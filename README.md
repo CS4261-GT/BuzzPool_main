@@ -3,6 +3,8 @@
 Instructions to run the code:
 Clone or download the react-native-calendar repository from GitHub. Open the directory in the command window.
 
+Run Yarn Install first. Then...
+
 Run the application by running the command:
 
 expo start
