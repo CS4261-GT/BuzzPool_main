@@ -1,7 +1,8 @@
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { auth } from '../firebase'
+import { auth } from '../api/firebase'
 import { useNavigation } from '@react-navigation/core'
+import { handleLogin, handleDeleteUser, handleEmailVerification, handleSignUp } from '../logic/authenticationHandler'
 
 const LoginScreen = () => {
 
@@ -10,35 +11,15 @@ const LoginScreen = () => {
 
     const navigation = useNavigation()
 
-    useEffect(() => {
-      const unsubscribe = auth.onAuthStateChanged(user => {
-        if (user) {
-          navigation.replace("Home")
-        }
-      })
+    // useEffect(() => {
+    //   const unsubscribe = auth.onAuthStateChanged(user => {
+    //     if (user) {
+    //       navigation.replace("Home")
+    //     }
+    //   })
   
-      return unsubscribe
-    }, [])
-
-    const handleSignUp = () => {
-      auth
-        .createUserWithEmailAndPassword(email, password)
-        .then(userCredentials => {
-          const user = userCredentials.user;
-          console.log('Registered with:', user.email);
-        })
-        .catch(error => alert(error.message))
-    }
-
-    const handleLogin = () => {
-      auth
-        .signInWithEmailAndPassword(email, password)
-        .then(userCredentials => {
-          const user = userCredentials.user;
-          console.log('Logged in with:', user.email);
-        })
-        .catch(error => alert(error.message))
-    }
+    //   return unsubscribe
+    // }, [])
   
 
   return (
@@ -49,7 +30,7 @@ const LoginScreen = () => {
       <View style={styles.inputContainer}>
         <View>
         <TextInput
-          placeholder="Email"
+          placeholder="GT Username"
           value={email}
           onChangeText={text => setEmail(text)}
           style={styles.input}
@@ -66,19 +47,34 @@ const LoginScreen = () => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={handleLogin}
+          onPress={()=>handleLogin(email, password)}
           style={styles.button}
         >
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={handleSignUp}
+          onPress={()=>handleSignUp(email, password)}
           style={[styles.button, styles.buttonOutline]}
         >
         <Text style={styles.buttonOutlineText}>Register</Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={()=>handleDeleteUser(email, password)}
+          style={[styles.button, styles.buttonOutline]}
+        >
+        <Text style={styles.buttonOutlineText}>Delete Account</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={()=>handleEmailVerification(email)}
+          style={[styles.button, styles.buttonOutline]}
+        >
+        <Text style={styles.buttonOutlineText}>Resend Email Verification</Text>
+        </TouchableOpacity>
       </View>
+
+      
     </KeyboardAvoidingView>
   )
 }

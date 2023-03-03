@@ -39,6 +39,7 @@ export default function App() {
         <Tab.Screen name="Service" component={Service} />
         <Tab.Screen name="Provider" component={Provider} />
         <Tab.Screen name="User" component={Profile} />
+        <Tab.Screen name="Login" component={LoginScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
