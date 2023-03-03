@@ -1,7 +1,7 @@
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View, KeyboardAvoidingView, TextInput, Button } from 'react-native'
-import { auth } from '../firebase'
+import { auth } from '../api/firebase'
 import DatePicker from '@react-native-community/datetimepicker';
 import * as Calendar from 'expo-calendar';
 
