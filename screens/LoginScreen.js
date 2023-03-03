@@ -2,7 +2,7 @@ import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, Vi
 import React, { useState, useEffect } from 'react'
 import { auth } from '../api/firebase'
 import { useNavigation } from '@react-navigation/core'
-import { handleLogin, handleDeleteUser, handleEmailVerification, handleSignUp } from '../logic/authenticationHandler'
+import { handleLogin, handleDeleteUser, handleEmailVerification, handleSignUp, handleResetPassword } from '../logic/authenticationHandler'
 
 const LoginScreen = () => {
 
@@ -46,6 +46,7 @@ const LoginScreen = () => {
       </View>
 
       <View style={styles.buttonContainer}>
+
         <TouchableOpacity
           onPress={()=>handleLogin(email, password)}
           style={styles.button}
@@ -66,12 +67,21 @@ const LoginScreen = () => {
         >
         <Text style={styles.buttonOutlineText}>Delete Account</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           onPress={()=>handleEmailVerification(email)}
           style={[styles.button, styles.buttonOutline]}
         >
         <Text style={styles.buttonOutlineText}>Resend Email Verification</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={()=>handleResetPassword(email)}
+          style={[styles.button, styles.buttonOutline]}
+        >
+        <Text style={styles.buttonOutlineText}>Reset password</Text>
+        </TouchableOpacity>
+
       </View>
 
       
