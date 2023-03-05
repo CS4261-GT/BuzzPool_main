@@ -5,12 +5,13 @@ import * as firebase from "firebase";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAsRARC3mTBWmQ-JzpbCYH5VMJLuCYp0QM",
-  authDomain: "calendar-event-325e6.firebaseapp.com",
-  projectId: "calendar-event-325e6",
-  storageBucket: "calendar-event-325e6.appspot.com",
-  messagingSenderId: "933831158330",
-  appId: "1:933831158330:web:0f53f15ef40be2923d2303"
+  apiKey: "AIzaSyBQZXcrStyOlnuf2oU1MPm-CVVnQIPGWZU",
+  authDomain: "buzzpool-test.firebaseapp.com",
+  projectId: "buzzpool-test",
+  storageBucket: "buzzpool-test.appspot.com",
+  messagingSenderId: "259892781917",
+  appId: "1:259892781917:web:f8259e3f85c6a86dafbeb4",
+  measurementId: "G-21VSFHWTTT"
 };
 
 // Initialize Firebase

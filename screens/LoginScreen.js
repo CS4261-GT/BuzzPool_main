@@ -2,8 +2,8 @@ import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, Vi
 import React, { useState, useEffect } from 'react'
 import { auth } from '../api/firebase'
 import { useNavigation } from '@react-navigation/core'
-import { handleLogin, handleDeleteUser, handleEmailVerification, handleSignUp, handleResetPassword } from '../logic/authenticationHandler'
-
+import { handleLogin, handleEmailVerification, handleSignUp, handleResetPassword } from '../logic/authenticationHandler'
+const DOMAIN = '@gatech.edu'
 const LoginScreen = () => {
 
     const [email, setEmail] = useState('')
@@ -48,35 +48,28 @@ const LoginScreen = () => {
       <View style={styles.buttonContainer}>
 
         <TouchableOpacity
-          onPress={()=>handleLogin(email, password)}
+          onPress={()=>handleLogin(email+DOMAIN, password)}
           style={styles.button}
         >
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={()=>handleSignUp(email, password)}
+          onPress={()=>handleSignUp(email+DOMAIN, password)}
           style={[styles.button, styles.buttonOutline]}
         >
         <Text style={styles.buttonOutlineText}>Register</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={()=>handleDeleteUser(email, password)}
-          style={[styles.button, styles.buttonOutline]}
-        >
-        <Text style={styles.buttonOutlineText}>Delete Account</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={()=>handleEmailVerification(email)}
+          onPress={()=>handleEmailVerification(email+DOMAIN, password)}
           style={[styles.button, styles.buttonOutline]}
         >
         <Text style={styles.buttonOutlineText}>Resend Email Verification</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={()=>handleResetPassword(email)}
+          onPress={()=>handleResetPassword(email+DOMAIN)}
           style={[styles.button, styles.buttonOutline]}
         >
         <Text style={styles.buttonOutlineText}>Reset password</Text>
