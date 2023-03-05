@@ -1,4 +1,12 @@
 import { auth } from '../api/firebase'
+
+/**
+ * This function handles email verification for user
+ * This function is first called when a user registers for an account
+ * If a user doesn't receive the verification email, they can call this function again
+ * @param {string} email 
+ * @param {string} password 
+ */
 const handleEmailVerification = (email, password) => {
     
     const user = auth.currentUser
@@ -10,7 +18,12 @@ const handleEmailVerification = (email, password) => {
     .catch(error => alert(error.message))
 }
 
-
+/**
+ * This function handles creates an account for the user in the firebase
+ * This function then calls email verification
+ * @param {string} email 
+ * @param {string} password 
+ */
 const handleSignUp = (email, password) => {
     auth
     .createUserWithEmailAndPassword(email, password)
@@ -24,6 +37,12 @@ const handleSignUp = (email, password) => {
 
 }
 
+/**
+ * This function handles user login
+ * Users are able to login if their email is verified
+ * @param {string} email 
+ * @param {string} password 
+ */
 const handleLogin = (email, password) => {
 
     auth
@@ -41,7 +60,11 @@ const handleLogin = (email, password) => {
     .catch(error => alert(error.message));
 }
 
-
+/**
+ * This function handles password reset for users
+ * It will send a reset email to the user with the given email
+ * @param {string} email 
+ */
 const handleResetPassword = (email) => {
     auth.sendPasswordResetEmail(email)
     .then(() => alert(`Password reset email is sent to ${email}`))
