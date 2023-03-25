@@ -2,8 +2,9 @@ import { Avatar, Button, Card, Text } from 'react-native-paper';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList } from 'react-native'
-import { auth } from '../api/firebase'
-
+import { auth, firestore } from '../api/firebase'
+// import firestore from 'firebase/firestore';
+import Carpool from '../model/Carpool';
 
 const DATA = [
     {
@@ -19,6 +20,9 @@ const DATA = [
       title: 'Third Item',
     },
 ];
+
+const usersCollection = firestore.collection('Users');
+const carpoolCollection = firestore.collection('Carpools');
 
 const renderCards = ({item}) => {
     return (
@@ -36,6 +40,49 @@ const renderCards = ({item}) => {
         </Card>
     )
 }
+
+
+const addCarpool = () => {  
+    const carpool = new Carpool(new Date().toLocaleString(), "Tech Square", "Culc", "123456789", 5);
+    carpoolCollection
+        .withConverter(carpoolConverter)
+        .add(carpool)
+        .then(() => {
+            console.log('New carpool added!');
+        })
+        .catch( error => console.log(error.message));
+    // console.log(carpool);
+    
+}
+
+var carpoolConverter = {
+    toFirestore: function(carpool) {
+        // data fields for reference
+
+        // this.departureTime = departureTime
+        // this.departureLocation = departureLocation
+        // this.destination = destination
+        // this.capacity = capacity
+        // this.requireDriver = true
+        // this.userGTIDs = [gtid]
+        // this.isTransactionFinished = false
+        // this.isTripFinished = false
+        return {
+            departureTime: carpool.departureTime,
+            departureLocation: carpool.departureLocation,
+            destination: carpool.destination,
+            userGTIDs: carpool.userGTIDs,
+            capacity: carpool.capacity,
+            requireDriver: carpool.requireDriver,
+            isTransactionFinished: carpool.isTransactionFinished,
+            isTripFinished: carpool.isTripFinished,
+            };
+    },
+    // fromFirestore: function(snapshot, options){
+    //     const data = snapshot.data(options);
+    //     return new City(data.name, data.state, data.country);
+    // }
+};
 
 const ServiceScreen = () => {
 
@@ -60,6 +107,7 @@ const ServiceScreen = () => {
       style={styles.container}
       behavior="padding"
     >
+        <Button onPress={addCarpool}> Add a carpool</Button>
         <FlatList
             data={DATA}
             renderItem={renderCards}
