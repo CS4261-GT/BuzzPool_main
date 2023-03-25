@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
+import ServiceScreen from './screens/ServiceScreen';
 import HomeScreen from './screens/HomeScreen';
 
 function Service() {
@@ -36,7 +37,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen name="Service" component={Service} />
+        <Tab.Screen name="Service" component={ServiceScreen} />
         <Tab.Screen name="Provider" component={Provider} />
         <Tab.Screen name="User" component={Profile} />
         <Tab.Screen name="Login" component={LoginScreen} />
