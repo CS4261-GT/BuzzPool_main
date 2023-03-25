@@ -9,19 +9,17 @@ import Carpool from '../model/Carpool';
 
 
 const usersCollection = firestore.collection('Users');
-
-
-
+const carpoolCollection = firestore.collection('Carpools');
 
 
 export const addCarpool = () => {  
-    const carpoolCollection = firestore.collection('Carpools');
+    
     const carpool = new Carpool(
-        departureTime=new Date().toLocaleString(), 
-        departureLocation="Tech Square", 
-        destination="Culc", 
-        gtid="123456789", 
-        capacity=5
+        new Date().toLocaleString(), 
+        "Tech Square", 
+        "Culc", 
+        "123456789", 
+        5
     );
     
     carpoolCollection
@@ -47,7 +45,7 @@ var carpoolConverter = {
         // this.userGTIDs = [gtid]
         // this.isTransactionFinished = false
         // this.isTripFinished = false
-        console.log(carpool);
+        // console.log(carpool);
         return {
             departureTime: carpool.departureTime,
             departureLocation: carpool.departureLocation,
