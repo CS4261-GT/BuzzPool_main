@@ -2,29 +2,17 @@ import { Avatar, Button, Card, Text } from 'react-native-paper';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList } from 'react-native'
-import { addCarpool } from '../logic/carpoolHandler'
+import { addCarpool, getCarpool, DATA } from '../logic/carpoolHandler'
 
-const DATA = [
-    {
-      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      title: 'First Item',
-    },
-    {
-      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      title: 'Second Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-];
+
+
 
 const renderCards = ({item}) => {
     return (
         <Card>
             <Card.Title title="Card Title" subtitle="Card Subtitle" />
             <Card.Content>
-            <Text variant="titleLarge">{item.title}</Text>
+            <Text variant="titleLarge">{item.id}</Text>
             <Text variant="bodyMedium">Card content</Text>
             </Card.Content>
             <Card.Cover source={{ uri: 'https://picsum.photos/700' }} />
@@ -59,7 +47,8 @@ const ServiceScreen = () => {
       style={styles.container}
       behavior="padding"
     >
-        <Button onPress={addCarpool}> Add a carpool</Button>
+        <Button onPress={addCarpool}>Add a carpool</Button>
+        <Button onPress={getCarpool}>Get all carpools</Button>
         <FlatList
             data={DATA}
             renderItem={renderCards}
