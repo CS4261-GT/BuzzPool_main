@@ -70,4 +70,4 @@ const handleResetPassword = (email) => {
     .then(() => alert(`Password reset email is sent to ${email}`))
     .catch(e => alert(e.message))
 }
-export {handleEmailVerification, handleLogin, handleSignUp, handleResetPassword}
+export default { handleEmailVerification, handleLogin, handleSignUp, handleResetPassword }

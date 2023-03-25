@@ -2,9 +2,31 @@ import { Avatar, Button, Card, Text } from 'react-native-paper';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList } from 'react-native'
-import { auth, firestore } from '../api/firebase'
-// import firestore from 'firebase/firestore';
-import Carpool from '../model/Carpool';
+import { addCarpool, getCarpool } from '../logic/carpoolHandler'
+
+
+
+const renderCards = ({item}) => {
+    console.log(item)
+    // if (carpool)
+        return (
+            <Card>
+                <Card.Title title={"To " + item.destination} subtitle= {"from " + item.departureLocation} />
+                <Card.Content>
+                    <Text variant="titleLarge">{item.departureTime}</Text>
+                    <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
+                    <Text variant="bodyMedium">Remaining seats: {item.capacity}</Text>
+                </Card.Content>
+                <Card.Cover source={{ uri: 'https://picsum.photos/700' }} />
+                <Card.Actions>
+                <Button>Skip</Button>
+                <Button>Join</Button>
+                </Card.Actions>
+            </Card>
+        )
+    // else
+    //     return <></>
+} 
 
 const DATA = [
     {
@@ -19,74 +41,12 @@ const DATA = [
       id: '58694a0f-3da1-471f-bd96-145571e29d72',
       title: 'Third Item',
     },
-];
-
-const usersCollection = firestore.collection('Users');
-const carpoolCollection = firestore.collection('Carpools');
-
-const renderCards = ({item}) => {
-    return (
-        <Card>
-            <Card.Title title="Card Title" subtitle="Card Subtitle" />
-            <Card.Content>
-            <Text variant="titleLarge">{item.title}</Text>
-            <Text variant="bodyMedium">Card content</Text>
-            </Card.Content>
-            <Card.Cover source={{ uri: 'https://picsum.photos/700' }} />
-            <Card.Actions>
-            <Button>Cancel</Button>
-            <Button>Ok</Button>
-            </Card.Actions>
-        </Card>
-    )
-}
-
-
-const addCarpool = () => {  
-    const carpool = new Carpool(new Date().toLocaleString(), "Tech Square", "Culc", "123456789", 5);
-    carpoolCollection
-        .withConverter(carpoolConverter)
-        .add(carpool)
-        .then(() => {
-            console.log('New carpool added!');
-        })
-        .catch( error => console.log(error.message));
-    // console.log(carpool);
-    
-}
-
-var carpoolConverter = {
-    toFirestore: function(carpool) {
-        // data fields for reference
-
-        // this.departureTime = departureTime
-        // this.departureLocation = departureLocation
-        // this.destination = destination
-        // this.capacity = capacity
-        // this.requireDriver = true
-        // this.userGTIDs = [gtid]
-        // this.isTransactionFinished = false
-        // this.isTripFinished = false
-        return {
-            departureTime: carpool.departureTime,
-            departureLocation: carpool.departureLocation,
-            destination: carpool.destination,
-            userGTIDs: carpool.userGTIDs,
-            capacity: carpool.capacity,
-            requireDriver: carpool.requireDriver,
-            isTransactionFinished: carpool.isTransactionFinished,
-            isTripFinished: carpool.isTripFinished,
-            };
-    },
-    // fromFirestore: function(snapshot, options){
-    //     const data = snapshot.data(options);
-    //     return new City(data.name, data.state, data.country);
-    // }
-};
+  ];
 
 const ServiceScreen = () => {
 
-    // const [email, setEmail] = useState('')
+    const [carpoolData, setCarpoolData] = useState(getCarpool())
+    const [flatlistRefresh, flipBit] = useState(true)
     // const [password, setPassword] = useState('')
 
     // const navigation = useNavigation()
@@ -100,6 +60,16 @@ const ServiceScreen = () => {
   
     //   return unsubscribe
     // }, [])
+
+    const updateData = () => {
+        getCarpool()
+        .then((data) => setCarpoolData(data))
+        // .then(()=>console.log(carpoolData))
+        
+        // console.log(carpoolData)
+        flipBit(!flatlistRefresh)
+        console.log(flatlistRefresh)
+    } 
   
 
   return (
@@ -107,11 +77,13 @@ const ServiceScreen = () => {
       style={styles.container}
       behavior="padding"
     >
-        <Button onPress={addCarpool}> Add a carpool</Button>
+        <Button onPress={addCarpool}>Add a carpool</Button>
+        <Button onPress={updateData}>Refresh carpools</Button>
         <FlatList
-            data={DATA}
+            data={carpoolData}
             renderItem={renderCards}
             keyExtractor={item => item.id}
+            extraData={flatlistRefresh}
             >
 
         </FlatList>
