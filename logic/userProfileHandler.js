@@ -1,5 +1,11 @@
-import { auth } from '../api/firebase'
 import { Review } from '../model/Review'
+import { auth, firestore } from '../api/firebase'
+
+
+
+const usersCollection = firestore.collection('Users');
+
+
 /**
  * This function adds the first name and last name for a user
  * @param {string} fname 
