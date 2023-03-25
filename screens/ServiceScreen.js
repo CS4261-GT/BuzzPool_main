@@ -2,31 +2,51 @@ import { Avatar, Button, Card, Text } from 'react-native-paper';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList } from 'react-native'
-import { addCarpool, getCarpool, DATA } from '../logic/carpoolHandler'
-
+import { addCarpool, getCarpool } from '../logic/carpoolHandler'
 
 
 
 const renderCards = ({item}) => {
-    return (
-        <Card>
-            <Card.Title title="Card Title" subtitle="Card Subtitle" />
-            <Card.Content>
-            <Text variant="titleLarge">{item.id}</Text>
-            <Text variant="bodyMedium">Card content</Text>
-            </Card.Content>
-            <Card.Cover source={{ uri: 'https://picsum.photos/700' }} />
-            <Card.Actions>
-            <Button>Cancel</Button>
-            <Button>Ok</Button>
-            </Card.Actions>
-        </Card>
-    )
-}
+    console.log(item)
+    // if (carpool)
+        return (
+            <Card>
+                <Card.Title title={"To " + item.destination} subtitle= {"from " + item.departureLocation} />
+                <Card.Content>
+                    <Text variant="titleLarge">{item.departureTime}</Text>
+                    <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
+                    <Text variant="bodyMedium">Remaining seats: {item.capacity}</Text>
+                </Card.Content>
+                <Card.Cover source={{ uri: 'https://picsum.photos/700' }} />
+                <Card.Actions>
+                <Button>Skip</Button>
+                <Button>Join</Button>
+                </Card.Actions>
+            </Card>
+        )
+    // else
+    //     return <></>
+} 
+
+const DATA = [
+    {
+      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+      title: 'First Item',
+    },
+    {
+      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+      title: 'Second Item',
+    },
+    {
+      id: '58694a0f-3da1-471f-bd96-145571e29d72',
+      title: 'Third Item',
+    },
+  ];
 
 const ServiceScreen = () => {
 
-    // const [email, setEmail] = useState('')
+    const [carpoolData, setCarpoolData] = useState(getCarpool())
+    const [flatlistRefresh, flipBit] = useState(true)
     // const [password, setPassword] = useState('')
 
     // const navigation = useNavigation()
@@ -40,6 +60,16 @@ const ServiceScreen = () => {
   
     //   return unsubscribe
     // }, [])
+
+    const updateData = () => {
+        getCarpool()
+        .then((data) => setCarpoolData(data))
+        // .then(()=>console.log(carpoolData))
+        
+        // console.log(carpoolData)
+        flipBit(!flatlistRefresh)
+        console.log(flatlistRefresh)
+    } 
   
 
   return (
@@ -48,11 +78,12 @@ const ServiceScreen = () => {
       behavior="padding"
     >
         <Button onPress={addCarpool}>Add a carpool</Button>
-        <Button onPress={getCarpool}>Get all carpools</Button>
+        <Button onPress={updateData}>Refresh carpools</Button>
         <FlatList
-            data={DATA}
+            data={carpoolData}
             renderItem={renderCards}
             keyExtractor={item => item.id}
+            extraData={flatlistRefresh}
             >
 
         </FlatList>
