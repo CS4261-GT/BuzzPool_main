@@ -8,7 +8,7 @@ import { addCarpool, getCarpool } from '../logic/carpoolHandler'
 
 
 const renderCards = ({item}) => {
-    console.log(item)
+    // console.log(item)
     // if (carpool)
         return (
             <Card>
@@ -29,9 +29,7 @@ const renderCards = ({item}) => {
     //     return <></>
 } 
 
-const makePost = () => {
-    
-}
+
 
 const ServiceScreen = () => {
 
@@ -41,15 +39,15 @@ const ServiceScreen = () => {
     const [destination, onChangeDestination] = useState("Tech Square")
     const [modalVisible, setModalVisible] = useState(false)
     const [flatlistRefresh, flipBit] = useState(true)
-    const [checked, setChecked] = useState(false)
     const [dateTimePickerVisible, setDateTimePickerVisible] = useState(false)
     const onDateTimePickerDismiss = useCallback(() => {
         setDateTimePickerVisible(false);
     }, [setDateTimePickerVisible]);
     const [requesterGTID, setRequesterGTID] = useState("123456789")
+    const [isDriver, setIsDriver] = useState(true)
     const [date, setDate] = useState(new Date());
     const onDateTimeChange = useCallback(( newDate ) => {
-        console.log(newDate);
+        // console.log(newDate);
         setDateTimePickerVisible(false);
         setDate(newDate);
       }, []);
@@ -67,6 +65,20 @@ const ServiceScreen = () => {
     //   return unsubscribe
     // }, [])
 
+    const makePost = () => {
+        setModalVisible(!modalVisible)
+        addCarpool(
+            date.toLocaleString(), 
+            departureLocation,
+            destination,
+            requesterGTID,
+            !isDriver,
+        );
+    }
+
+    /**
+     * This is to reset carpool data and force rerendering of the UI
+     */
     const updateData = () => {
         getCarpool()
         .then((data) => setCarpoolData(data))
@@ -83,7 +95,17 @@ const ServiceScreen = () => {
       style={styles.container}
       behavior="padding"
     >
-        <Button onPress={addCarpool}>Add a carpool</Button>
+        {/* <Button 
+            onPress={
+                () => addCarpool(
+                    date.toLocaleString(), 
+                    departureLocation,
+                    destination,
+                    requesterGTID,
+                    )}
+            >
+            Add a carpool
+        </Button> */}
 
         <Modal
         animationType="slide"
@@ -166,11 +188,9 @@ const ServiceScreen = () => {
                 
                 <Text style={styles.inputLabel}>Are you a driver?</Text>
                 <Checkbox
-                    status={checked ? 'checked' : 'unchecked'}
+                    status={isDriver ? 'checked' : 'unchecked'}
                     color="green"
-                    onPress={() => {
-                        setChecked(!checked);
-                    }}/>
+                    onPress={() => setIsDriver(!isDriver)}/>
             </View>
 
             
@@ -189,7 +209,7 @@ const ServiceScreen = () => {
                 </Button>
 
                 <Button 
-                    onPress={() => setModalVisible(!modalVisible)}
+                    onPress={makePost}
                     mode={'contained'}
                     buttoncolor='blue'>
                     Post

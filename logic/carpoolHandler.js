@@ -12,14 +12,14 @@ const usersCollection = firestore.collection('Users');
 const carpoolCollection = firestore.collection('Carpools');
 
 
-export const addCarpool = () => {  
+export const addCarpool = (datetime, from, to, GTID, requireDriver) => {  
     
     const carpool = new Carpool(
-        new Date().toLocaleString(), 
-        "Tech Square", 
-        "Culc", 
-        "123456789", 
-        5
+        datetime,
+        from,
+        to, 
+        GTID,
+        requireDriver,
     );
     
     carpoolCollection
@@ -86,8 +86,8 @@ var carpoolConverter = {
             data.departureTime,
             data.departureLocation,
             data.destination,
-            data.capacity,
             data.requireDriver,
+            data.capacity,
             data.userGTIDs,
             data.isTransactionFinished,
             data.isTripFinished);
