@@ -27,7 +27,7 @@ const ProfileScreen = () => {
                 throw new Error()
             addUser(firstName, lastName, pNumber, GTIDNumber)
         } catch (error) {
-            alert("Incomplete/Invalid user information!")
+            alert("Incomplete or Invalid user information!")
         }
     }
 

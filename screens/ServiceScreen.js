@@ -81,17 +81,28 @@ const ServiceScreen = () => {
 
     /**
      * This function closes the modal and calls the handler in carpoolHandler.js
+     * after checking that the required fields are all filled up
      */
     const makePost = () => {
         setModalVisible(!modalVisible)
-        addCarpool(
-            title,
-            date.toLocaleString(), 
-            departureLocation,
-            destination,
-            requesterGTID,
-            !isDriver,
-        );
+        try {
+            const GTIDNumber = Number(requesterGTID)
+            if (title.length == 0 || date == null || date == undefined || departureLocation.length == 0 || 
+                destination.length == 0 || requesterGTID.length != 9 || isNaN(GTIDNumber))
+                throw new Error()
+
+            addCarpool(
+                title,
+                date.toLocaleString(), 
+                departureLocation,
+                destination,
+                GTIDNumber,
+                !isDriver,
+            )
+        } catch (error) {
+            alert("Incomplete or invalid input")
+        }
+        
     }
 
     /**
@@ -118,6 +129,7 @@ const ServiceScreen = () => {
             value={value}
             onValueChange={setValue}
             style={styles.segmentedButtons}
+            theme={{colors:{backgroundColor:"black"}}}
             buttons={[
             {
                 value: 'myTrip',
@@ -160,7 +172,7 @@ const ServiceScreen = () => {
             transparent={true}
             visible={modalVisible}
             onRequestClose={() => {
-                Alert.alert('Modal has been closed.');
+                // Alert.alert('Modal has been closed.');
                 setModalVisible(!modalVisible);
             }}
         >
