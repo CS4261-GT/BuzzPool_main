@@ -7,13 +7,6 @@ import LoginScreen from './screens/LoginScreen';
 import ServiceScreen from './screens/ServiceScreen';
 import HomeScreen from './screens/HomeScreen';
 
-function Service() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Get a service!</Text>
-    </View>
-  );
-}
 
 function Provider() {
   return (

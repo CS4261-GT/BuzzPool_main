@@ -8,13 +8,22 @@ import Carpool from '../model/Carpool';
 
 
 
-const usersCollection = firestore.collection('Users');
+// const usersCollection = firestore.collection('Users');
 const carpoolCollection = firestore.collection('Carpools');
 
-
-export const addCarpool = (datetime, from, to, GTID, requireDriver) => {  
+/**
+ * This function writes a carpool instance to firebase firestore
+ * @param {string} title title of the post
+ * @param {string} datetime datetime = Date.toLocaleString(), this is the departure time
+ * @param {string} from departure location
+ * @param {string} to destination
+ * @param {string} GTID requester's GTID
+ * @param {boolean} requireDriver true if a driver is still needed for the carpool
+ */
+export const addCarpool = (title, datetime, from, to, GTID, requireDriver) => {  
     
     const carpool = new Carpool(
+        title,
         datetime,
         from,
         to, 
@@ -33,7 +42,10 @@ export const addCarpool = (datetime, from, to, GTID, requireDriver) => {
     
 }
 
-
+/**
+ * This class returns all the available carpool instances from firestore
+ * @returns all avaialble carpool instances
+ */
 export const getCarpool = async() => {
     var carpools = [];
     await carpoolCollection
@@ -55,6 +67,11 @@ export const getCarpool = async() => {
     return carpools
 }
 
+/**
+ * This object uses the firebase interface of datatype conversion
+ * This converts a carpool object to a firestore compatible object upon write
+ * and converts a firestore compatible object to a carpool object upon read
+ */
 var carpoolConverter = {
     toFirestore: function(carpool) {
         // data fields for reference
@@ -69,12 +86,13 @@ var carpoolConverter = {
         // this.isTripFinished = false
         // console.log(carpool);
         return {
+            title: carpool.title,
             departureTime: carpool.departureTime,
             departureLocation: carpool.departureLocation,
             destination: carpool.destination,
             userGTIDs: carpool.userGTIDs,
-            capacity: carpool.capacity,
             requireDriver: carpool.requireDriver,
+            capacity: carpool.capacity,
             isTransactionFinished: carpool.isTransactionFinished,
             isTripFinished: carpool.isTripFinished,
             };
@@ -83,6 +101,7 @@ var carpoolConverter = {
         const data = snapshot.data(options);
         
         var carpool = new Carpool(
+            data.title,
             data.departureTime,
             data.departureLocation,
             data.destination,
