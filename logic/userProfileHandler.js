@@ -5,6 +5,28 @@ import { auth, firestore } from '../api/firebase'
 
 const usersCollection = firestore.collection('Users');
 
+/**
+ * This function pushes user info to firestore 
+ * if user information is complete
+ * @param {string} fname 
+ * @param {string} lname 
+ * @param {number} phoneNumber 
+ * @param {number} GTID 
+ */
+export const addUser = (fname, lname, phoneNumber, GTID) => {
+    // console.log("function called")
+    usersCollection
+        .add({
+            firstName: fname,
+            lastName: lname,
+            phoneNumber: phoneNumber,
+            GTID: GTID,
+        })
+        .then(() => {
+            console.log('New user added!');
+        })
+        .catch( error => console.log(error.message));
+}
 
 /**
  * This function adds the first name and last name for a user

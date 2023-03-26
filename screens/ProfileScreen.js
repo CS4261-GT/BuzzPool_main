@@ -3,13 +3,33 @@ import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState, useCallback } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal } from 'react-native'
+import { addUser } from '../logic/userProfileHandler'
 
 
 
 
-
-
+/**
+ * This function returns the profile page UI
+ * @returns profile page UI
+ */
 const ProfileScreen = () => {
+
+
+    /**
+     * This function does a sanity check of the user input information
+     * and makes sure it is correct before pushing it to firestore
+     */
+    const createUser = () => {
+        try {
+            const pNumber = Number(phoneNumber)
+            const GTIDNumber = Number(GTID)
+            if (!(firstName.length > 0 && lastName.length > 0 && phoneNumber.length == 10 && GTID.length == 9) || isNaN(pNumber) || isNaN(GTID))
+                throw new Error()
+            addUser(firstName, lastName, pNumber, GTIDNumber)
+        } catch (error) {
+            alert("Incomplete/Invalid user information!")
+        }
+    }
 
     
     const [firstName, setFirstName] = useState("")
@@ -88,10 +108,12 @@ const ProfileScreen = () => {
                 </View>
 
                 
-
-            
+                
+                <Button onPress={createUser} style={styles.button}>Create Profile</Button>
                 
             </View>
+
+            
 
         </KeyboardAvoidingView>
     )
@@ -213,9 +235,9 @@ const styles = StyleSheet.create({
     button: {
       backgroundColor: '#0782F9',
       width: '100%',
-      padding: 15,
-      borderRadius: 10,
-      alignItems: 'center',
+    //   padding: 15,
+    //   borderRadius: 10,
+      alignItems: 'right',
     },
     buttonText: {
       color: 'white',

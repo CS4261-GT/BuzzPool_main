@@ -8,7 +8,7 @@ import Carpool from '../model/Carpool';
 
 
 
-// const usersCollection = firestore.collection('Users');
+
 const carpoolCollection = firestore.collection('Carpools');
 
 /**
