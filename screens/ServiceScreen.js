@@ -48,16 +48,16 @@ const renderCards = ({item}) => {
 const ServiceScreen = () => {
 
     const [carpoolData, setCarpoolData] = useState(getCarpool())
-    const [title, onChangeTitle] = useState("Title")
-    const [departureLocation, onChangeDepartureLocation] = useState("Culc")
-    const [destination, onChangeDestination] = useState("Tech Square")
+    const [title, onChangeTitle] = useState("")
+    const [departureLocation, onChangeDepartureLocation] = useState("")
+    const [destination, onChangeDestination] = useState("")
     const [modalVisible, setModalVisible] = useState(false)
     const [flatlistRefresh, flipBit] = useState(true)
     const [dateTimePickerVisible, setDateTimePickerVisible] = useState(false)
     const onDateTimePickerDismiss = useCallback(() => {
         setDateTimePickerVisible(false);
     }, [setDateTimePickerVisible]);
-    const [requesterGTID, setRequesterGTID] = useState("123456789")
+    const [requesterGTID, setRequesterGTID] = useState("")
     const [isDriver, setIsDriver] = useState(true)
     const [date, setDate] = useState(new Date());
     const onDateTimeChange = useCallback(( newDate ) => {
@@ -144,6 +144,8 @@ const ServiceScreen = () => {
                 <TextInput
                         style={styles.input}
                         onChangeText={onChangeTitle}
+                        placeholder="Post Title"
+                        placeholderTextColor="grey"
                         value={title}
                     />
 
@@ -154,6 +156,8 @@ const ServiceScreen = () => {
                     <TextInput
                         style={styles.input}
                         onChangeText={onChangeDepartureLocation}
+                        placeholder="departure location"
+                        placeholderTextColor="grey"
                         value={departureLocation}
                     />
                 </View>
@@ -165,6 +169,8 @@ const ServiceScreen = () => {
                     <TextInput
                         style={styles.input}
                         onChangeText={onChangeDestination}
+                        placeholder="destination"
+                        placeholderTextColor="grey"
                         value={destination}
                     />
                 </View>
@@ -193,6 +199,8 @@ const ServiceScreen = () => {
                     <TextInput
                         style={styles.input}
                         onChangeText={setRequesterGTID}
+                        placeholder="123456789"
+                        placeholderTextColor="grey"
                         value={requesterGTID}
                     />
                 </View>
