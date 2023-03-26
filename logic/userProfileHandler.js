@@ -23,7 +23,9 @@ export const addUser = (fname, lname, phoneNumber, GTID) => {
             GTID: GTID,
         })
         .then(() => {
-            console.log('New user added!');
+            console.log('New user added!')
+            alert("New user added!")
+
         })
         .catch( error => console.log(error.message));
 }

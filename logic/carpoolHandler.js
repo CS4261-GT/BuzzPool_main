@@ -36,6 +36,7 @@ export const addCarpool = (title, datetime, from, to, GTID, requireDriver) => {
         .add(carpool)
         .then(() => {
             console.log('New carpool added!');
+            alert("New carpool added!")
         })
         .catch( error => console.log(error.message));
     // console.log(carpool);
