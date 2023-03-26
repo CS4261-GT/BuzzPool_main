@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
 import ServiceScreen from './screens/ServiceScreen';
 import HomeScreen from './screens/HomeScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 
 function Provider() {
@@ -16,13 +17,7 @@ function Provider() {
   );
 }
 
-function Profile() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Hey User!</Text>
-    </View>
-  );
-}
+
 
 const Tab = createBottomTabNavigator();
 
@@ -32,7 +27,7 @@ export default function App() {
       <Tab.Navigator>
         <Tab.Screen name="Service" component={ServiceScreen} />
         <Tab.Screen name="Provider" component={Provider} />
-        <Tab.Screen name="User" component={Profile} />
+        <Tab.Screen name="User" component={ProfileScreen} />
         <Tab.Screen name="Login" component={LoginScreen} />
       </Tab.Navigator>
     </NavigationContainer>

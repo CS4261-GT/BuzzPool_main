@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Text, Checkbox } from 'react-native-paper';
+import { Avatar, Button, Card, Text, Checkbox, SegmentedButtons } from 'react-native-paper';
 import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState, useCallback } from 'react'
@@ -48,16 +48,16 @@ const renderCards = ({item}) => {
 const ServiceScreen = () => {
 
     const [carpoolData, setCarpoolData] = useState(getCarpool())
-    const [title, onChangeTitle] = useState("Title")
-    const [departureLocation, onChangeDepartureLocation] = useState("Culc")
-    const [destination, onChangeDestination] = useState("Tech Square")
+    const [title, onChangeTitle] = useState("")
+    const [departureLocation, onChangeDepartureLocation] = useState("")
+    const [destination, onChangeDestination] = useState("")
     const [modalVisible, setModalVisible] = useState(false)
     const [flatlistRefresh, flipBit] = useState(true)
     const [dateTimePickerVisible, setDateTimePickerVisible] = useState(false)
     const onDateTimePickerDismiss = useCallback(() => {
         setDateTimePickerVisible(false);
     }, [setDateTimePickerVisible]);
-    const [requesterGTID, setRequesterGTID] = useState("123456789")
+    const [requesterGTID, setRequesterGTID] = useState("")
     const [isDriver, setIsDriver] = useState(true)
     const [date, setDate] = useState(new Date());
     const onDateTimeChange = useCallback(( newDate ) => {
@@ -65,9 +65,9 @@ const ServiceScreen = () => {
         setDateTimePickerVisible(false);
         setDate(newDate);
       }, []);
-    // const [password, setPassword] = useState('')
 
-    // const navigation = useNavigation()
+    const [value, setValue] = React.useState('');
+   
 
     // useEffect(() => {
     //   const unsubscribe = auth.onAuthStateChanged(user => {
@@ -113,6 +113,31 @@ const ServiceScreen = () => {
       style={styles.container}
       behavior="padding"
     >
+
+        <SegmentedButtons
+            value={value}
+            onValueChange={setValue}
+            style={styles.segmentedButtons}
+            buttons={[
+            {
+                value: 'myTrip',
+                label: 'My Trip',
+            },
+            {
+                value: 'rider',
+                label: 'Riders',
+            },
+            {
+                value: 'request',
+                label: 'Request',
+            },
+            {
+                value: 'contact',
+                label: 'Contacts',
+            },
+            
+            ]}
+        />
         <Button onPress={() => setModalVisible(true)}>Make post</Button>
 
 
@@ -144,6 +169,8 @@ const ServiceScreen = () => {
                 <TextInput
                         style={styles.input}
                         onChangeText={onChangeTitle}
+                        placeholder="Post Title"
+                        placeholderTextColor="grey"
                         value={title}
                     />
 
@@ -154,6 +181,8 @@ const ServiceScreen = () => {
                     <TextInput
                         style={styles.input}
                         onChangeText={onChangeDepartureLocation}
+                        placeholder="departure location"
+                        placeholderTextColor="grey"
                         value={departureLocation}
                     />
                 </View>
@@ -165,6 +194,8 @@ const ServiceScreen = () => {
                     <TextInput
                         style={styles.input}
                         onChangeText={onChangeDestination}
+                        placeholder="destination"
+                        placeholderTextColor="grey"
                         value={destination}
                     />
                 </View>
@@ -193,6 +224,8 @@ const ServiceScreen = () => {
                     <TextInput
                         style={styles.input}
                         onChangeText={setRequesterGTID}
+                        placeholder="123456789"
+                        placeholderTextColor="grey"
                         value={requesterGTID}
                     />
                 </View>
@@ -257,6 +290,10 @@ const styles = StyleSheet.create({
         // flexWrap: "wrap",
         width: "100%",
         paddingHorizontal: 10,
+    },
+    segmentedButtons: {
+        padding: 10,
+        margin: 10,
     },
     cardStyle: {
         marginVertical: 10,
