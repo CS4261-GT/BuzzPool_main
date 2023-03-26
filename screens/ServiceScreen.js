@@ -1,7 +1,7 @@
-import { Avatar, Button, Card, Text } from 'react-native-paper';
+import { Avatar, Button, Card, Text, Checkbox } from 'react-native-paper';
 import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useCallback } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal, Pressable } from 'react-native'
 import { addCarpool, getCarpool } from '../logic/carpoolHandler'
 
@@ -37,21 +37,20 @@ const ServiceScreen = () => {
 
     const [carpoolData, setCarpoolData] = useState(getCarpool())
     const [title, onChangeTitle] = useState("Title")
-    const [departureLocation, onChangeDepartureLocation] = useState("From")
-    const [destination, onChangeDestination] = useState("to")
+    const [departureLocation, onChangeDepartureLocation] = useState("Culc")
+    const [destination, onChangeDestination] = useState("Tech Square")
     const [modalVisible, setModalVisible] = useState(false)
     const [flatlistRefresh, flipBit] = useState(true)
-
-    const [visible, setVisible] = React.useState(false);
-    const onDateTimePickerDismiss = React.useCallback(() => {
-        setVisible(false);
-    }, [setVisible]);
+    const [checked, setChecked] = useState(false)
+    const [dateTimePickerVisible, setDateTimePickerVisible] = useState(false)
+    const onDateTimePickerDismiss = useCallback(() => {
+        setDateTimePickerVisible(false);
+    }, [setDateTimePickerVisible]);
+    const [requesterGTID, setRequesterGTID] = useState("123456789")
     const [date, setDate] = useState(new Date());
-    const onDateTimeChange = React.useCallback(( newDate ) => {
+    const onDateTimeChange = useCallback(( newDate ) => {
         console.log(newDate);
-        setVisible(false);
-        // date = newDate;
-        
+        setDateTimePickerVisible(false);
         setDate(newDate);
       }, []);
     // const [password, setPassword] = useState('')
@@ -139,7 +138,7 @@ const ServiceScreen = () => {
                 style={styles.inputRowcontainer}>
                 
                 <DateTimePickerModal
-                    visible={visible}
+                    visible={dateTimePickerVisible}
                     onDismiss={onDateTimePickerDismiss}
                     date={date}
                     onConfirm={onDateTimeChange}
@@ -147,9 +146,36 @@ const ServiceScreen = () => {
                 />
 
                 <Text style={styles.input}>{date.toLocaleString()}</Text>
-                <Button onPress={() => setVisible(true)}>Pick date</Button>
+                <Button onPress={() => setDateTimePickerVisible(true)}>Pick date</Button>
             </View>
 
+            
+            <View
+                style={styles.inputRowcontainer}>
+                
+                <Text style={styles.inputLabel}>Your GTID:</Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={setRequesterGTID}
+                    value={requesterGTID}
+                />
+            </View>
+
+            <View
+                style={styles.inputRowcontainer}>
+                
+                <Text style={styles.inputLabel}>Are you a driver?</Text>
+                <Checkbox
+                    status={checked ? 'checked' : 'unchecked'}
+                    color="green"
+                    onPress={() => {
+                        setChecked(!checked);
+                    }}/>
+            </View>
+
+            
+
+            
             
 
              
@@ -269,6 +295,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginTop: 5,
     },
+    
     buttonContainer: {
       width: '60%',
       justifyContent: 'center',
