@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Text, Checkbox } from 'react-native-paper';
+import { Avatar, Button, Card, Text, Checkbox, SegmentedButtons } from 'react-native-paper';
 import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState, useCallback } from 'react'
@@ -65,9 +65,9 @@ const ServiceScreen = () => {
         setDateTimePickerVisible(false);
         setDate(newDate);
       }, []);
-    // const [password, setPassword] = useState('')
 
-    // const navigation = useNavigation()
+    const [value, setValue] = React.useState('');
+   
 
     // useEffect(() => {
     //   const unsubscribe = auth.onAuthStateChanged(user => {
@@ -113,6 +113,31 @@ const ServiceScreen = () => {
       style={styles.container}
       behavior="padding"
     >
+
+        <SegmentedButtons
+            value={value}
+            onValueChange={setValue}
+            style={styles.segmentedButtons}
+            buttons={[
+            {
+                value: 'myTrip',
+                label: 'My Trip',
+            },
+            {
+                value: 'rider',
+                label: 'Riders',
+            },
+            {
+                value: 'request',
+                label: 'Request',
+            },
+            {
+                value: 'contact',
+                label: 'Contacts',
+            },
+            
+            ]}
+        />
         <Button onPress={() => setModalVisible(true)}>Make post</Button>
 
 
@@ -265,6 +290,10 @@ const styles = StyleSheet.create({
         // flexWrap: "wrap",
         width: "100%",
         paddingHorizontal: 10,
+    },
+    segmentedButtons: {
+        padding: 10,
+        margin: 10,
     },
     cardStyle: {
         marginVertical: 10,

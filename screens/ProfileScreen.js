@@ -43,8 +43,6 @@ const ProfileScreen = () => {
         behavior="padding"
         >
         
-
-            
             <View style={styles.centeredView}>
                 <Text
                     style={styles.title}>
