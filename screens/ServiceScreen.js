@@ -1,4 +1,5 @@
 import { Avatar, Button, Card, Text } from 'react-native-paper';
+import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal, Pressable } from 'react-native'
@@ -38,8 +39,21 @@ const ServiceScreen = () => {
     const [title, onChangeTitle] = useState("Title")
     const [departureLocation, onChangeDepartureLocation] = useState("From")
     const [destination, onChangeDestination] = useState("to")
-    const [modalVisible, setModalVisible] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false)
     const [flatlistRefresh, flipBit] = useState(true)
+
+    const [visible, setVisible] = React.useState(false);
+    const onDateTimePickerDismiss = React.useCallback(() => {
+        setVisible(false);
+    }, [setVisible]);
+    const [date, setDate] = useState(new Date());
+    const onDateTimeChange = React.useCallback(( newDate ) => {
+        console.log(newDate);
+        setVisible(false);
+        // date = newDate;
+        
+        setDate(newDate);
+      }, []);
     // const [password, setPassword] = useState('')
 
     // const navigation = useNavigation()
@@ -61,7 +75,7 @@ const ServiceScreen = () => {
         
         // console.log(carpoolData)
         flipBit(!flatlistRefresh)
-        console.log(flatlistRefresh)
+        // console.log(flatlistRefresh)
     } 
   
 
@@ -119,11 +133,26 @@ const ServiceScreen = () => {
                     value={destination}
                 />
             </View>
+
             
+            <View
+                style={styles.inputRowcontainer}>
+                
+                <DateTimePickerModal
+                    visible={visible}
+                    onDismiss={onDateTimePickerDismiss}
+                    date={date}
+                    onConfirm={onDateTimeChange}
+                    label="Pick A Date"
+                />
+
+                <Text style={styles.input}>{date.toLocaleString()}</Text>
+                <Button onPress={() => setVisible(true)}>Pick date</Button>
+            </View>
 
             
 
-            
+             
             <View
                 style={styles.inputRowcontainerNoborder}>
                 
@@ -225,10 +254,12 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         paddingHorizontal: 5,
         flexWrap: "wrap",
-        alignItems: "right",
-        // alignContent: 'right',
+        alignItems: "center",
     },
     inputLabel: {
+        flex: 1,
+    },
+    dateTimeDisplay: {
         flex: 1,
     },
     input: {
