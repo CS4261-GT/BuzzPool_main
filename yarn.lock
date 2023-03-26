@@ -2183,11 +2183,6 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-firebase/firestore@^17.4.0":
-  version "17.4.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/firestore/-/firestore-17.4.0.tgz#2c9d4454b3fd2a7e67a75beab54f816b1b89f86c"
-  integrity sha512-rFgf+j6NP5FOiWjzJtliuLQryxqWsCiLJ/aT8tWyFOBEqQtke+GQ9ofo4KPB0OdbziU11mFJgZjfcrErkRyU3g==
-
 "@react-native/assets@1.0.0":
   version "1.0.0"
   resolved "https://registry.npmjs.org/@react-native/assets/-/assets-1.0.0.tgz"
@@ -6137,6 +6132,13 @@ react-native-gradle-plugin@^0.70.3:
   resolved "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.70.3.tgz"
   integrity sha512-oOanj84fJEXUg9FoEAQomA8ISG+DVIrTZ3qF7m69VQUJyOGYyDZmPqKcjvRku4KXlEH6hWO9i4ACLzNBh8gC0A==
 
+react-native-paper-datetimepicker@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-paper-datetimepicker/-/react-native-paper-datetimepicker-0.0.2.tgz#d51d99f0ce066542b1fa25bb87dd8896141bbcc6"
+  integrity sha512-iLrmgz7dNErpjAczW6F1yhonTiLUkvLSvycSuIlNjYAgbM86mFDqx0KfitggE1jibkaA3Rve1QxjG79PrD+lbA==
+  dependencies:
+    react-native-web-hover "^0.2.7"
+
 react-native-paper@^5.5.1:
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-5.5.1.tgz#21ffd0f83f3dc8761f4a836f5e99b5ebeebc7838"
@@ -6158,6 +6160,11 @@ react-native-screens@^3.19.0:
   dependencies:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
+
+react-native-web-hover@^0.2.7:
+  version "0.2.9"
+  resolved "https://registry.yarnpkg.com/react-native-web-hover/-/react-native-web-hover-0.2.9.tgz#aee61d09cb92fce93f55fa7c9d6ebbd28899fded"
+  integrity sha512-6hXQMLptJPDn67xlgmA6eh42LWlHb2THjaedNqW5N8rwutEqsta/zoCYTAJNz+1U/tGW9ZrZVXitUnoLie/itQ==
 
 react-native@0.70.5:
   version "0.70.5"
