@@ -1,7 +1,7 @@
 import { Avatar, Button, Card, Text } from 'react-native-paper';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState } from 'react'
-import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList } from 'react-native'
+import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal, Pressable } from 'react-native'
 import { addCarpool, getCarpool } from '../logic/carpoolHandler'
 
 
@@ -28,24 +28,17 @@ const renderCards = ({item}) => {
     //     return <></>
 } 
 
-const DATA = [
-    {
-      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      title: 'First Item',
-    },
-    {
-      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      title: 'Second Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-  ];
+const makePost = () => {
+    
+}
 
 const ServiceScreen = () => {
 
     const [carpoolData, setCarpoolData] = useState(getCarpool())
+    const [title, onChangeTitle] = useState("Title")
+    const [departureLocation, onChangeDepartureLocation] = useState("From")
+    const [destination, onChangeDestination] = useState("to")
+    const [modalVisible, setModalVisible] = useState(false);
     const [flatlistRefresh, flipBit] = useState(true)
     // const [password, setPassword] = useState('')
 
@@ -78,6 +71,85 @@ const ServiceScreen = () => {
       behavior="padding"
     >
         <Button onPress={addCarpool}>Add a carpool</Button>
+
+        <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+            <TextInput
+                    style={styles.input}
+                    onChangeText={onChangeTitle}
+                    value={title}
+                />
+            {/* <View
+                style={styles.inputRowcontainer}>
+                
+                <Text style={styles.inputLabel}>Title:</Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={onChangeTitle}
+                    value={title}
+                />
+            </View> */}
+
+            <View
+                style={styles.inputRowcontainer}>
+                
+                <Text style={styles.inputLabel}>From:</Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={onChangeDepartureLocation}
+                    value={departureLocation}
+                />
+            </View>
+
+            <View
+                style={styles.inputRowcontainer}>
+                
+                <Text style={styles.inputLabel}>To:</Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={onChangeDestination}
+                    value={destination}
+                />
+            </View>
+            
+
+            
+
+            
+            <View
+                style={styles.inputRowcontainerNoborder}>
+                
+                <Button 
+                    onPress={() => setModalVisible(!modalVisible)}
+                    >
+                    Cancel
+                </Button>
+
+                <Button 
+                    onPress={() => setModalVisible(!modalVisible)}
+                    mode={'contained'}
+                    buttoncolor='blue'>
+                    Post
+                        
+                </Button>
+            </View>
+            
+            
+            </View>
+        </View>
+        </Modal>
+
+        <Button onPress={() => setModalVisible(true)}>Make post</Button>
+
+
         <Button onPress={updateData}>Refresh carpools</Button>
         <FlatList
             data={carpoolData}
@@ -103,15 +175,68 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
       },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22,
+    },
     inputContainer: {
         width: '80%'
-      },
-    input: {
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+    },
+    inputTitle: {
       backgroundColor: 'white',
       paddingHorizontal: 15,
       paddingVertical: 10,
       borderRadius: 10,
       marginTop: 5,
+      fontWeight: '700',
+      fontSize: 16,
+    },
+    inputRowcontainer: {
+        flexDirection: "row",
+        marginVertical: 5,
+        paddingHorizontal: 5,
+        borderWidth: 1,
+        flexWrap: "wrap",
+        alignItems: "center"
+    },
+    inputRowcontainerNoborder: {
+        flexDirection: "row",
+        marginVertical: 5,
+        paddingHorizontal: 5,
+        flexWrap: "wrap",
+        alignItems: "right",
+        // alignContent: 'right',
+    },
+    inputLabel: {
+        flex: 1,
+    },
+    input: {
+        backgroundColor: 'white',
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        borderRadius: 10,
+        marginTop: 5,
     },
     buttonContainer: {
       width: '60%',
