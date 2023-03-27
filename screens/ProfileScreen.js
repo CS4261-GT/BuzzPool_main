@@ -1,10 +1,11 @@
 import { Avatar, Button, Card, Text, Checkbox } from 'react-native-paper';
 import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useRef, useState, useCallback } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal } from 'react-native'
 import { addUser } from '../logic/userProfileHandler'
-
+import ServiceScreen from './ServiceScreen';
 
 
 
@@ -14,6 +15,7 @@ import { addUser } from '../logic/userProfileHandler'
  */
 const ProfileScreen = () => {
 
+    const Tab = createBottomTabNavigator();
 
     /**
      * This function does a sanity check of the user input information
@@ -38,10 +40,12 @@ const ProfileScreen = () => {
     const [GTID, setGTID] = useState("")
 
     return (
+        
         <KeyboardAvoidingView
         style={styles.container}
         behavior="padding"
         >
+            
         
             <View style={styles.centeredView}>
                 <Text
@@ -107,7 +111,7 @@ const ProfileScreen = () => {
 
                 
                 
-                <Button onPress={createUser} style={styles.button}>Create Profile</Button>
+                <Button onPress={createUser} style={styles.button} mode='contained' >Create Profile</Button>
                 
             </View>
 
@@ -131,7 +135,7 @@ const styles = StyleSheet.create({
       },
     centeredView: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         marginTop: 22,
         marginHorizontal: 10,
@@ -182,6 +186,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 10,
         marginTop: 5,
+        marginBottom: 50,
         textAlign: 'center',
         fontWeight: '700',
         fontSize: 16,
@@ -232,10 +237,8 @@ const styles = StyleSheet.create({
     },
     button: {
       backgroundColor: '#0782F9',
-      width: '100%',
-    //   padding: 15,
-    //   borderRadius: 10,
-      alignItems: 'right',
+      marginTop: 5,
+      alignItems: 'center',
     },
     buttonText: {
       color: 'white',

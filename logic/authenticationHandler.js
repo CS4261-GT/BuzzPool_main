@@ -7,7 +7,7 @@ import { auth } from '../api/firebase'
  * @param {string} email 
  * @param {string} password 
  */
-const handleEmailVerification = (email, password) => {
+export const handleEmailVerification = (email, password) => {
     
     const user = auth.currentUser
     // console.log(user);
@@ -24,7 +24,7 @@ const handleEmailVerification = (email, password) => {
  * @param {string} email 
  * @param {string} password 
  */
-const handleSignUp = (email, password) => {
+export const handleSignUp = (email, password) => {
     auth
     .createUserWithEmailAndPassword(email, password)
     .then(userCredentials => {
@@ -43,13 +43,15 @@ const handleSignUp = (email, password) => {
  * @param {string} email 
  * @param {string} password 
  */
-const handleLogin = (email, password) => {
-
+export const handleLogin = (email, password) => {
+    // console.log(email, password)
+    if (auth.currentUser) 
+        auth.signOut()
     auth
     .signInWithEmailAndPassword(email, password)
     .then(userCredentials => {
         const user = userCredentials.user;
-        console.log(user)
+        // console.log(user)
         if (!user.emailVerified) {
             auth.signOut()
             alert("Email is not verified")
@@ -65,9 +67,8 @@ const handleLogin = (email, password) => {
  * It will send a reset email to the user with the given email
  * @param {string} email 
  */
-const handleResetPassword = (email) => {
+export const handleResetPassword = (email) => {
     auth.sendPasswordResetEmail(email)
     .then(() => alert(`Password reset email is sent to ${email}`))
     .catch(e => alert(e.message))
 }
-export default { handleEmailVerification, handleLogin, handleSignUp, handleResetPassword }

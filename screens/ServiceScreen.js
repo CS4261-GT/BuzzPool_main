@@ -11,6 +11,8 @@ import { addCarpool, getCarpool } from '../logic/carpoolHandler'
 
 const ServiceScreen = () => {
 
+    
+
     const [carpoolData, setCarpoolData] = useState(getCarpool())
     const [title, onChangeTitle] = useState("")
     const [departureLocation, onChangeDepartureLocation] = useState("")
@@ -142,10 +144,14 @@ const ServiceScreen = () => {
   
 
   return (
+
+    
     <KeyboardAvoidingView
       style={styles.container}
       behavior="padding"
     >
+
+        
 
         <SegmentedButtons
             value={value}

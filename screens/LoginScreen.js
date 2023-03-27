@@ -3,23 +3,43 @@ import React, { useState, useEffect } from 'react'
 import { auth } from '../api/firebase'
 import { useNavigation } from '@react-navigation/core'
 import { handleLogin, handleEmailVerification, handleSignUp, handleResetPassword } from '../logic/authenticationHandler'
+import { Navigator } from '../components/navigator'
 const DOMAIN = '@gatech.edu'
 const LoginScreen = () => {
 
     const [email, setEmail] = useState('')
+    const [reload, setReload] = useState(true)
     const [password, setPassword] = useState('')
 
     const navigation = useNavigation()
 
+    const login = () => {
+      handleLogin(email+DOMAIN, password)
+      const user = auth.currentUser
+      // console.log(user)
+      if (user) {
+        setReload(!reload)
+        navigation.navigate("Navigator")
+      }
+
+    }
+
     // useEffect(() => {
-    //   const unsubscribe = auth.onAuthStateChanged(user => {
-    //     if (user) {
-    //       navigation.replace("Home")
-    //     }
-    //   })
-  
-    //   return unsubscribe
-    // }, [])
+      
+    //   const user = auth.currentUser
+    
+    //   if (user) {
+    //     navigation.navigate("Navigator")
+    //   }
+    //   else {
+    //     handleLogin(email, password)
+    //     navigation.navigate("Navigator")
+    //   }
+    //   console.log("navigated!")
+      
+    //   console.log(reload)
+    //   return () => {}
+    // }, []) 
   
 
   return (
@@ -48,7 +68,7 @@ const LoginScreen = () => {
       <View style={styles.buttonContainer}>
 
         <TouchableOpacity
-          onPress={()=>handleLogin(email+DOMAIN, password)}
+          onPress={login}
           style={styles.button}
         >
           <Text style={styles.buttonText}>Login</Text>
