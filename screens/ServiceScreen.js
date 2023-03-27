@@ -130,6 +130,15 @@ const ServiceScreen = () => {
         flipBit(!flatlistRefresh)
         // console.log(flatlistRefresh)
     } 
+
+    const theme = {
+        colors:{
+            primary: '#3498db', 
+            accent: '#f1c40f',
+            backgroundColor: "red",
+            surface: "red"
+        }
+    }
   
 
   return (
@@ -142,24 +151,29 @@ const ServiceScreen = () => {
             value={value}
             onValueChange={setValue}
             style={styles.segmentedButtons}
-            // theme={{colors:{background:"yellow"}}}
+            theme={theme}
             buttons={[
             {
                 value: 'myTrip',
                 label: 'My Trip',
-                backgroundColor: 'yellow',
+                // TODO: need two themes for the button, one for the unchecked state and another for the checked state
+                // checkedColor: 'black',
+                // showSelectedCheck:'true'
             },
             {
                 value: 'rider',
                 label: 'Riders',
+                // showSelectedCheck:'true'
             },
             {
                 value: 'request',
                 label: 'Request',
+                // showSelectedCheck:'true'
             },
             {
                 value: 'contact',
                 label: 'Contacts',
+                // showSelectedCheck:'true'
             },
             
             ]}
@@ -320,6 +334,10 @@ const styles = StyleSheet.create({
         padding: 10,
         margin: 10,
     },
+    segButton: {
+        backgroundColor: 'blue'
+    },
+
     cardStyle: {
         marginVertical: 10,
         marginHorizontal: 10,
