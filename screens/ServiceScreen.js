@@ -292,14 +292,15 @@ const ServiceScreen = () => {
                     
                     <Button 
                         onPress={() => setModalVisible(!modalVisible)}
-                        >
+                        mode='contained'
+                        style={styles.buttonCancel}>
                         Cancel
                     </Button>
 
                     <Button 
                         onPress={makePost}
-                        mode={'contained'}
-                        buttoncolor='blue'>
+                        mode='contained'
+                        style={styles.buttonConfirm}>
                         Post
                             
                     </Button>
@@ -428,6 +429,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#0782F9',
       alignItems: 'center',
       marginBottom: 5,
+      marginHorizontal: 5,
     },
     buttonCancel: {
         backgroundColor: 'red',
@@ -435,6 +437,7 @@ const styles = StyleSheet.create({
         // color:"#000000",
         alignItems: 'center',
         marginBottom: 5,
+        marginHorizontal: 5,
     },
     buttonOutline: {
       backgroundColor: 'white',
