@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Text, Checkbox, SegmentedButtons } from 'react-native-paper';
+import { Avatar, Card, Text, Checkbox, SegmentedButtons, Button } from 'react-native-paper';
 import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState, useCallback } from 'react'
@@ -6,42 +6,6 @@ import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, Fl
 import { addCarpool, getCarpool } from '../logic/carpoolHandler'
 
 
-/**
- * This function is called for every item in the flatlist
- * It will create a card for each carpool instance
- * @param {Carpool} item I think it has to be named "item", it represents a carpool instance
- * @returns 
- */
-const renderCards = ({item}) => {
-    // console.log(item)
-
-    // I think title is not necessary
-    const subtitle = "From " + item.departureLocation + "\n" + "To " + item.destination
-    if (item)
-        return (
-            <Card
-                style={styles.cardStyle}>
-                <Card.Title 
-                    title={item.title} 
-                    titleStyle={styles.postTitle}
-                    subtitleNumberOfLines={2} 
-                    subtitle={subtitle} 
-                />
-                <Card.Content>
-                    <Text variant="titleLarge">{item.departureTime}</Text>
-                    <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
-                    <Text variant="bodyMedium">Remaining seats: {item.capacity}</Text>
-                </Card.Content>
-                {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
-                <Card.Actions>
-                <Button>Skip</Button>
-                <Button>Join</Button>
-                </Card.Actions>
-            </Card>
-        )
-    else
-        return <></>
-} 
 
 
 
@@ -66,7 +30,7 @@ const ServiceScreen = () => {
         setDate(newDate);
       }, []);
 
-    const [value, setValue] = React.useState('');
+    const [value, setValue] = useState('myTrip');
    
 
     // useEffect(() => {
@@ -79,6 +43,55 @@ const ServiceScreen = () => {
     //   return unsubscribe
     // }, [])
 
+    
+    /**
+     * This function is called for every item in the flatlist
+     * It will create a card for each carpool instance
+     * @param {Carpool} item I think it has to be named "item", it represents a carpool instance
+     * @returns 
+     */
+    const renderCards = ({item}) => {
+        // console.log(typeof(item))
+        const remainingSeats = item.capacity - item.userGTIDs.length;
+        // I think title is not necessary
+        const subtitle = "From " + item.departureLocation + "\n" + "To " + item.destination
+        if (item)
+            return (
+                <Card
+                    style={styles.cardStyle}>
+                    <Card.Title 
+                        title={item.title} 
+                        titleStyle={styles.postTitle}
+                        subtitleNumberOfLines={2} 
+                        subtitle={subtitle} 
+                    />
+                    <Card.Content>
+                        <Text variant="bodyLarge">{item.departureTime}</Text>
+                        <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
+                        <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
+                    </Card.Content>
+                    {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
+                    <Card.Actions>
+                    <Button style={styles.buttonCancel} mode='contained' onPress={() => skipCarpool(item.id)}>Skip</Button>
+                    <Button style={styles.buttonConfirm} mode='contained'>Join</Button>
+                    </Card.Actions>
+                </Card>
+            )
+        else
+            return <></>
+    } 
+
+    const skipCarpool = (carpoolId) => {
+        // console.log(carpoolId)
+        // console.log(carpoolData.length)
+        const newCarpoolArray = carpoolData.filter((value) => {
+            return value.id != carpoolId
+        })
+        // console.log(newCarpoolArray.length)
+        setCarpoolData(newCarpoolArray)
+        flipBit(!flatlistRefresh)
+        console.log("pressed")
+    }
     /**
      * This function closes the modal and calls the handler in carpoolHandler.js
      * after checking that the required fields are all filled up
@@ -100,7 +113,7 @@ const ServiceScreen = () => {
                 !isDriver,
             )
         } catch (error) {
-            alert("Incomplete or invalid input")
+            alert("Incomplete or invalid input!")
         }
         
     }
@@ -117,6 +130,15 @@ const ServiceScreen = () => {
         flipBit(!flatlistRefresh)
         // console.log(flatlistRefresh)
     } 
+
+    const theme = {
+        colors:{
+            primary: '#3498db', 
+            accent: '#f1c40f',
+            backgroundColor: "red",
+            surface: "red"
+        }
+    }
   
 
   return (
@@ -129,31 +151,36 @@ const ServiceScreen = () => {
             value={value}
             onValueChange={setValue}
             style={styles.segmentedButtons}
-            theme={{colors:{backgroundColor:"black"}}}
+            theme={theme}
             buttons={[
             {
                 value: 'myTrip',
                 label: 'My Trip',
+                // TODO: need two themes for the button, one for the unchecked state and another for the checked state
+                // checkedColor: 'black',
+                // showSelectedCheck:'true'
             },
             {
                 value: 'rider',
                 label: 'Riders',
+                // showSelectedCheck:'true'
             },
             {
                 value: 'request',
                 label: 'Request',
+                // showSelectedCheck:'true'
             },
             {
                 value: 'contact',
                 label: 'Contacts',
+                // showSelectedCheck:'true'
             },
             
             ]}
         />
-        <Button onPress={() => setModalVisible(true)}>Make post</Button>
+        <Button onPress={() => setModalVisible(true)} mode='contained' style={styles.buttonConfirm}>Make post</Button>
 
-
-        <Button onPress={updateData}>Refresh carpools</Button>
+        <Button onPress={updateData} mode='contained' style={styles.buttonConfirm}>Refresh carpools</Button>
         <FlatList
             data={carpoolData}
             style={styles.flatListStyle}
@@ -307,6 +334,10 @@ const styles = StyleSheet.create({
         padding: 10,
         margin: 10,
     },
+    segButton: {
+        backgroundColor: 'blue'
+    },
+
     cardStyle: {
         marginVertical: 10,
         marginHorizontal: 10,
@@ -314,6 +345,7 @@ const styles = StyleSheet.create({
     inputContainer: {
         width: '80%'
     },
+
     modalView: {
         margin: 20,
         backgroundColor: 'white',
@@ -386,17 +418,17 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       marginTop: 40,
     },
-    button: {
+    buttonConfirm: {
       backgroundColor: '#0782F9',
-      width: '100%',
-      padding: 15,
-      borderRadius: 10,
       alignItems: 'center',
+      marginBottom: 5,
     },
-    buttonText: {
-      color: 'white',
-      fontWeight: '700',
-      fontSize: 16,
+    buttonCancel: {
+        backgroundColor: 'red',
+        // borderColor: '#000000',
+        // color:"#000000",
+        alignItems: 'center',
+        marginBottom: 5,
     },
     buttonOutline: {
       backgroundColor: 'white',
