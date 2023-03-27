@@ -6,42 +6,6 @@ import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, Fl
 import { addCarpool, getCarpool } from '../logic/carpoolHandler'
 
 
-/**
- * This function is called for every item in the flatlist
- * It will create a card for each carpool instance
- * @param {Carpool} item I think it has to be named "item", it represents a carpool instance
- * @returns 
- */
-const renderCards = ({item}) => {
-    // console.log(typeof(item))
-    const remainingSeats = item.capacity - item.userGTIDs.length;
-    // I think title is not necessary
-    const subtitle = "From " + item.departureLocation + "\n" + "To " + item.destination
-    if (item)
-        return (
-            <Card
-                style={styles.cardStyle}>
-                <Card.Title 
-                    title={item.title} 
-                    titleStyle={styles.postTitle}
-                    subtitleNumberOfLines={2} 
-                    subtitle={subtitle} 
-                />
-                <Card.Content>
-                    <Text variant="bodyLarge">{item.departureTime}</Text>
-                    <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
-                    <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
-                </Card.Content>
-                {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
-                <Card.Actions>
-                <Button style={styles.buttonCancel}  mode='contained'>Skip</Button>
-                <Button style={styles.buttonConfirm} mode='contained'>Join</Button>
-                </Card.Actions>
-            </Card>
-        )
-    else
-        return <></>
-} 
 
 
 
@@ -79,6 +43,55 @@ const ServiceScreen = () => {
     //   return unsubscribe
     // }, [])
 
+    
+    /**
+     * This function is called for every item in the flatlist
+     * It will create a card for each carpool instance
+     * @param {Carpool} item I think it has to be named "item", it represents a carpool instance
+     * @returns 
+     */
+    const renderCards = ({item}) => {
+        // console.log(typeof(item))
+        const remainingSeats = item.capacity - item.userGTIDs.length;
+        // I think title is not necessary
+        const subtitle = "From " + item.departureLocation + "\n" + "To " + item.destination
+        if (item)
+            return (
+                <Card
+                    style={styles.cardStyle}>
+                    <Card.Title 
+                        title={item.title} 
+                        titleStyle={styles.postTitle}
+                        subtitleNumberOfLines={2} 
+                        subtitle={subtitle} 
+                    />
+                    <Card.Content>
+                        <Text variant="bodyLarge">{item.departureTime}</Text>
+                        <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
+                        <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
+                    </Card.Content>
+                    {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
+                    <Card.Actions>
+                    <Button style={styles.buttonCancel} mode='contained' onPress={() => skipCarpool(item.id)}>Skip</Button>
+                    <Button style={styles.buttonConfirm} mode='contained'>Join</Button>
+                    </Card.Actions>
+                </Card>
+            )
+        else
+            return <></>
+    } 
+
+    const skipCarpool = (carpoolId) => {
+        // console.log(carpoolId)
+        // console.log(carpoolData.length)
+        const newCarpoolArray = carpoolData.filter((value) => {
+            return value.id != carpoolId
+        })
+        // console.log(newCarpoolArray.length)
+        setCarpoolData(newCarpoolArray)
+        flipBit(!flatlistRefresh)
+        console.log("pressed")
+    }
     /**
      * This function closes the modal and calls the handler in carpoolHandler.js
      * after checking that the required fields are all filled up
