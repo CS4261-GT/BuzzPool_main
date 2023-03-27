@@ -13,33 +13,35 @@ const LoginScreen = () => {
 
     const navigation = useNavigation()
 
-    const login = () => {
-      handleLogin(email+DOMAIN, password)
-      const user = auth.currentUser
-      // console.log(user)
-      if (user) {
-        setReload(!reload)
-        navigation.navigate("Navigator")
-      }
-
-    }
-
-    // useEffect(() => {
+    // const login = () => {
+    //   console.log("try logging in")
       
-    //   const user = auth.currentUser
-    
-    //   if (user) {
-    //     navigation.navigate("Navigator")
-    //   }
-    //   else {
-    //     handleLogin(email, password)
-    //     navigation.navigate("Navigator")
-    //   }
-    //   console.log("navigated!")
+
       
-    //   console.log(reload)
-    //   return () => {}
-    // }, []) 
+    //   if (auth.currentUser) {
+    //     auth.currentUser.reload()
+    //     .then(() => {
+    //       console.log("user signed in")
+    //       if (auth.currentUser) {
+    //         setReload(!reload)
+    //         navigation.navigate("Navigator")
+    //       }
+    //     })
+        
+    //   }
+      
+
+    // }
+
+    useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged(user => {
+        if (user) {
+          navigation.navigate("Navigator")
+        }
+      })
+  
+      return unsubscribe
+    }, [])
   
 
   return (
@@ -68,7 +70,7 @@ const LoginScreen = () => {
       <View style={styles.buttonContainer}>
 
         <TouchableOpacity
-          onPress={login}
+          onPress={() => handleLogin(email+DOMAIN, password)}
           style={styles.button}
         >
           <Text style={styles.buttonText}>Login</Text>

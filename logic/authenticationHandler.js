@@ -38,28 +38,50 @@ export const handleSignUp = (email, password) => {
 }
 
 /**
+ * This function forces user to sign in again with the provided email and password input fields
+ * to prevent login with incorrect password
+ */
+const enforceSignOut = async () => {
+    
+    if (auth.currentUser) {
+
+        auth.signOut()
+        await auth.currentUser.reload()
+    }
+}
+
+/**
  * This function handles user login
  * Users are able to login if their email is verified
  * @param {string} email 
  * @param {string} password 
  */
-export const handleLogin = (email, password) => {
+export const handleLogin = async (email, password) => {
     // console.log(email, password)
-    if (auth.currentUser) 
-        auth.signOut()
-    auth
+    // console.log("1 " + (auth.currentUser == null))
+    await enforceSignOut()
+    // console.log("2 " + (auth.currentUser == null))
+    await auth
     .signInWithEmailAndPassword(email, password)
     .then(userCredentials => {
         const user = userCredentials.user;
         // console.log(user)
-        if (!user.emailVerified) {
-            auth.signOut()
-            alert("Email is not verified")
-        } else {
-            console.log('Logged in with:', user.email);
-        }
+        user.reload()
+        .then(() => {
+            // console.log("3 " + (auth.currentUser == null))
+            if (!user.emailVerified) {
+                auth.signOut()
+                alert("Email is not verified")
+            } else {
+                
+                console.log('Logged in with:', user.email);
+            }
+        })
+        
     })
-    .catch(error => alert(error.message));
+    .catch(error => alert(error.message))
+    
+
 }
 
 /**
