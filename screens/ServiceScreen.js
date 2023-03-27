@@ -410,6 +410,7 @@ const styles = StyleSheet.create({
         // borderColor: '#000000',
         // color:"#000000",
         alignItems: 'center',
+        marginBottom: 5,
     },
     buttonOutline: {
       backgroundColor: 'white',
