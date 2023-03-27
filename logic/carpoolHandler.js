@@ -17,7 +17,7 @@ const carpoolCollection = firestore.collection('Carpools');
  * @param {string} datetime datetime = Date.toLocaleString(), this is the departure time
  * @param {string} from departure location
  * @param {string} to destination
- * @param {string} GTID requester's GTID
+ * @param {number} GTID requester's GTID
  * @param {boolean} requireDriver true if a driver is still needed for the carpool
  */
 export const addCarpool = (title, datetime, from, to, GTID, requireDriver) => {  
@@ -45,7 +45,7 @@ export const addCarpool = (title, datetime, from, to, GTID, requireDriver) => {
 
 /**
  * This class returns all the available carpool instances from firestore
- * @returns all avaialble carpool instances
+ * @returns Carpool[]: all avaialble carpool instances
  */
 export const getCarpool = async() => {
     var carpools = [];

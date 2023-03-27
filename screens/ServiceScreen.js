@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Text, Checkbox, SegmentedButtons } from 'react-native-paper';
+import { Avatar, Card, Text, Checkbox, SegmentedButtons, Button } from 'react-native-paper';
 import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState, useCallback } from 'react'
@@ -13,8 +13,8 @@ import { addCarpool, getCarpool } from '../logic/carpoolHandler'
  * @returns 
  */
 const renderCards = ({item}) => {
-    // console.log(item)
-
+    // console.log(typeof(item))
+    const remainingSeats = item.capacity - item.userGTIDs.length;
     // I think title is not necessary
     const subtitle = "From " + item.departureLocation + "\n" + "To " + item.destination
     if (item)
@@ -28,14 +28,14 @@ const renderCards = ({item}) => {
                     subtitle={subtitle} 
                 />
                 <Card.Content>
-                    <Text variant="titleLarge">{item.departureTime}</Text>
+                    <Text variant="bodyLarge">{item.departureTime}</Text>
                     <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
-                    <Text variant="bodyMedium">Remaining seats: {item.capacity}</Text>
+                    <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
                 </Card.Content>
                 {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
                 <Card.Actions>
-                <Button>Skip</Button>
-                <Button>Join</Button>
+                <Button style={styles.buttonCancel}  mode='contained'>Skip</Button>
+                <Button style={styles.buttonConfirm} mode='contained'>Join</Button>
                 </Card.Actions>
             </Card>
         )
@@ -66,7 +66,7 @@ const ServiceScreen = () => {
         setDate(newDate);
       }, []);
 
-    const [value, setValue] = React.useState('');
+    const [value, setValue] = useState('myTrip');
    
 
     // useEffect(() => {
@@ -100,7 +100,7 @@ const ServiceScreen = () => {
                 !isDriver,
             )
         } catch (error) {
-            alert("Incomplete or invalid input")
+            alert("Incomplete or invalid input!")
         }
         
     }
@@ -129,11 +129,12 @@ const ServiceScreen = () => {
             value={value}
             onValueChange={setValue}
             style={styles.segmentedButtons}
-            theme={{colors:{backgroundColor:"black"}}}
+            // theme={{colors:{background:"yellow"}}}
             buttons={[
             {
                 value: 'myTrip',
                 label: 'My Trip',
+                backgroundColor: 'yellow',
             },
             {
                 value: 'rider',
@@ -150,10 +151,9 @@ const ServiceScreen = () => {
             
             ]}
         />
-        <Button onPress={() => setModalVisible(true)}>Make post</Button>
+        <Button onPress={() => setModalVisible(true)} mode='contained' style={styles.buttonConfirm}>Make post</Button>
 
-
-        <Button onPress={updateData}>Refresh carpools</Button>
+        <Button onPress={updateData} mode='contained' style={styles.buttonConfirm}>Refresh carpools</Button>
         <FlatList
             data={carpoolData}
             style={styles.flatListStyle}
@@ -314,6 +314,7 @@ const styles = StyleSheet.create({
     inputContainer: {
         width: '80%'
     },
+
     modalView: {
         margin: 20,
         backgroundColor: 'white',
@@ -386,17 +387,16 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       marginTop: 40,
     },
-    button: {
+    buttonConfirm: {
       backgroundColor: '#0782F9',
-      width: '100%',
-      padding: 15,
-      borderRadius: 10,
       alignItems: 'center',
+      marginBottom: 5,
     },
-    buttonText: {
-      color: 'white',
-      fontWeight: '700',
-      fontSize: 16,
+    buttonCancel: {
+        backgroundColor: 'red',
+        // borderColor: '#000000',
+        // color:"#000000",
+        alignItems: 'center',
     },
     buttonOutline: {
       backgroundColor: 'white',
