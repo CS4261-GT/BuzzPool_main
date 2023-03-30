@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator, } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
-import ServiceScreen from './screens/ServiceScreen';
+import RiderScreen from './screens/RiderScreen';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen'
 import { Navigator } from './components/navigator'
@@ -17,16 +17,6 @@ function Provider() {
     </View>
   );
 }
-
-
-
-
-// <Tab.Navigator>
-// <Tab.Screen name="Service" component={ServiceScreen} />
-// <Tab.Screen name="Provider" component={Provider} />
-// <Tab.Screen name="User" component={ProfileScreen} />
-// <Tab.Screen name="Login" component={LoginScreen} />
-// </Tab.Navigator>
 
 
 const Stack = createNativeStackNavigator();

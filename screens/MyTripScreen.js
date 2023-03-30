@@ -11,7 +11,7 @@ import { usersCollection, userConverter } from '../logic/userProfileHandler';
 
 
 
-const ServiceScreen = () => {
+export const MytripScreen = () => {
 
 
 
@@ -369,7 +369,6 @@ const joinCarpool = (carpoolId) => {
   )
 }
 
-export default ServiceScreen
 
 
 const styles = StyleSheet.create({

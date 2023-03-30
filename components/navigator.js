@@ -3,8 +3,9 @@ import React from "react";
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ProfileScreen from "../screens/ProfileScreen";
-import ServiceScreen from "../screens/ServiceScreen";
+import { RiderScreen } from "../screens/RiderScreen";
 import { View } from "react-native";
+import { DriverScreen } from "../screens/DriverScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -22,8 +23,15 @@ export const Navigator = () => {
     >
 
       <Tab.Screen
-        name="Service"
-        component={ServiceScreen}
+        name="Rider"
+        component={RiderScreen}
+
+        options={{ headerShown: false }}
+      />
+
+      <Tab.Screen
+        name="Driver"
+        component={DriverScreen}
 
         options={{ headerShown: false }}
       />

@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useRef, useState, useCallback } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal } from 'react-native'
 import { addUser } from '../logic/userProfileHandler'
-import ServiceScreen from './ServiceScreen';
+import ServiceScreen from './RiderScreen';
 
 
 
