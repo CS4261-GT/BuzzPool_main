@@ -1,9 +1,13 @@
 import { Review } from '../model/Review'
 import { auth, firestore } from '../api/firebase'
+import User from '../model/User';
+
+
+export const usersCollection = firestore.collection('Users');
 
 
 
-const usersCollection = firestore.collection('Users');
+
 
 /**
  * This function pushes user info to firestore 
@@ -13,14 +17,16 @@ const usersCollection = firestore.collection('Users');
  * @param {number} phoneNumber 
  * @param {number} GTID 
  */
-export const addUser = (fname, lname, phoneNumber, GTID) => {
+export const addUser = async (fname, lname, phoneNumber, GTID) => {
     // console.log("function called")
     usersCollection
         .add({
+            email: auth.currentUser.email,
             firstName: fname,
             lastName: lname,
             phoneNumber: phoneNumber,
             GTID: GTID,
+            ongoingTripID: []
         })
         .then(() => {
             console.log('New user added!')
@@ -31,119 +37,43 @@ export const addUser = (fname, lname, phoneNumber, GTID) => {
 }
 
 /**
- * This function adds the first name and last name for a user
- * @param {string} fname 
- * @param {string} lname 
+ * This object uses the firebase interface of datatype conversion
+ * This converts a user object to a firestore compatible object upon write
+ * and converts a firestore compatible object to a user object upon read
  */
-const addName = (fname, lname) => {
+export var userConverter = {
+  toFirestore: function (user) {
 
-}
+    console.log("To firebase")
+    console.log(user)
 
-/**
- * This function retrieves the first name and last name for a user
- * @returns {{string, string}}
- */
-const getName = () => {
+    return {
+      email: user.email,
+      GTID: user.GTID,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phoneNumber: user.phoneNumber,
+      ongoingTripID: user.ongoingTripID,
+      };
+  },
+  fromFirestore: function (snapshot, options) {
+    const data = snapshot.data(options);
 
-}
+    console.log("From firebase")
+    console.log(data)
 
-/**
- * This function updates the first name and last name for a user
- * @param {string} fname 
- * @param {string} lname 
- */
-const updateName = (fname, lname) => {
+    var user = new User(
+      data.GTID,
+      data.firstName,
+      data.lastName,
+      data.phoneNumber,
+      data.ongoingTripID,
+      );
 
-}
+    return user;
+  }
+};
 
-/**
- * This function adds the GTID for a user
- * @param {string} gtid 
- */
-const addGTID = (gtid) => {
-
-}
-
-/**
- * This function retrieves the gtid of a user
- * @returns {string}
- */
-const getGTID = () => {
-
-}
-
-/**
- * This function updates the GTID for a user
- * @param {string} gtid 
- */
-const updateGTID = (gtid) => {
-
-}
-
-
-/**
- * This function adds the phone number of a user
- * @param {string} phoneNumber 
- */
-const addPhoneNumber = (phoneNumber) => {
-
-}
-
-/**
- * This function retrieves the phone number of a user
- * @returns {string}
- */
-const getPhoneNumber = () => {
-
-}
-
-/**
- * This function updatse the phone number of a user
- * @param {string} phoneNumber 
- */
-const updatePhoneNumber = (phoneNumber) => {
-
-}
-
-/**
- * This function adds a Review for a user
- * @param {Review} review 
- */
-const addReview = (review) => {
-
-}
-
-/**
- * This function retrieves all the reviews for a user
- * @returns {List<Review>} 
- */
-const getReviews = () => {
-
-}
-
-/**
- * This function adds a Venmo handle for the user
- * @param {string} venmo 
- */
-const addVenmoHandle = (venmo) => {
-
-}
-
-/**
- * This function retrieves the Venmo handle of a user
- * @returns {string}
- */
-const getVenmoHandle = () => {
-
-}
-
-/**
- * This function updates a Venmo handle for the user
- * @param {string} venmo
- */
-const updateVenmoHandle = (venmo) => {
-
-}
 
 
 export {}

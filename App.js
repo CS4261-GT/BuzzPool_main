@@ -2,9 +2,9 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator,  } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
-import ServiceScreen from './screens/ServiceScreen';
+import RiderScreen from './screens/RiderScreen';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen'
 import { Navigator } from './components/navigator'
@@ -19,16 +19,6 @@ function Provider() {
 }
 
 
-
-
-// <Tab.Navigator>
-// <Tab.Screen name="Service" component={ServiceScreen} />
-// <Tab.Screen name="Provider" component={Provider} />
-// <Tab.Screen name="User" component={ProfileScreen} />
-// <Tab.Screen name="Login" component={LoginScreen} />
-// </Tab.Navigator>
-
-
 const Stack = createNativeStackNavigator();
 
 
@@ -38,23 +28,36 @@ export default function App() {
 
 
   return (
-    
+
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
           name="Login"
           component={LoginScreen}
-          options={{title: 'Welcome'}}
+          options={{ title: 'Welcome' }}
         />
-        <Stack.Screen 
-          name="Navigator" 
-          component={Navigator} 
-          options={{title: 'Buzzpool'}}
+        <Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{ 
+            title: 'Add to Your Profile', 
+            gestureEnabled: false, 
+            // headerBackVisible: false
+          }}
         />
-        
-      </Stack.Navigator> 
+        <Stack.Screen
+          name="Navigator"
+          component={Navigator}
+          options={{ 
+            title: 'Buzzpool', 
+            gestureEnabled: false, 
+            // headerBackVisible: false 
+          }}
+        />
+
+      </Stack.Navigator>
     </NavigationContainer>
-  ); 
+  );
 }
 
 const styles = StyleSheet.create({
