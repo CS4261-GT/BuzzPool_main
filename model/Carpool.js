@@ -20,7 +20,7 @@ export default class Carpool {
   getRemainingSeats() {
     return this.capacity - this.userGTIDs.length
   }
-
+ 
   /**
    * This method adds a driver to the carpool
    * @param {string} gtid 
