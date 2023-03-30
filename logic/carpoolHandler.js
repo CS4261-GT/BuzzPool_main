@@ -20,7 +20,7 @@ const carpoolCollection = firestore.collection('Carpools');
  * @param {number} GTID requester's GTID
  * @param {boolean} requireDriver true if a driver is still needed for the carpool
  */
-export const addCarpool = (title, datetime, from, to, GTID, requireDriver) => {
+export const createCarpool = (title, datetime, from, to, GTID, requireDriver) => {
 
   const carpool = new Carpool(
     title,

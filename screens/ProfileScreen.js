@@ -16,6 +16,7 @@ import ServiceScreen from './ServiceScreen';
 const ProfileScreen = () => {
 
     const Tab = createBottomTabNavigator();
+    const navigation = useNavigation()
 
     /**
      * This function does a sanity check of the user input information
@@ -28,6 +29,7 @@ const ProfileScreen = () => {
             if (!(firstName.length > 0 && lastName.length > 0 && phoneNumber.length == 10 && GTID.length == 9) || isNaN(pNumber) || isNaN(GTID))
                 throw new Error()
             addUser(firstName, lastName, pNumber, GTIDNumber)
+            .then(() => navigation.navigate("Navigator"))
         } catch (error) {
             alert("Incomplete or Invalid user information!")
         }

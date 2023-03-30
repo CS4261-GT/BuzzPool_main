@@ -1,5 +1,9 @@
+import { auth } from "../api/firebase"
+
 export default class User {
   constructor(GTID, firstName, lastName, phoneNumber, ongoingTripID) {
+    // userId from firebase?
+    this.email = auth.currentUser.email
     this.GTID = GTID
     this.firstName = firstName
     this.lastName = lastName

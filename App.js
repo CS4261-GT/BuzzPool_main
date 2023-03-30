@@ -47,6 +47,11 @@ export default function App() {
           options={{ title: 'Welcome' }}
         />
         <Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{ title: 'Add to Your Profile' }}
+        />
+        <Stack.Screen
           name="Navigator"
           component={Navigator}
           options={{ title: 'Buzzpool' }}

@@ -3,7 +3,9 @@ import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState, useCallback } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal } from 'react-native'
-import { addCarpool, getCarpool } from '../logic/carpoolHandler'
+import { createCarpool, getCarpool } from '../logic/carpoolHandler'
+import { auth } from '../api/firebase';
+import { usersCollection, userConverter } from '../logic/userProfileHandler';
 
 
 
@@ -45,6 +47,59 @@ const ServiceScreen = () => {
   //   return unsubscribe
   // }, [])
 
+  /**
+ * hide the carpool from user's feed
+ * @param {string} carpoolId 
+ */
+const skipCarpool = (carpoolId) => {
+  // console.log(carpoolId)
+  // console.log(carpoolData.length)
+  const newCarpoolArray = carpoolData.filter((value) => {
+    return value.id != carpoolId
+  })
+  // console.log(newCarpoolArray.length)
+  setCarpoolData(newCarpoolArray)
+  flipBit(!flatlistRefresh)
+  console.log("pressed")
+}
+
+/**
+ * add the carpool to user's ongoing carpool
+ * 1) add carpool id to user's ongoingCarpool
+ * 2) remove the card from feed
+ * @param {string} email 
+ * @param {string} carpoolId 
+ */
+const joinCarpool = (carpoolId) => {
+  // find the user from firebase, call User.addTripId(carpoolId)
+  const email = auth.currentUser.email
+  console.log(email, carpoolId)
+  // console.log(usersCollection)
+  usersCollection.where('email', '==', email)
+  .withConverter(userConverter)
+  .get()
+  .then((querySnapshot) => {
+    querySnapshot.forEach((user) => {
+        // doc.data() is never undefined for query doc snapshots
+        console.log(user)
+        if (user.addTripId(carpoolId)) {
+          alert("Successfully joined the carpool!")
+          usersCollection.where('email', '==', email)
+          .withConverter(userConverter)
+          .set(user)
+        }
+          
+        else
+          alert("Error in joining the carpool")
+    });
+  })
+  .catch((error) => {
+      console.log("Error getting documents: ", error);
+  });
+  skipCarpool(carpoolId)
+}
+
+
 
   /**
    * This function is called for every item in the flatlist
@@ -83,32 +138,6 @@ const ServiceScreen = () => {
       return <></>
   }
 
-  /**
-   * hide the carpool from user's feed
-   * @param {string} carpoolId 
-   */
-  const skipCarpool = (carpoolId) => {
-    // console.log(carpoolId)
-    // console.log(carpoolData.length)
-    const newCarpoolArray = carpoolData.filter((value) => {
-      return value.id != carpoolId
-    })
-    // console.log(newCarpoolArray.length)
-    setCarpoolData(newCarpoolArray)
-    flipBit(!flatlistRefresh)
-    console.log("pressed")
-  }
-
-  /**
-   * add the carpool to user's ongoing carpool
-   * 1) add carpool id to user's ongoingCarpool
-   * 2) remove the card from feed
-   * @param {string} carpoolId 
-   */
-  const addCarpool = (carpoolId) => {
-    // find the user from firebase, call User.addTripId(carpoolId)
-    skipCarpool(carpoolId)
-  }
 
   /**
    * This function closes the modal and calls the handler in carpoolHandler.js
@@ -123,7 +152,7 @@ const ServiceScreen = () => {
         destination.length == 0 || requesterGTID.length != 9 || isNaN(GTIDNumber))
         throw new Error()
 
-      addCarpool(
+      createCarpool(
         title,
         date.toLocaleString(),
         departureLocation,
@@ -148,6 +177,8 @@ const ServiceScreen = () => {
 
     // console.log(carpoolData)
     flipBit(!flatlistRefresh)
+    if (auth.currentUser)
+      console.log(auth.currentUser)
     // console.log(flatlistRefresh)
   }
 

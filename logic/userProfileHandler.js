@@ -3,7 +3,9 @@ import { auth, firestore } from '../api/firebase'
 import User from '../model/User';
 
 
-const usersCollection = firestore.collection('Users');
+export const usersCollection = firestore.collection('Users');
+
+
 
 
 
@@ -15,10 +17,11 @@ const usersCollection = firestore.collection('Users');
  * @param {number} phoneNumber 
  * @param {number} GTID 
  */
-export const addUser = (fname, lname, phoneNumber, GTID) => {
+export const addUser = async (fname, lname, phoneNumber, GTID) => {
     // console.log("function called")
     usersCollection
         .add({
+            email: auth.currentUser.email,
             firstName: fname,
             lastName: lname,
             phoneNumber: phoneNumber,
@@ -38,16 +41,13 @@ export const addUser = (fname, lname, phoneNumber, GTID) => {
  * This converts a user object to a firestore compatible object upon write
  * and converts a firestore compatible object to a user object upon read
  */
-var userConverter = {
+export var userConverter = {
   toFirestore: function (user) {
-    // data fields for reference
 
-    // firstName: fname,
-    //         lastName: lname,
-    //         phoneNumber: phoneNumber,
-    //         GTID: GTID,
-    //         ongoingTripID: []
+    console.log(user)
+
     return {
+      email: user.email,
       GTID: user.GTID,
       fisrtName: user.firstName,
       lastName: user.lastName,
@@ -59,6 +59,7 @@ var userConverter = {
     const data = snapshot.data(options);
 
     var user = new User(
+      user.email,
       user.GTID,
       user.firstName,
       user.lastName,
