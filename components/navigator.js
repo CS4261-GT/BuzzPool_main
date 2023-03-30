@@ -29,7 +29,7 @@ export const Navigator = () => {
       />
       {/* <Tab.Screen name="Provider" component={Provider} /> */}
       <Tab.Screen
-        name="Profile"
+        name="Setting"
         component={tempProfile}
         options={{ headerShown: false }}
       />

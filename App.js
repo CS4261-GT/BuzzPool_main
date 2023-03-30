@@ -49,12 +49,12 @@ export default function App() {
         <Stack.Screen
           name="Profile"
           component={ProfileScreen}
-          options={{ title: 'Add to Your Profile' }}
+          options={{ title: 'Add to Your Profile', gestureEnabled: false, headerBackVisible: false}}
         />
         <Stack.Screen
           name="Navigator"
           component={Navigator}
-          options={{ title: 'Buzzpool' }}
+          options={{ title: 'Buzzpool', gestureEnabled: false, headerBackVisible: false }}
         />
 
       </Stack.Navigator>
