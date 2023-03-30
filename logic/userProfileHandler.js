@@ -21,6 +21,7 @@ export const addUser = (fname, lname, phoneNumber, GTID) => {
             lastName: lname,
             phoneNumber: phoneNumber,
             GTID: GTID,
+            ongoingTripID: []
         })
         .then(() => {
             console.log('New user added!')
@@ -29,6 +30,16 @@ export const addUser = (fname, lname, phoneNumber, GTID) => {
         })
         .catch( error => console.log(error.message));
 }
+
+/**
+ * This function adds the tripId to a user
+ * @param {string} tripId 
+ */
+const addTripId = (tripId) => {
+  
+}
+
+
 
 /**
  * This function adds the first name and last name for a user

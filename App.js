@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator,  } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
 import ServiceScreen from './screens/ServiceScreen';
 import HomeScreen from './screens/HomeScreen';
@@ -38,23 +38,23 @@ export default function App() {
 
 
   return (
-    
+
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
           name="Login"
           component={LoginScreen}
-          options={{title: 'Welcome'}}
+          options={{ title: 'Welcome' }}
         />
-        <Stack.Screen 
-          name="Navigator" 
-          component={Navigator} 
-          options={{title: 'Buzzpool'}}
+        <Stack.Screen
+          name="Navigator"
+          component={Navigator}
+          options={{ title: 'Buzzpool' }}
         />
-        
-      </Stack.Navigator> 
+
+      </Stack.Navigator>
     </NavigationContainer>
-  ); 
+  );
 }
 
 const styles = StyleSheet.create({

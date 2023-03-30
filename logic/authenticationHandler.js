@@ -8,12 +8,12 @@ import { auth } from '../api/firebase'
  * @param {string} password 
  */
 export const handleEmailVerification = (email, password) => {
-    
-    const user = auth.currentUser
-    // console.log(user);
-    if (!user)
-        auth.signInWithEmailAndPassword(email, password).then(() => user.reload())
-    user.sendEmailVerification()
+
+  const user = auth.currentUser
+  // console.log(user);
+  if (!user)
+    auth.signInWithEmailAndPassword(email, password).then(() => user.reload())
+  user.sendEmailVerification()
     .then(_ => alert(`Email Verification is sent to ${email}`))
     .catch(error => alert(error.message))
 }
@@ -25,12 +25,12 @@ export const handleEmailVerification = (email, password) => {
  * @param {string} password 
  */
 export const handleSignUp = (email, password) => {
-    auth
+  auth
     .createUserWithEmailAndPassword(email, password)
     .then(userCredentials => {
-        const user = userCredentials.user;
-        console.log('Registered with:', user.email);
-        handleEmailVerification(email)
+      const user = userCredentials.user;
+      console.log('Registered with:', user.email);
+      handleEmailVerification(email)
     })
     .catch(error => alert(error.message))
 
@@ -42,12 +42,13 @@ export const handleSignUp = (email, password) => {
  * to prevent login with incorrect password
  */
 const enforceSignOut = async () => {
-    
-    if (auth.currentUser) {
 
-        auth.signOut()
-        await auth.currentUser.reload()
-    }
+  if (auth.currentUser)
+  {
+
+    auth.signOut()
+    await auth.currentUser.reload()
+  }
 }
 
 /**
@@ -57,30 +58,32 @@ const enforceSignOut = async () => {
  * @param {string} password 
  */
 export const handleLogin = async (email, password) => {
-    // console.log(email, password)
-    // console.log("1 " + (auth.currentUser == null))
-    await enforceSignOut()
-    // console.log("2 " + (auth.currentUser == null))
-    await auth
+  // console.log(email, password)
+  // console.log("1 " + (auth.currentUser == null))
+  await enforceSignOut()
+  // console.log("2 " + (auth.currentUser == null))
+  await auth
     .signInWithEmailAndPassword(email, password)
     .then(userCredentials => {
-        const user = userCredentials.user;
-        // console.log(user)
-        user.reload()
+      const user = userCredentials.user;
+      // console.log(user)
+      user.reload()
         .then(() => {
-            // console.log("3 " + (auth.currentUser == null))
-            if (!user.emailVerified) {
-                auth.signOut()
-                alert("Email is not verified")
-            } else {
-                
-                console.log('Logged in with:', user.email);
-            }
+          // console.log("3 " + (auth.currentUser == null))
+          if (!user.emailVerified)
+          {
+            auth.signOut()
+            alert("Email is not verified")
+          } else
+          {
+
+            console.log('Logged in with:', user.email);
+          }
         })
-        
+
     })
     .catch(error => alert(error.message))
-    
+
 
 }
 
@@ -90,7 +93,7 @@ export const handleLogin = async (email, password) => {
  * @param {string} email 
  */
 export const handleResetPassword = (email) => {
-    auth.sendPasswordResetEmail(email)
+  auth.sendPasswordResetEmail(email)
     .then(() => alert(`Password reset email is sent to ${email}`))
     .catch(e => alert(e.message))
 }

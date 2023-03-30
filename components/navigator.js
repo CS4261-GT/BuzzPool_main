@@ -7,24 +7,24 @@ import ServiceScreen from "../screens/ServiceScreen";
 
 const Tab = createBottomTabNavigator();
 export const Navigator = () => {
-    return (
-            <Tab.Navigator
-                // displayedName='Buzzpool'
-            >
-                
-                <Tab.Screen 
-                    name="Service" 
-                    component={ServiceScreen} 
-                    
-                    options={{headerShown: false}}
-                />
-                {/* <Tab.Screen name="Provider" component={Provider} /> */}
-                <Tab.Screen 
-                    name="Profile" 
-                    component={ProfileScreen} 
-                    options={{headerShown: false}}
-                />
-            </Tab.Navigator>
-        
-    )
+  return (
+    <Tab.Navigator
+    // displayedName='Buzzpool'
+    >
+
+      <Tab.Screen
+        name="Service"
+        component={ServiceScreen}
+
+        options={{ headerShown: false }}
+      />
+      {/* <Tab.Screen name="Provider" component={Provider} /> */}
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{ headerShown: false }}
+      />
+    </Tab.Navigator>
+
+  )
 }
