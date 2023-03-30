@@ -5,7 +5,7 @@ import React, { useRef, useState, useCallback } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal } from 'react-native'
 import { createCarpool, getCarpool } from '../logic/carpoolHandler'
 import { auth } from '../api/firebase';
-import { usersCollection, userConverter } from '../logic/userProfileHandler';
+import { usersCollection, userConverter, getLoginUser } from '../logic/userHandler';
 
 
 
@@ -72,36 +72,53 @@ const skipCarpool = (carpoolId) => {
  * @param {string} carpoolId 
  */
 const joinCarpool = (carpoolId) => {
-  // find the user from firebase, call User.addTripId(carpoolId)
-  const email = auth.currentUser.email
-  console.log(email, carpoolId)
-  // console.log(usersCollection)
-  usersCollection.where('email', '==', email)
-  .withConverter(userConverter)
-  .get()
-  .then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        const user = doc.data()
-        const docId = doc.id
-        // console.log(user)
-        if (user.addTripId(carpoolId)) {
-          // console.log(user)
-          usersCollection.doc(docId)
-          .withConverter(userConverter)
-          .set(user)
+  getLoginUser()
+  .then(({userId, userData}) => {
+    console.log(userData)
+    if (userData.addTripId(carpoolId)) {
+      // console.log(user)
 
-          alert("Successfully joined the carpool!")
-        }
-          
-        // else
-        //   alert("Error in joining the carpool")
-        skipCarpool(carpoolId)
-    });
+
+      // problem is here
+      usersCollection.doc(userId)
+      .withConverter(userConverter)
+      .set(userData)
+      alert("Successfully joined the carpool!")
+      skipCarpool(carpoolId)
+    }
+    else
+      alert("Error in joining the carpool")
   })
-  .catch((error) => {
-      console.log("Error getting documents: ", error);
-  });
+  .catch(error => console.log(error.message))
+
+  
+        
+  // usersCollection.where('email', '==', email)
+  // .withConverter(userConverter)
+  // .get()
+  // .then((querySnapshot) => {
+  //   querySnapshot.forEach((doc) => {
+  //       // doc.data() is never undefined for query doc snapshots
+  //       const user = doc.data()
+  //       const docId = doc.id
+  //       // console.log(user)
+  //       if (user.addTripId(carpoolId)) {
+  //         // console.log(user)
+  //         usersCollection.doc(docId)
+  //         .withConverter(userConverter)
+  //         .set(user)
+
+  //         alert("Successfully joined the carpool!")
+  //       }
+          
+  //       // else
+  //       //   alert("Error in joining the carpool")
+  //       skipCarpool(carpoolId)
+  //   });
+  // })
+  // .catch((error) => {
+  //     console.log("Error getting documents: ", error);
+  // });
   
 }
 
@@ -239,6 +256,7 @@ const joinCarpool = (carpoolId) => {
 
         ]}
       />
+      {/* <Button onPress={() => } mode='contained' style={styles.buttonConfirm}>Get User</Button> */}
       <Button onPress={() => setModalVisible(true)} mode='contained' style={styles.buttonConfirm}>Make post</Button>
 
       <Button onPress={updateData} mode='contained' style={styles.buttonConfirm}>Refresh carpools</Button>

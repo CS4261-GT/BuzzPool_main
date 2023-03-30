@@ -6,6 +6,41 @@ import User from '../model/User';
 export const usersCollection = firestore.collection('Users');
 
 
+// export const getMytrip = () => {
+//   // get the data ready and navigate to MytripScreen
+//   carpoolCollection
+//   .withConverter(userConverter)
+//   .get()
+//   .then((doc) => {
+//     if ()
+//   })
+  
+//   MytripScreen()
+// }
+
+export const getLoginUser = async () => {
+  var returnUser = {};
+  console.log("attemp to get user")
+  await usersCollection.where('email', '==', auth.currentUser.email)
+  .withConverter(userConverter)
+  .get()
+  .then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      returnUser['userId'] = doc.id
+      returnUser['userData'] = doc.data()
+      console.log("in user handler")
+      console.log(returnUser)
+    })
+  })
+  .catch((error) => {
+      console.log('Error getting documents: ', error)
+  })
+  return returnUser
+
+}
+
+// export var myUser = async () => {await getLoginUser()}
+
 
 
 

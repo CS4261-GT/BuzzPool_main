@@ -11,7 +11,8 @@ import { usersCollection, userConverter } from '../logic/userHandler';
 
 
 
-export const DriverScreen = () => {
+const ServiceScreen = () => {
+
 
 
   const [carpoolData, setCarpoolData] = useState(getCarpool())
@@ -32,8 +33,6 @@ export const DriverScreen = () => {
     setDateTimePickerVisible(false);
     setDate(newDate);
   }, []);
-
-  const driver = true
 
   const [value, setValue] = useState('myTrip');
 
@@ -369,6 +368,8 @@ const joinCarpool = (carpoolId) => {
     </KeyboardAvoidingView>
   )
 }
+
+export default ServiceScreen
 
 
 const styles = StyleSheet.create({

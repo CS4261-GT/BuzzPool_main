@@ -9,7 +9,7 @@ import Carpool from '../model/Carpool';
 
 
 
-const carpoolCollection = firestore.collection('Carpools');
+export const carpoolCollection = firestore.collection('Carpools');
 
 /**
  * This function writes a carpool instance to firebase firestore
@@ -68,12 +68,14 @@ export const getCarpool = async () => {
   return carpools
 }
 
+
+
 /**
  * This object uses the firebase interface of datatype conversion
  * This converts a carpool object to a firestore compatible object upon write
  * and converts a firestore compatible object to a carpool object upon read
  */
-var carpoolConverter = {
+export var carpoolConverter = {
   toFirestore: function (carpool) {
     // data fields for reference
 
