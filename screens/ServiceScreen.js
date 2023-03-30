@@ -75,7 +75,7 @@ const ServiceScreen = () => {
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
           <Card.Actions>
             <Button style={styles.buttonCancel} mode='contained' onPress={() => skipCarpool(item.id)}>Skip</Button>
-            <Button style={styles.buttonConfirm} mode='contained'>Join</Button>
+            <Button style={styles.buttonConfirm} mode='contained' onPress={() => joinCarpool(item.id)}>Join</Button>
           </Card.Actions>
         </Card>
       )
@@ -83,6 +83,10 @@ const ServiceScreen = () => {
       return <></>
   }
 
+  /**
+   * hide the carpool from user's feed
+   * @param {string} carpoolId 
+   */
   const skipCarpool = (carpoolId) => {
     // console.log(carpoolId)
     // console.log(carpoolData.length)
@@ -94,6 +98,18 @@ const ServiceScreen = () => {
     flipBit(!flatlistRefresh)
     console.log("pressed")
   }
+
+  /**
+   * add the carpool to user's ongoing carpool
+   * 1) add carpool id to user's ongoingCarpool
+   * 2) remove the card from feed
+   * @param {string} carpoolId 
+   */
+  const addCarpool = (carpoolId) => {
+    // find the user from firebase, call User.addTripId(carpoolId)
+    skipCarpool(carpoolId)
+  }
+
   /**
    * This function closes the modal and calls the handler in carpoolHandler.js
    * after checking that the required fields are all filled up
