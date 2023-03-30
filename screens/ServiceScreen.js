@@ -79,24 +79,29 @@ const joinCarpool = (carpoolId) => {
   .withConverter(userConverter)
   .get()
   .then((querySnapshot) => {
-    querySnapshot.forEach((user) => {
+    querySnapshot.forEach((doc) => {
         // doc.data() is never undefined for query doc snapshots
-        console.log(user)
+        const user = doc.data()
+        const docId = doc.id
+        // console.log(user)
         if (user.addTripId(carpoolId)) {
-          alert("Successfully joined the carpool!")
-          usersCollection.where('email', '==', email)
+          // console.log(user)
+          usersCollection.doc(docId)
           .withConverter(userConverter)
           .set(user)
+
+          alert("Successfully joined the carpool!")
         }
           
-        else
-          alert("Error in joining the carpool")
+        // else
+        //   alert("Error in joining the carpool")
+        skipCarpool(carpoolId)
     });
   })
   .catch((error) => {
       console.log("Error getting documents: ", error);
   });
-  skipCarpool(carpoolId)
+  
 }
 
 

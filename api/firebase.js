@@ -18,6 +18,7 @@ const firebaseConfig = {
   measurementId: "G-21VSFHWTTT"
 };
 
+
 // Initialize Firebase
 let app;
 if (firebase.apps.length === 0) {
@@ -27,6 +28,7 @@ if (firebase.apps.length === 0) {
 }
 
 const auth = firebase.auth()
+
 const firestore = firebase.firestore();
 
 
