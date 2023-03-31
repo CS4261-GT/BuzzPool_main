@@ -5,41 +5,10 @@ import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal } from 'react-native'
 import { carpoolCollection, carpoolConverter, createCarpool, getCarpool } from '../logic/carpoolHandler'
 import { auth } from '../api/firebase';
-import { usersCollection, userConverter, getLoginUser } from '../logic/userHandler';
+import { showMyCarpool } from '../logic/userHandler';
 
 
-const getData = async () => {
-  
-}
-export const showCarpool = async () => {
-  var carpoolList = []
-  const {userId, userData} = await getLoginUser()
 
-  await carpoolCollection
-  .withConverter(carpoolConverter)
-  .get()
-  .then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      // console.log(doc.id, " => ", doc.data());
-      const carpool = doc.data()
-      const carpoolID = doc.id
-      
-      if (userData.ongoingTripID.includes(carpoolID)) {
-        carpoolList.push(carpool)
-      }
-        
-    });
-    console.log(carpoolList.length)
-  })
-  // .then(()=>console.log(carpools))
-  .catch((error) => {
-    console.log("Error getting documents: ", error);
-  });
-
-  console.log("Here " + carpoolList.length)
-  return carpoolList
-}
 
 export const MytripScreen = () => {
 
@@ -52,9 +21,9 @@ export const MytripScreen = () => {
   const [value, setValue] = useState('myTrip');
 
 
-  // useEffect(() => {
-  //   showCarpool().then(data => setCarpoolData(data))
-  // }, [])
+  useEffect(() => {
+    showMyCarpool().then(data => setCarpoolData(data))
+  }, [])
   
   // useEffect(() => {
   //   const unsubscribe = auth.onAuthStateChanged(user => {
@@ -108,8 +77,7 @@ export const MytripScreen = () => {
    * This function resets carpool data and force rerendering of the UI
    */
   const updateData = () => {
-    showCarpool()
-      .then((data) => setCarpoolData(data))
+    showMyCarpool().then((data) => setCarpoolData(data))
     // .then(()=>console.log(carpoolData))
 
     // console.log(carpoolData)

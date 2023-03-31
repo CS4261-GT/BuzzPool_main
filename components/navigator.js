@@ -13,7 +13,7 @@ import { auth } from "../api/firebase";
 
 const Tab = createBottomTabNavigator();
 
-const tempProfile = () => {
+const TempProfile = () => {
   return 
     <View>
       <Text>User profile </Text>
@@ -51,7 +51,7 @@ export const Navigator = () => {
       {/* <Tab.Screen name="Provider" component={Provider} /> */}
       <Tab.Screen
         name="Setting"
-        component={tempProfile}
+        component={TempProfile}
         options={{ headerShown: false }}
       />
     </Tab.Navigator>

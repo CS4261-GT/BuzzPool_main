@@ -163,8 +163,9 @@ const joinCarpool = (carpoolId) => {
         date.toLocaleString(),
         departureLocation,
         destination,
-        GTIDNumber,
         !isDriver,
+        5,
+        GTIDNumber,
       )
     } catch (error)
     {

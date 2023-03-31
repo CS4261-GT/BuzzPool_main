@@ -1,6 +1,6 @@
 export default class Carpool {
-  constructor(title, departureTime, departureLocation, destination, gtid,
-    requireDriver = true, capacity = 5, userGTIDs = [gtid],
+  constructor(title, departureTime, departureLocation, destination,
+    requireDriver = true, capacity = 4, userGTIDs = [],
     isTransactionFinished = false, isTripFinished = false) {
     this.title = title
     this.departureTime = departureTime

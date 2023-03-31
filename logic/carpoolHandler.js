@@ -20,15 +20,16 @@ export const carpoolCollection = firestore.collection('Carpools');
  * @param {number} GTID requester's GTID
  * @param {boolean} requireDriver true if a driver is still needed for the carpool
  */
-export const createCarpool = (title, datetime, from, to, GTID, requireDriver) => {
+export const createCarpool = (title, datetime, from, to, requireDriver, capacity, GTID) => {
 
   const carpool = new Carpool(
     title,
     datetime,
     from,
     to,
-    GTID,
     requireDriver,
+    capacity,
+    [GTID],
   );
 
   carpoolCollection
@@ -45,7 +46,7 @@ export const createCarpool = (title, datetime, from, to, GTID, requireDriver) =>
 
 /**
  * This class returns all the available carpool instances from firestore
- * @returns Carpool[]: all avaialble carpool instances
+ * @returns Promise<Carpool[]>: all avaialble carpool instances
  */
 export const getCarpool = async () => {
   var carpools = [];
@@ -93,15 +94,25 @@ export var carpoolConverter = {
       departureTime: carpool.departureTime,
       departureLocation: carpool.departureLocation,
       destination: carpool.destination,
-      userGTIDs: carpool.userGTIDs,
       requireDriver: carpool.requireDriver,
       capacity: carpool.capacity,
+      userGTIDs: carpool.userGTIDs,
       isTransactionFinished: carpool.isTransactionFinished,
       isTripFinished: carpool.isTripFinished,
     };
   },
   fromFirestore: function (snapshot, options) {
     const data = snapshot.data(options);
+
+    // title, 
+    // departureTime, 
+    // departureLocation, 
+    // destination, 
+    // requireDriver = true, 
+    // capacity = 5, 
+    // userGTIDs = [],
+    // isTransactionFinished = false, 
+    // isTripFinished = false
 
     var carpool = new Carpool(
       data.title,

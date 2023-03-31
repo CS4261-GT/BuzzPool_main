@@ -1,22 +1,41 @@
 import { Review } from '../model/Review'
 import { auth, firestore } from '../api/firebase'
 import User from '../model/User';
-
+import { carpoolCollection, carpoolConverter } from './carpoolHandler';
 
 export const usersCollection = firestore.collection('Users');
 
 
-// export const getMytrip = () => {
-//   // get the data ready and navigate to MytripScreen
-//   carpoolCollection
-//   .withConverter(userConverter)
-//   .get()
-//   .then((doc) => {
-//     if ()
-//   })
-  
-//   MytripScreen()
-// }
+export const showMyCarpool = async () => {
+  var carpoolList = []
+  const {userId, userData} = await getLoginUser()
+
+  await carpoolCollection
+  .withConverter(carpoolConverter)
+  .get()
+  .then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      // console.log(doc.id, " => ", doc.data());
+      const carpool = doc.data()
+      const carpoolID = doc.id
+      
+      if (userData.ongoingTripID.includes(carpoolID)) {
+        carpoolList.push(carpool)
+      }
+        
+    });
+    console.log(carpoolList.length)
+  })
+  // .then(()=>console.log(carpools))
+  .catch((error) => {
+    console.log("Error getting documents: ", error);
+  });
+
+  console.log("Here " + carpoolList.length)
+  console.log(carpoolList)
+  return carpoolList
+}
 
 export const getLoginUser = async () => {
   var returnUser = {};
