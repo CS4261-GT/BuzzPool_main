@@ -1,10 +1,64 @@
 import { Review } from '../model/Review'
 import { auth, firestore } from '../api/firebase'
 import User from '../model/User';
-
+import { carpoolCollection, carpoolConverter } from './carpoolHandler';
 
 export const usersCollection = firestore.collection('Users');
 
+
+export const showMyCarpool = async () => {
+  var carpoolList = []
+  const {userId, userData} = await getLoginUser()
+
+  await carpoolCollection
+  .withConverter(carpoolConverter)
+  .get()
+  .then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      // console.log(doc.id, " => ", doc.data());
+      const carpool = doc.data()
+      const carpoolID = doc.id
+      
+      if (userData.ongoingTripID.includes(carpoolID)) {
+        carpoolList.push(carpool)
+      }
+        
+    });
+    console.log(carpoolList.length)
+  })
+  // .then(()=>console.log(carpools))
+  .catch((error) => {
+    console.log("Error getting documents: ", error);
+  });
+
+  console.log("Here " + carpoolList.length)
+  console.log(carpoolList)
+  return carpoolList
+}
+
+export const getLoginUser = async () => {
+  var returnUser = {};
+  console.log("attemp to get user")
+  await usersCollection.where('email', '==', auth.currentUser.email)
+  .withConverter(userConverter)
+  .get()
+  .then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      returnUser['userId'] = doc.id
+      returnUser['userData'] = doc.data()
+      // console.log("in user handler")
+      // console.log(returnUser)
+    })
+  })
+  .catch((error) => {
+      console.log('Error getting documents: ', error)
+  })
+  return returnUser
+
+}
+
+// export var myUser = async () => {await getLoginUser()}
 
 
 
@@ -44,8 +98,8 @@ export const addUser = async (fname, lname, phoneNumber, GTID) => {
 export var userConverter = {
   toFirestore: function (user) {
 
-    console.log("To firebase")
-    console.log(user)
+    // console.log("To firebase")
+    // console.log(user)
 
     return {
       email: user.email,
@@ -59,8 +113,8 @@ export var userConverter = {
   fromFirestore: function (snapshot, options) {
     const data = snapshot.data(options);
 
-    console.log("From firebase")
-    console.log(data)
+    // console.log("From firebase")
+    // console.log(data)
 
     var user = new User(
       data.GTID,

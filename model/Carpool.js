@@ -1,6 +1,6 @@
 export default class Carpool {
-  constructor(title, departureTime, departureLocation, destination, gtid,
-    requireDriver = true, capacity = 5, userGTIDs = [gtid],
+  constructor(title, departureTime, departureLocation, destination,
+    requireDriver = true, capacity = 4, userGTIDs = [],
     isTransactionFinished = false, isTripFinished = false) {
     this.title = title
     this.departureTime = departureTime
@@ -23,18 +23,43 @@ export default class Carpool {
  
   /**
    * This method adds a driver to the carpool
-   * @param {string} gtid 
+   * @param {number} gtid 
+   * @return {boolean} true if the action is successful, false otherwise
    */
   addDriver(gtid) {
-
+    if (!this.requireDriver || this.userGTIDs.length == this.capacity)
+      return false
+    this.userGTIDs.push(gtid)
+    this.requireDriver = false
+    return true
   }
 
   /**
    * This method adds a rider to the carpool
-   * @param {string} gtid 
+   * @param {number} gtid 
+   * @return {boolean} true if the action is successful, false otherwise
    */
   addRider(gtid) {
+    if (this.userGTIDs.length == this.capacity)
+      return false
+    this.userGTIDs.push(gtid)
+    return true
+  }
 
+  /**
+   * This method adds a driver of a rider from a carpool
+   *
+   * If adding is successful, true will be returned
+   * Otherwise it will return false
+   * @param {number} gtid 
+   * @param {boolean} isDriver 
+   * @returns {boolean}
+   */
+  addUser(gtid, isDriver) {
+    console.log("Add user")
+    if (this.userGTIDs.includes(gtid))
+      return false
+    return isDriver ? this.addDriver(gtid) : this.addRider(gtid)
   }
 
 
@@ -45,9 +70,9 @@ export default class Carpool {
    *
    * If removal is successful, true will be returned
    * Otherwise it will return false
-   * @param {string} gtid 
-   * @param {bool} isDriver 
-   * @returns {bool}
+   * @param {number} gtid 
+   * @param {boolean} isDriver 
+   * @returns {boolean}
    */
   removeUser(gtid, isDriver) {
 

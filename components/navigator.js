@@ -6,21 +6,34 @@ import ProfileScreen from "../screens/ProfileScreen";
 import { RiderScreen } from "../screens/RiderScreen";
 import { View } from "react-native";
 import { DriverScreen } from "../screens/DriverScreen";
+import { MytripScreen } from "../screens/MyTripScreen";
+import { userConverter, usersCollection } from "../logic/userHandler";
+import { carpoolCollection } from "../logic/carpoolHandler";
+import { auth } from "../api/firebase";
 
 const Tab = createBottomTabNavigator();
 
-const tempProfile = () => {
+const TempProfile = () => {
   return 
     <View>
-      User profile 
+      <Text>User profile </Text>
+      
     </View>
 }
 
 export const Navigator = () => {
+
   return (
     <Tab.Navigator
     // displayedName='Buzzpool'
     >
+
+      <Tab.Screen
+        name="My Trip"
+        component={MytripScreen}
+
+        options={{ headerShown: false }}
+      />
 
       <Tab.Screen
         name="Rider"
@@ -38,7 +51,7 @@ export const Navigator = () => {
       {/* <Tab.Screen name="Provider" component={Provider} /> */}
       <Tab.Screen
         name="Setting"
-        component={tempProfile}
+        component={TempProfile}
         options={{ headerShown: false }}
       />
     </Tab.Navigator>
