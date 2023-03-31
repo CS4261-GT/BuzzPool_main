@@ -1,4 +1,5 @@
 import { auth } from '../api/firebase'
+import { useNavigation } from '@react-navigation/core'
 
 /**
  * This function handles email verification for user
@@ -57,7 +58,7 @@ const enforceSignOut = async () => {
  * @param {string} email 
  * @param {string} password 
  */
-export const handleLogin = async (email, password) => {
+export const handleLogin = async (email, password, navigation) => {
   // console.log(email, password)
   // console.log("1 " + (auth.currentUser == null))
   await enforceSignOut()
@@ -76,8 +77,8 @@ export const handleLogin = async (email, password) => {
             alert("Email is not verified")
           } else
           {
-
             console.log('Logged in with:', user.email);
+            navigation.navigate('Navigator');
           }
         })
 
