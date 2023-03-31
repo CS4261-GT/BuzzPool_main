@@ -23,18 +23,27 @@ export default class Carpool {
  
   /**
    * This method adds a driver to the carpool
-   * @param {string} gtid 
+   * @param {number} gtid 
+   * @return {boolean} true if the action is successful, false otherwise
    */
   addDriver(gtid) {
-
+    if (!this.requireDriver || this.userGTIDs.length == this.capacity)
+      return false
+    this.userGTIDs.push(gtid)
+    this.requireDriver = false
+    return true
   }
 
   /**
    * This method adds a rider to the carpool
-   * @param {string} gtid 
+   * @param {number} gtid 
+   * @return {boolean} true if the action is successful, false otherwise
    */
   addRider(gtid) {
-
+    if (this.userGTIDs.length == this.capacity)
+      return false
+    this.userGTIDs.push(gtid)
+    return true
   }
 
 
