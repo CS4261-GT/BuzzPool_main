@@ -57,6 +57,8 @@ export default class Carpool {
    */
   addUser(gtid, isDriver) {
     console.log("Add user")
+    if (this.userGTIDs.includes(gtid))
+      return false
     return isDriver ? this.addDriver(gtid) : this.addRider(gtid)
   }
 

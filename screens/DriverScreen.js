@@ -1,11 +1,11 @@
 import { Avatar, Card, Text, Checkbox, SegmentedButtons, Button } from 'react-native-paper';
 import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
-import React, { useRef, useState, useCallback } from 'react'
+import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal } from 'react-native'
-import { createCarpool, getCarpool } from '../logic/carpoolHandler'
+import { carpoolCollection, carpoolConverter, createCarpool, getCarpool, joinCarpool, skipCarpool } from '../logic/carpoolHandler'
 import { auth } from '../api/firebase';
-import { usersCollection, userConverter } from '../logic/userHandler';
+import { usersCollection, userConverter, getLoginUser } from '../logic/userHandler';
 
 
 
@@ -14,7 +14,8 @@ import { usersCollection, userConverter } from '../logic/userHandler';
 export const DriverScreen = () => {
 
 
-  const [carpoolData, setCarpoolData] = useState(getCarpool())
+
+  const [carpoolData, setCarpoolData] = useState()
   const [title, onChangeTitle] = useState("")
   const [departureLocation, onChangeDepartureLocation] = useState("")
   const [destination, onChangeDestination] = useState("")
@@ -33,11 +34,12 @@ export const DriverScreen = () => {
     setDate(newDate);
   }, []);
 
-  const driver = true
-
   const [value, setValue] = useState('myTrip');
 
 
+  useEffect(() => {
+    getCarpool().then(data => setCarpoolData(data))
+  }, [])
   // useEffect(() => {
   //   const unsubscribe = auth.onAuthStateChanged(user => {
   //     if (user) {
@@ -49,62 +51,25 @@ export const DriverScreen = () => {
   // }, [])
 
   /**
- * hide the carpool from user's feed
- * @param {string} carpoolId 
- */
-const skipCarpool = (carpoolId) => {
-  // console.log(carpoolId)
-  // console.log(carpoolData.length)
-  const newCarpoolArray = carpoolData.filter((value) => {
-    return value.id != carpoolId
-  })
-  // console.log(newCarpoolArray.length)
-  setCarpoolData(newCarpoolArray)
-  flipBit(!flatlistRefresh)
-  console.log("pressed")
-}
+   * Rerender the RiderScreen UI by removing the skipped carpool
+   * @param {string} carpoolId 
+   */
+  const skipCarpoolUI = (carpoolId) => {
+    const newCarpoolArray = skipCarpool(carpoolData, carpoolId)
+    setCarpoolData(newCarpoolArray)
+    flipBit(!flatlistRefresh)
+  }
 
-/**
- * add the carpool to user's ongoing carpool
- * 1) add carpool id to user's ongoingCarpool
- * 2) remove the card from feed
- * @param {string} email 
- * @param {string} carpoolId 
- */
-const joinCarpool = (carpoolId) => {
-  // find the user from firebase, call User.addTripId(carpoolId)
-  const email = auth.currentUser.email
-  console.log(email, carpoolId)
-  // console.log(usersCollection)
-  usersCollection.where('email', '==', email)
-  .withConverter(userConverter)
-  .get()
-  .then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        const user = doc.data()
-        const docId = doc.id
-        // console.log(user)
-        if (user.addTripId(carpoolId)) {
-          // console.log(user)
-          usersCollection.doc(docId)
-          .withConverter(userConverter)
-          .set(user)
-
-          alert("Successfully joined the carpool!")
-        }
-          
-        // else
-        //   alert("Error in joining the carpool")
-        skipCarpool(carpoolId)
-    });
-  })
-  .catch((error) => {
-      console.log("Error getting documents: ", error);
-  });
+  /**
+   * Rerender the RiderScreen UI by removing the joined carpool
+   * This alsos add data to MyTripScreen UI
+   * @param {Carpool} carpool 
+   */
+  const joinCarpoolUI = (carpool) => {
+    joinCarpool(carpool, true)
+    skipCarpoolUI(carpoolData, carpool.id)
+  }
   
-}
-
 
 
   /**
@@ -114,7 +79,6 @@ const joinCarpool = (carpoolId) => {
    * @returns 
    */
   const renderCards = ({ item }) => {
-    // console.log(typeof(item))
     const remainingSeats = item.capacity - item.userGTIDs.length;
     // I think title is not necessary
     const subtitle = "From " + item.departureLocation + "\n" + "To " + item.destination
@@ -135,8 +99,8 @@ const joinCarpool = (carpoolId) => {
           </Card.Content>
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
           <Card.Actions>
-            <Button style={styles.buttonCancel} mode='contained' onPress={() => skipCarpool(item.id)}>Skip</Button>
-            <Button style={styles.buttonConfirm} mode='contained' onPress={() => joinCarpool(item.id)}>Join</Button>
+            <Button style={styles.buttonCancel} mode='contained' onPress={() => skipCarpoolUI(item.id)}>Skip</Button>
+            <Button style={styles.buttonConfirm} mode='contained' onPress={() => joinCarpoolUI(item)}>Join</Button>
           </Card.Actions>
         </Card>
       )
@@ -166,6 +130,7 @@ const joinCarpool = (carpoolId) => {
         !isDriver,
         5,
         GTIDNumber,
+        
       )
     } catch (error)
     {
@@ -240,6 +205,7 @@ const joinCarpool = (carpoolId) => {
 
         ]}
       />
+      {/* <Button onPress={() => } mode='contained' style={styles.buttonConfirm}>Get User</Button> */}
       <Button onPress={() => setModalVisible(true)} mode='contained' style={styles.buttonConfirm}>Make post</Button>
 
       <Button onPress={updateData} mode='contained' style={styles.buttonConfirm}>Refresh carpools</Button>
@@ -370,6 +336,7 @@ const joinCarpool = (carpoolId) => {
     </KeyboardAvoidingView>
   )
 }
+
 
 
 const styles = StyleSheet.create({
