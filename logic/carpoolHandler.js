@@ -51,6 +51,7 @@ export const createCarpool = (title, datetime, from, to, requireDriver, capacity
 export const getCarpool = async () => {
   var carpools = [];
   await carpoolCollection
+    .withConverter(carpoolConverter)
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {

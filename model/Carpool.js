@@ -46,6 +46,20 @@ export default class Carpool {
     return true
   }
 
+  /**
+   * This method adds a driver of a rider from a carpool
+   *
+   * If adding is successful, true will be returned
+   * Otherwise it will return false
+   * @param {number} gtid 
+   * @param {boolean} isDriver 
+   * @returns {boolean}
+   */
+  addUser(gtid, isDriver) {
+    console.log("Add user")
+    return isDriver ? this.addDriver(gtid) : this.addRider(gtid)
+  }
+
 
   /**
    * This method removes a driver of a rider from a carpool
@@ -54,9 +68,9 @@ export default class Carpool {
    *
    * If removal is successful, true will be returned
    * Otherwise it will return false
-   * @param {string} gtid 
-   * @param {bool} isDriver 
-   * @returns {bool}
+   * @param {number} gtid 
+   * @param {boolean} isDriver 
+   * @returns {boolean}
    */
   removeUser(gtid, isDriver) {
 

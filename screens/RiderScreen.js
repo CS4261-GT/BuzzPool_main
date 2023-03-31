@@ -3,7 +3,7 @@ import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal } from 'react-native'
-import { createCarpool, getCarpool } from '../logic/carpoolHandler'
+import { carpoolCollection, carpoolConverter, createCarpool, getCarpool } from '../logic/carpoolHandler'
 import { auth } from '../api/firebase';
 import { usersCollection, userConverter, getLoginUser } from '../logic/userHandler';
 
@@ -35,7 +35,6 @@ export const RiderScreen = () => {
   }, []);
 
   const [value, setValue] = useState('myTrip');
-  const driver = false
 
 
   useEffect(() => {
@@ -69,25 +68,42 @@ const skipCarpool = (carpoolId) => {
 
 /**
  * add the carpool to user's ongoing carpool
- * 1) add carpool id to user's ongoingCarpool
+ * 1) add carpool id to user's ongoingCarpool and push user data to firestore
  * 2) remove the card from feed
- * @param {string} email 
- * @param {string} carpoolId 
+ * 3) update carpool's data and push carpool data to firestore
+ * @param {Carpool} carpool 
  */
-const joinCarpool = (carpoolId) => {
-  getLoginUser()
+const joinCarpool = async (carpool) => {
+
+  await getLoginUser()
   .then(({userId, userData}) => {
     console.log(userData)
-    if (userData.addTripId(carpoolId)) {
+
+    // add carpoolId to user
+    if (userData.addTripId(carpool.id)) {
       // console.log(user)
 
 
-      // problem is here
+      // update user data in firestore
       usersCollection.doc(userId)
       .withConverter(userConverter)
       .set(userData)
-      alert("Successfully joined the carpool!")
-      skipCarpool(carpoolId)
+
+      // add user to the carpool instance
+      if (carpool.addUser(userData.GTID, false)) {
+        // update carpool data in firestore
+        carpoolCollection.doc(carpool.id)
+        .withConverter(carpoolConverter)
+        .set(carpool)
+
+        alert("Successfully joined the carpool!")
+        skipCarpool(carpool.id)
+        
+      } else {
+        alert("Carpool is full or this carpool already has a driver!")
+      }
+      
+
     }
     else
       alert("Error in joining the carpool")
@@ -130,11 +146,11 @@ const joinCarpool = (carpoolId) => {
   /**
    * This function is called for every item in the flatlist
    * It will create a card for each carpool instance
-   * @param {Carpool} item I think it has to be named "item", it represents a carpool instance
+   * @param {Object} item I think it has to be named "item", it represents a carpool instance
+   * @param {number} index
    * @returns 
    */
   const renderCards = ({ item }) => {
-    // console.log(typeof(item))
     const remainingSeats = item.capacity - item.userGTIDs.length;
     // I think title is not necessary
     const subtitle = "From " + item.departureLocation + "\n" + "To " + item.destination
@@ -156,7 +172,7 @@ const joinCarpool = (carpoolId) => {
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
           <Card.Actions>
             <Button style={styles.buttonCancel} mode='contained' onPress={() => skipCarpool(item.id)}>Skip</Button>
-            <Button style={styles.buttonConfirm} mode='contained' onPress={() => joinCarpool(item.id)}>Join</Button>
+            <Button style={styles.buttonConfirm} mode='contained' onPress={() => joinCarpool(item)}>Join</Button>
           </Card.Actions>
         </Card>
       )
