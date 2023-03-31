@@ -3,7 +3,7 @@ import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
 import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal } from 'react-native'
-import { carpoolCollection, carpoolConverter, createCarpool, getCarpool } from '../logic/carpoolHandler'
+import { carpoolCollection, carpoolConverter, createCarpool, getCarpool, joinCarpool, skipCarpool } from '../logic/carpoolHandler'
 import { auth } from '../api/firebase';
 import { usersCollection, userConverter, getLoginUser } from '../logic/userHandler';
 
@@ -50,104 +50,23 @@ export const RiderScreen = () => {
   //   return unsubscribe
   // }, [])
 
-  /**
- * hide the carpool from user's feed
- * @param {string} carpoolId 
- */
-const skipCarpool = (carpoolId) => {
-  // console.log(carpoolId)
-  // console.log(carpoolData.length)
-  const newCarpoolArray = carpoolData.filter((value) => {
-    return value.id != carpoolId
-  })
-  // console.log(newCarpoolArray.length)
-  setCarpoolData(newCarpoolArray)
-  flipBit(!flatlistRefresh)
-  console.log("pressed")
-}
+  const skipCarpoolUI = (carpoolId) => {
+    const newCarpoolArray = skipCarpool(carpoolData, carpoolId)
+    setCarpoolData(newCarpoolArray)
+    flipBit(!flatlistRefresh)
+  }
 
-/**
- * add the carpool to user's ongoing carpool
- * 1) add carpool id to user's ongoingCarpool and push user data to firestore
- * 2) remove the card from feed
- * 3) update carpool's data and push carpool data to firestore
- * @param {Carpool} carpool 
- */
-const joinCarpool = async (carpool) => {
-
-  await getLoginUser()
-  .then(({userId, userData}) => {
-    console.log(userData)
-
-    // add carpoolId to user
-    if (userData.addTripId(carpool.id)) {
-      // console.log(user)
-
-
-      // update user data in firestore
-      usersCollection.doc(userId)
-      .withConverter(userConverter)
-      .set(userData)
-
-      // add user to the carpool instance
-      if (carpool.addUser(userData.GTID, false)) {
-        // update carpool data in firestore
-        carpoolCollection.doc(carpool.id)
-        .withConverter(carpoolConverter)
-        .set(carpool)
-
-        alert("Successfully joined the carpool!")
-        skipCarpool(carpool.id)
-        
-      } else {
-        alert("Carpool is full or this carpool already has a driver!")
-      }
-      
-
-    }
-    else
-      alert("Error in joining the carpool")
-  })
-  .catch(error => console.log(error.message))
-
+  const joinCarpoolUI = (carpool) => {
+    joinCarpool(carpool, false)
+    skipCarpoolUI(carpoolData, carpool.id)
+  }
   
-        
-  // usersCollection.where('email', '==', email)
-  // .withConverter(userConverter)
-  // .get()
-  // .then((querySnapshot) => {
-  //   querySnapshot.forEach((doc) => {
-  //       // doc.data() is never undefined for query doc snapshots
-  //       const user = doc.data()
-  //       const docId = doc.id
-  //       // console.log(user)
-  //       if (user.addTripId(carpoolId)) {
-  //         // console.log(user)
-  //         usersCollection.doc(docId)
-  //         .withConverter(userConverter)
-  //         .set(user)
-
-  //         alert("Successfully joined the carpool!")
-  //       }
-          
-  //       // else
-  //       //   alert("Error in joining the carpool")
-  //       skipCarpool(carpoolId)
-  //   });
-  // })
-  // .catch((error) => {
-  //     console.log("Error getting documents: ", error);
-  // });
-  
-}
-
 
 
   /**
    * This function is called for every item in the flatlist
    * It will create a card for each carpool instance
-   * @param {Object} item I think it has to be named "item", it represents a carpool instance
-   * @param {number} index
+   * @param {Carpool} item I think it has to be named "item", it represents a carpool instance
    * @returns 
    */
   const renderCards = ({ item }) => {
@@ -171,8 +90,8 @@ const joinCarpool = async (carpool) => {
           </Card.Content>
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
           <Card.Actions>
-            <Button style={styles.buttonCancel} mode='contained' onPress={() => skipCarpool(item.id)}>Skip</Button>
-            <Button style={styles.buttonConfirm} mode='contained' onPress={() => joinCarpool(item)}>Join</Button>
+            <Button style={styles.buttonCancel} mode='contained' onPress={() => skipCarpoolUI(item.id)}>Skip</Button>
+            <Button style={styles.buttonConfirm} mode='contained' onPress={() => joinCarpoolUI(item)}>Join</Button>
           </Card.Actions>
         </Card>
       )

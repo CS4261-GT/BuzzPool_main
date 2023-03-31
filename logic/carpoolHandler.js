@@ -5,6 +5,7 @@ import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, Fl
 import { auth, firestore } from '../api/firebase'
 // import firestore from 'firebase/firestore';
 import Carpool from '../model/Carpool';
+import { userConverter, usersCollection, getLoginUser } from './userHandler';
 
 
 
@@ -70,6 +71,68 @@ export const getCarpool = async () => {
   return carpools
 }
 
+/**
+ * hide the carpool from user's feed
+ * @param {string} carpoolId 
+ */
+export const skipCarpool = (carpoolData, carpoolId) => {
+  // console.log(carpoolId)
+  // console.log(carpoolData.length)
+  const newCarpoolArray = carpoolData.filter((value) => {
+    return value.id != carpoolId
+  })
+  // console.log(newCarpoolArray.length)
+  
+  console.log("Carpool skipped")
+  return newCarpoolArray
+}
+
+/**
+ * add the carpool to user's ongoing carpool
+ * 1) add carpool id to user's ongoingCarpool and push user data to firestore
+ * 2) remove the card from feed
+ * 3) update carpool's data and push carpool data to firestore
+ * @param {Carpool} carpool 
+ * @param {boolean} isDriver
+ */
+export const joinCarpool = async (carpool, isDriver) => {
+
+  await getLoginUser()
+  .then(({userId, userData}) => {
+    console.log(userData)
+    console.log(carpool)
+    // add carpoolId to user
+    if (userData.addTripId(carpool.id)) {
+      // console.log(user)
+
+
+      // update user data in firestore
+      usersCollection.doc(userId)
+      .withConverter(userConverter)
+      .set(userData)
+
+      // add user to the carpool instance
+      if (carpool.addUser(userData.GTID, isDriver)) {
+        // update carpool data in firestore
+        console.log("trying to update firestore carpool")
+        carpoolCollection.doc(carpool.id)
+        .withConverter(carpoolConverter)
+        .set(carpool)
+
+        alert("Successfully joined the carpool!")
+        
+        
+      } else {
+        alert("Carpool is full or this carpool already has a driver!")
+      }
+      
+
+    }
+    else
+      alert("Error in joining the carpool")
+  })
+  .catch(error => console.log(error.message))
+}
 
 
 /**
@@ -90,6 +153,9 @@ export var carpoolConverter = {
     // this.isTransactionFinished = false
     // this.isTripFinished = false
     // console.log(carpool);
+
+    console.log("Carpool to firebase")
+    console.log(carpool)
     return {
       title: carpool.title,
       departureTime: carpool.departureTime,
@@ -114,6 +180,9 @@ export var carpoolConverter = {
     // userGTIDs = [],
     // isTransactionFinished = false, 
     // isTripFinished = false
+
+    console.log("Carpool from firebase")
+    console.log(data)
 
     var carpool = new Carpool(
       data.title,
