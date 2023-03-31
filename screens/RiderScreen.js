@@ -1,7 +1,7 @@
 import { Avatar, Card, Text, Checkbox, SegmentedButtons, Button } from 'react-native-paper';
 import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
 import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
-import React, { useRef, useState, useCallback } from 'react'
+import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal } from 'react-native'
 import { createCarpool, getCarpool } from '../logic/carpoolHandler'
 import { auth } from '../api/firebase';
@@ -15,7 +15,7 @@ export const RiderScreen = () => {
 
 
 
-  const [carpoolData, setCarpoolData] = useState(getCarpool())
+  const [carpoolData, setCarpoolData] = useState()
   const [title, onChangeTitle] = useState("")
   const [departureLocation, onChangeDepartureLocation] = useState("")
   const [destination, onChangeDestination] = useState("")
@@ -38,6 +38,9 @@ export const RiderScreen = () => {
   const driver = false
 
 
+  useEffect(() => {
+    getCarpool().then(data => setCarpoolData(data))
+  }, [])
   // useEffect(() => {
   //   const unsubscribe = auth.onAuthStateChanged(user => {
   //     if (user) {

@@ -28,8 +28,8 @@ export const getLoginUser = async () => {
     querySnapshot.forEach((doc) => {
       returnUser['userId'] = doc.id
       returnUser['userData'] = doc.data()
-      console.log("in user handler")
-      console.log(returnUser)
+      // console.log("in user handler")
+      // console.log(returnUser)
     })
   })
   .catch((error) => {
@@ -79,8 +79,8 @@ export const addUser = async (fname, lname, phoneNumber, GTID) => {
 export var userConverter = {
   toFirestore: function (user) {
 
-    console.log("To firebase")
-    console.log(user)
+    // console.log("To firebase")
+    // console.log(user)
 
     return {
       email: user.email,
@@ -94,8 +94,8 @@ export var userConverter = {
   fromFirestore: function (snapshot, options) {
     const data = snapshot.data(options);
 
-    console.log("From firebase")
-    console.log(data)
+    // console.log("From firebase")
+    // console.log(data)
 
     var user = new User(
       data.GTID,
