@@ -8,6 +8,7 @@ import RiderScreen from './screens/RiderScreen';
 import HomeScreen from './screens/HomeScreen';
 import { ProfileScreen } from './screens/ProfileScreen'
 import { Navigator } from './components/navigator'
+import { auth } from './api/firebase';
 
 
 const Stack = createNativeStackNavigator();
@@ -22,29 +23,46 @@ export default function App() {
 
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ title: 'Welcome' }}
-        />
-        <Stack.Screen
-          name="Profile"
-          component={ProfileScreen}
-          options={{
-            title: 'Add to Your Profile',
-            gestureEnabled: false,
-            // headerBackVisible: false
-          }}
-        />
-        <Stack.Screen
-          name="Navigator"
-          component={Navigator}
-          options={{
-            title: 'Buzzpool',
-            gestureEnabled: false,
-            // headerBackVisible: false 
-          }}
-        />
+        {auth.currentUser ? (
+          <>
+            <Stack.Screen
+              name="Navigator"
+              component={Navigator}
+              options={{
+                title: 'Buzzpool',
+                gestureEnabled: false,
+                // headerBackVisible: false 
+              }}
+            />
+          </>
+        ) : (
+          <>
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{ title: 'Welcome' }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{
+                title: 'Add to Your Profile',
+                gestureEnabled: false,
+                // headerBackVisible: false
+              }}
+            />
+            <Stack.Screen
+              name="Navigator"
+              component={Navigator}
+              options={{
+                title: 'Buzzpool',
+                gestureEnabled: false,
+                // headerBackVisible: false 
+              }}
+            />
+          </>
+        )}
+
 
       </Stack.Navigator>
     </NavigationContainer>

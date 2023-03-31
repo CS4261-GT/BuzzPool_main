@@ -23,7 +23,7 @@ export const SettingScreen = () => {
     auth.signOut()
       .then(() => {
         alert("User successfully logged out")
-        navigation.replace("Login")
+        navigation.navigate("Login")
       })
       .catch((error) => alert(error.message))
 
