@@ -16,6 +16,7 @@ export default class User {
    * This function adds the tripId to a user
    * If it is successful, returns true, otherwise false
    * @param {string} tripId 
+   * @return {boolean} true if the action is successful
    */
   addTripId(tripId){
     if (this.ongoingTripID.includes(tripId))
@@ -24,6 +25,10 @@ export default class User {
     return true
   }
 
+  /**
+   * fetches all the matching carpool instance from firestore
+   * @returns Promise<Carpool[]>
+   */
   async getMytrip(){
     var carpoolTrips = []
     await carpoolCollection
