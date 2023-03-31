@@ -50,12 +50,21 @@ export const RiderScreen = () => {
   //   return unsubscribe
   // }, [])
 
+  /**
+   * Rerender the RiderScreen UI by removing the skipped carpool
+   * @param {string} carpoolId 
+   */
   const skipCarpoolUI = (carpoolId) => {
     const newCarpoolArray = skipCarpool(carpoolData, carpoolId)
     setCarpoolData(newCarpoolArray)
     flipBit(!flatlistRefresh)
   }
 
+  /**
+   * Rerender the RiderScreen UI by removing the joined carpool
+   * This alsos add data to MyTripScreen UI
+   * @param {Carpool} carpool 
+   */
   const joinCarpoolUI = (carpool) => {
     joinCarpool(carpool, false)
     skipCarpoolUI(carpoolData, carpool.id)
