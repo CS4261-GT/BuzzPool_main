@@ -2,21 +2,13 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator, } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
 import RiderScreen from './screens/RiderScreen';
 import HomeScreen from './screens/HomeScreen';
-import ProfileScreen from './screens/ProfileScreen'
+import { ProfileScreen } from './screens/ProfileScreen'
 import { Navigator } from './components/navigator'
-
-
-function Provider() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Provide a service!</Text>
-    </View>
-  );
-}
+import { auth } from './api/firebase';
 
 
 const Stack = createNativeStackNavigator();
@@ -31,29 +23,47 @@ export default function App() {
 
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ title: 'Welcome' }}
-        />
-        <Stack.Screen
-          name="Profile"
-          component={ProfileScreen}
-          options={{ 
-            title: 'Add to Your Profile', 
-            gestureEnabled: false, 
-            // headerBackVisible: false
-          }}
-        />
-        <Stack.Screen
-          name="Navigator"
-          component={Navigator}
-          options={{ 
-            title: 'Buzzpool', 
-            gestureEnabled: false, 
-            // headerBackVisible: false 
-          }}
-        />
+        {auth.currentUser ? (
+          <>
+            <Stack.Screen
+              name="Navigator"
+              component={Navigator}
+              options={{
+                title: 'Buzzpool',
+                gestureEnabled: false,
+                // headerBackVisible: false 
+              }}
+            />
+          </>
+        ) : (
+          <>
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{ title: 'Welcome' }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{
+                title: 'Add to Your Profile',
+                gestureEnabled: false,
+                // headerBackVisible: false
+              }}
+            />
+            <Stack.Screen
+              name="Navigator"
+              component={Navigator}
+              options={{
+                title: 'Buzzpool',
+                gestureEnabled: false,
+                // headerLeft: () => {}
+                // headerBackVisible: false 
+              }}
+            />
+          </>
+        )}
+
 
       </Stack.Navigator>
     </NavigationContainer>
