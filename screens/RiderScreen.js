@@ -38,7 +38,12 @@ export const RiderScreen = () => {
 
 
   useEffect(() => {
-    getCarpool().then(data => setCarpoolData(data))
+    getCarpool().then(data => {
+      const newData = data.filter((carpool) => {
+        return carpool.requireDriver
+      })
+      setCarpoolData(newData)
+    })
   }, [])
   // useEffect(() => {
   //   const unsubscribe = auth.onAuthStateChanged(user => {
@@ -143,8 +148,12 @@ export const RiderScreen = () => {
    * This function resets carpool data and force rerendering of the UI
    */
   const updateData = () => {
-    getCarpool()
-      .then((data) => setCarpoolData(data))
+    getCarpool().then(data => {
+      const newData = data.filter((carpool) => {
+        return carpool.requireDriver
+      })
+      setCarpoolData(newData)
+    })
     // .then(()=>console.log(carpoolData))
 
     // console.log(carpoolData)
@@ -174,7 +183,7 @@ export const RiderScreen = () => {
 
 
 
-      <SegmentedButtons
+      {/* <SegmentedButtons
         value={value}
         onValueChange={setValue}
         style={styles.segmentedButtons}
@@ -203,8 +212,7 @@ export const RiderScreen = () => {
             // showSelectedCheck:'true'
           },
 
-        ]}
-      />
+        ]} */}
       {/* <Button onPress={() => } mode='contained' style={styles.buttonConfirm}>Get User</Button> */}
       <Button onPress={() => setModalVisible(true)} mode='contained' style={styles.buttonConfirm}>Make post</Button>
 

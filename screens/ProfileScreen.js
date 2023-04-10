@@ -13,9 +13,8 @@ import ServiceScreen from './RiderScreen';
  * This function returns the profile page UI
  * @returns profile page UI
  */
-const ProfileScreen = () => {
+export const ProfileScreen = () => {
 
-    const Tab = createBottomTabNavigator();
     const navigation = useNavigation()
 
     /**
@@ -123,7 +122,6 @@ const ProfileScreen = () => {
     )
 }
 
-export default ProfileScreen
 
 
 const styles = StyleSheet.create({

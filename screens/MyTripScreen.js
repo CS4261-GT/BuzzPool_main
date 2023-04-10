@@ -106,39 +106,6 @@ export const MytripScreen = () => {
     >
 
 
-
-      <SegmentedButtons
-        value={value}
-        onValueChange={setValue}
-        style={styles.segmentedButtons}
-        theme={theme}
-        buttons={[
-          {
-            value: 'myTrip',
-            label: 'My Trip',
-            // TODO: need two themes for the button, one for the unchecked state and another for the checked state
-            // checkedColor: 'black',
-            // showSelectedCheck:'true'
-          },
-          {
-            value: 'rider',
-            label: 'Riders',
-            // showSelectedCheck:'true'
-          },
-          {
-            value: 'request',
-            label: 'Request',
-            // showSelectedCheck:'true'
-          },
-          {
-            value: 'contact',
-            label: 'Contacts',
-            // showSelectedCheck:'true'
-          },
-
-        ]}
-      />
-
       <Button onPress={updateData} mode='contained' style={styles.buttonConfirm}>Refresh carpools</Button>
       <FlatList
         data={carpoolData}

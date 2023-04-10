@@ -11,16 +11,10 @@ import ReportScreen from "../screens/ReportScreen";
 import { userConverter, usersCollection } from "../logic/userHandler";
 import { carpoolCollection } from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
+import { SettingScreen } from "../screens/SettingScreen";
 
 const Tab = createBottomTabNavigator();
 
-const TempProfile = () => {
-  return 
-    <View>
-      <Text>User profile </Text>
-      
-    </View>
-}
 
 export const Navigator = () => {
 
@@ -37,14 +31,14 @@ export const Navigator = () => {
       />
 
       <Tab.Screen
-        name="Rider"
+        name="Requests"
         component={RiderScreen}
 
         options={{ headerShown: false }}
       />
 
       <Tab.Screen
-        name="Driver"
+        name="Trips"
         component={DriverScreen}
 
         options={{ headerShown: false }}
@@ -53,6 +47,7 @@ export const Navigator = () => {
       <Tab.Screen
         name="Report"
         component={ReportScreen}
+
         options={{ headerShown: false }}
       />
     </Tab.Navigator>
