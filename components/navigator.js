@@ -7,6 +7,7 @@ import { RiderScreen } from "../screens/RiderScreen";
 import { View } from "react-native";
 import { DriverScreen } from "../screens/DriverScreen";
 import { MytripScreen } from "../screens/MyTripScreen";
+import ReportScreen from "../screens/ReportScreen";
 import { userConverter, usersCollection } from "../logic/userHandler";
 import { carpoolCollection } from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
@@ -50,8 +51,8 @@ export const Navigator = () => {
       />
       {/* <Tab.Screen name="Provider" component={Provider} /> */}
       <Tab.Screen
-        name="Setting"
-        component={TempProfile}
+        name="Report"
+        component={ReportScreen}
         options={{ headerShown: false }}
       />
     </Tab.Navigator>
