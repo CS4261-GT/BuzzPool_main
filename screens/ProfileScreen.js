@@ -105,7 +105,7 @@ const ProfileScreen = () => {
                     <TextInput
                         style={styles.input}
                         onChangeText={setGTID}
-                        placeholder="Your phone number"
+                        placeholder="Your GTID"
                         placeholderTextColor="grey"
                         value={GTID}
                     />
