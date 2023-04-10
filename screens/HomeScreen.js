@@ -16,7 +16,7 @@ const HomeScreen = () => {
     auth
       .signOut()
       .then(() => {
-        // navigation.replace("Login")
+        navigation.replace("Login")
       })
       .catch(error => alert(error.message))
   }

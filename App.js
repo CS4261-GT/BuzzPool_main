@@ -57,6 +57,7 @@ export default function App() {
               options={{
                 title: 'Buzzpool',
                 gestureEnabled: false,
+                // headerLeft: () => {}
                 // headerBackVisible: false 
               }}
             />
