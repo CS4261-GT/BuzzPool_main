@@ -23,7 +23,7 @@ YellowBox.ignoreWarnings(["Setting a timer for a long period of time"]);
 
 const db = firebase.firestore();
 
-export const ChatScreen = ({ route }) => {
+const ChatScreen = ({ route }) => {
   const [user, setUser] = useState(null);
   const [name, setName] = useState("");
   const [messages, setMessages] = useState([]);
@@ -107,6 +107,8 @@ export const ChatScreen = ({ route }) => {
   );
 };
 
+export default ChatScreen
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -122,5 +124,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
 });
-
-export default ChatScreen;
