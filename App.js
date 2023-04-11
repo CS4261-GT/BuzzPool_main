@@ -1,3 +1,4 @@
+
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -12,16 +13,15 @@ import { auth } from './api/firebase';
 import React, { useEffect } from 'react';
 import registerNNPushToken from 'native-notify';
 
+
 const Stack = createNativeStackNavigator();
 
-
-
-
 export default function App() {
+
   registerNNPushToken(7334, 'd1AFABt39G4VjuJZ4ymIbt');
 
-  return (
 
+  return (
     <NavigationContainer>
       <Stack.Navigator>
         {auth.currentUser ? (
@@ -30,9 +30,18 @@ export default function App() {
               name="Navigator"
               component={Navigator}
               options={{
-                title: 'Buzzpool',
+                title: "Buzzpool",
                 gestureEnabled: false,
-                // headerBackVisible: false 
+                // headerBackVisible: false
+              }}
+            />
+            <Stack.Screen
+              name="ChatScreen"
+              component={ChatScreen}
+              options={{
+                title: "ChatScreen",
+                gestureEnabled: false,
+                // headerBackVisible: false
               }}
             />
           </>
@@ -41,13 +50,22 @@ export default function App() {
             <Stack.Screen
               name="Login"
               component={LoginScreen}
-              options={{ title: 'Welcome' }}
+              options={{ title: "Welcome" }}
             />
             <Stack.Screen
               name="Profile"
               component={ProfileScreen}
               options={{
-                title: 'Add to Your Profile',
+                title: "Add to Your Profile",
+                gestureEnabled: false,
+                // headerBackVisible: false
+              }}
+            />
+            <Stack.Screen
+              name="ChatScreen"
+              component={ChatScreen}
+              options={{
+                title: "ChatScreen",
                 gestureEnabled: false,
                 // headerBackVisible: false
               }}
@@ -56,16 +74,14 @@ export default function App() {
               name="Navigator"
               component={Navigator}
               options={{
-                title: 'Buzzpool',
+                title: "Buzzpool",
                 gestureEnabled: false,
                 // headerLeft: () => {}
-                // headerBackVisible: false 
+                // headerBackVisible: false
               }}
             />
           </>
         )}
-
-
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -74,8 +90,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
