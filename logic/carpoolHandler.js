@@ -97,7 +97,7 @@ export const skipCarpool = (carpoolData, carpoolId) => {
  * @param {boolean} isDriver
  */
 export const joinCarpool = async (carpool, isDriver) => {
-
+  // console.log(auth.currentUser)
   await getLoginUser()
   .then(({userId, userData}) => {
     console.log(userData)
@@ -154,8 +154,8 @@ export var carpoolConverter = {
     // this.isTripFinished = false
     // console.log(carpool);
 
-    console.log("Carpool to firebase")
-    console.log(carpool)
+    // console.log("Carpool to firebase")
+    // console.log(carpool)
     return {
       title: carpool.title,
       departureTime: carpool.departureTime,
@@ -181,8 +181,8 @@ export var carpoolConverter = {
     // isTransactionFinished = false, 
     // isTripFinished = false
 
-    console.log("Carpool from firebase")
-    console.log(data)
+    // console.log("Carpool from firebase")
+    // console.log(data)
 
     var carpool = new Carpool(
       data.title,
