@@ -4,35 +4,21 @@ import { AsyncStorage } from "react-native";
 import { StyleSheet, TextInput, View, YellowBox, Button } from "react-native";
 import * as firebase from "firebase";
 import "firebase/firestore";
-import { auth } from "../api/firebase";
+import { auth, firestore } from "../api/firebase";
 import { getLoginUser } from "../logic/userHandler";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBQZXcrStyOlnuf2oU1MPm-CVVnQIPGWZU",
-  authDomain: "buzzpool-test.firebaseapp.com",
-  projectId: "buzzpool-test",
-  storageBucket: "buzzpool-test.appspot.com",
-  messagingSenderId: "259892781917",
-  appId: "1:259892781917:web:f8259e3f85c6a86dafbeb4",
-  measurementId: "G-21VSFHWTTT",
-};
 
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(firebaseConfig);
-}
 
 YellowBox.ignoreWarnings(["Setting a timer for a long period of time"]);
 
-const db = firebase.firestore();
 
 const ChatScreen = ({ route }) => {
-  // const [user, setUser] = useState({_id: "", name: ""});
-  const [name, setName] = useState("");
   const [messages, setMessages] = useState([]);
   const [chatRoom, setChatRoom] = useState(null); // Added chatRoom state variable
 
   const { chatIdString, userdata } = route.params;
-  console.log(chatIdString)
+  // console.log(chatIdString)
+
   const handleChatRoomPress = () => {
     // Perform any actions or API calls related to joining chat room here
     // ...Your code here...
@@ -42,13 +28,10 @@ const ChatScreen = ({ route }) => {
   // console.log("current user:")
 
   
-
-  console.log()
-  
   useEffect(() => {
     
     const unsubscribe = chatRoom // Only listen for chat room changes if chatRoom is set
-      ? db
+      ? firestore
           .collection("chats")
           .doc(chatRoom)
           .collection("messages")
@@ -77,18 +60,18 @@ const ChatScreen = ({ route }) => {
     [messages]
   );
 
-  async function readUser() {
+  // async function readUser() {
 
-    const user = await AsyncStorage.getItem("user");
-    console.log(user)
-    if (user) {
-      setUser(JSON.parse(user));
-    }
-  }
+  //   const user = await AsyncStorage.getItem("user");
+  //   console.log(user)
+  //   if (user) {
+  //     setUser(JSON.parse(user));
+  //   }
+  // }
 
   async function handleSend(messages) {
     const writes = messages.map((m) =>
-      db
+      firestore
         .collection("chats")
         .doc(chatRoom) // Use chatRoom as the document ID for chat room
         .collection("messages") // Subcollection for messages under chat room
