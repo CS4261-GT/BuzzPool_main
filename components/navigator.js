@@ -12,6 +12,7 @@ import { userConverter, usersCollection } from "../logic/userHandler";
 import { carpoolCollection } from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
 import { SettingScreen } from "../screens/SettingScreen";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Tab = createBottomTabNavigator();
 
@@ -27,28 +28,59 @@ export const Navigator = () => {
         name="My Trip"
         component={MytripScreen}
 
-        options={{ headerShown: false }}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="map" size={size} color={color} />
+          ),
+          headerShown: false
+        }}
       />
 
       <Tab.Screen
         name="Requests"
         component={RiderScreen}
 
-        options={{ headerShown: false }}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="car" size={size} color={color} />
+          ),
+          headerShown: false
+        }}
       />
 
       <Tab.Screen
         name="Trips"
         component={DriverScreen}
 
-        options={{ headerShown: false }}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="car" size={size} color={color} />
+          ),
+          headerShown: false
+        }}
       />
       {/* <Tab.Screen name="Provider" component={Provider} /> */}
       <Tab.Screen
         name="Report"
         component={ReportScreen}
 
-        options={{ headerShown: false }}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="warning" size={size} color={color} />
+          ),
+          headerShown: false
+        }}
+      />
+            <Tab.Screen
+        name="Settings"
+        component={SettingScreen}
+
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="gear" size={size} color={color} />
+          ),
+          headerShown: false
+        }}
       />
     </Tab.Navigator>
 

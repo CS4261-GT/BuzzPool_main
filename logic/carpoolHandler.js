@@ -11,7 +11,6 @@ import { userConverter, usersCollection, getLoginUser } from './userHandler';
 
 
 export const carpoolCollection = firestore.collection('Carpools');
-
 /**
  * This function writes a carpool instance to firebase firestore
  * @param {string} title title of the post
@@ -32,6 +31,8 @@ export const createCarpool = (title, datetime, from, to, requireDriver, capacity
     capacity,
     [GTID],
   );
+
+  
 
   carpoolCollection
     .withConverter(carpoolConverter)
@@ -104,7 +105,6 @@ export const joinCarpool = async (carpool, isDriver) => {
     // add carpoolId to user
     if (userData.addTripId(carpool.id)) {
       // console.log(user)
-
 
       // update user data in firestore
       usersCollection.doc(userId)

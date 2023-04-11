@@ -1,30 +1,47 @@
-import { Avatar, Card, Text, Checkbox, SegmentedButtons, Button } from 'react-native-paper';
-import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
-import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
-import React, { useRef, useState, useCallback, useEffect } from 'react'
-import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal } from 'react-native'
-import { carpoolCollection, carpoolConverter, createCarpool, getCarpool } from '../logic/carpoolHandler'
-import { auth } from '../api/firebase';
-import { showMyCarpool } from '../logic/userHandler';
-
-
-
+import {
+  Avatar,
+  Card,
+  Text,
+  Checkbox,
+  SegmentedButtons,
+  Button,
+} from "react-native-paper";
+import { DateTimePickerModal } from "react-native-paper-datetimepicker";
+import { NavigationHelpersContext } from "@react-navigation/core";
+import React, { useRef, useState, useCallback, useEffect } from "react";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  KeyboardAvoidingView,
+  TextInput,
+  FlatList,
+  Modal,
+} from "react-native";
+import {
+  carpoolCollection,
+  carpoolConverter,
+  createCarpool,
+  getCarpool,
+} from "../logic/carpoolHandler";
+import { auth } from "../api/firebase";
+import { showMyCarpool } from "../logic/userHandler";
+import Carpool from "../model/Carpool";
+import { useNavigation } from "@react-navigation/native";
+import Icon from 'react-native-vector-icons/FontAwesome'
 
 export const MytripScreen = () => {
+  const navigation = useNavigation();
 
+  const [carpoolData, setCarpoolData] = useState();
+  const [flatlistRefresh, flipBit] = useState(true);
 
-
-  const [carpoolData, setCarpoolData] = useState()
-  const [flatlistRefresh, flipBit] = useState(true)
-  
-
-  const [value, setValue] = useState('myTrip');
-
+  const [value, setValue] = useState("myTrip");
 
   useEffect(() => {
-    showMyCarpool().then(data => setCarpoolData(data))
-  }, [])
-  
+    showMyCarpool().then((data) => setCarpoolData(data));
+  }, []);
+
   // useEffect(() => {
   //   const unsubscribe = auth.onAuthStateChanged(user => {
   //     if (user) {
@@ -35,23 +52,30 @@ export const MytripScreen = () => {
   //   return unsubscribe
   // }, [])
 
-
+  const handleChatPress = (departureLocation, departureTime) => {
+    // Pass the departureLocation value to the Chat screen
+    console.log(departureLocation);
+    console.log(departureTime);
+    const combinedString = departureLocation + " " + departureTime;
+    navigation.navigate("ChatScreen", { combinedString: combinedString });
+  };
 
   /**
    * This function is called for every item in the flatlist
    * It will create a card for each carpool instance
    * @param {Carpool} item I think it has to be named "item", it represents a carpool instance
-   * @returns 
+   * @returns
    */
   const renderCards = ({ item }) => {
     // console.log(typeof(item))
     const remainingSeats = item.capacity - item.userGTIDs.length;
     // I think title is not necessary
-    const subtitle = "From " + item.departureLocation + "\n" + "To " + item.destination
+    const subtitle =
+      "From " + item.departureLocation + "\n" + "To " + item.destination;
+    console.log("Document ID:", item);
     if (item)
       return (
-        <Card
-          style={styles.cardStyle}>
+        <Card style={styles.cardStyle}>
           <Card.Title
             title={item.title}
             titleStyle={styles.postTitle}
@@ -64,80 +88,78 @@ export const MytripScreen = () => {
             <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
           </Card.Content>
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
-          <Card.Actions>
-          </Card.Actions>
+          <Card.Actions></Card.Actions>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={() =>
+              handleChatPress(item.departureLocation, item.departureTime)
+            }
+          >
+            
+            <Icon name="comments-o" size={25} color="black" />
+          </TouchableOpacity>
         </Card>
-      )
-    else
-      return <></>
-  }
-
+      );
+    else return <></>;
+  };
 
   /**
    * This function resets carpool data and force rerendering of the UI
    */
   const updateData = () => {
-    showMyCarpool().then((data) => setCarpoolData(data))
+    showMyCarpool().then((data) => setCarpoolData(data));
     // .then(()=>console.log(carpoolData))
 
     // console.log(carpoolData)
-    flipBit(!flatlistRefresh)
+    flipBit(!flatlistRefresh);
     // if (auth.currentUser)
-      // console.log(auth.currentUser)
+    // console.log(auth.currentUser)
     // console.log(flatlistRefresh)
-  }
+  };
 
   const theme = {
     colors: {
-      primary: '#3498db',
-      accent: '#f1c40f',
+      primary: "#3498db",
+      accent: "#f1c40f",
       backgroundColor: "red",
-      surface: "red"
-    }
-  }
-
+      surface: "red",
+    },
+  };
 
   return (
-
-
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior="padding"
-    >
-
-
-      <Button onPress={updateData} mode='contained' style={styles.buttonConfirm}>Refresh carpools</Button>
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <Button
+        onPress={updateData}
+        mode="contained"
+        style={styles.buttonConfirm}
+      >
+        Refresh carpools
+      </Button>
       <FlatList
         data={carpoolData}
         style={styles.flatListStyle}
         contentContainerStyle={{ alignItems: "stretch" }}
         renderItem={renderCards}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         extraData={flatlistRefresh}
-      >
-
-      </FlatList>
-
-    
-
+      ></FlatList>
     </KeyboardAvoidingView>
-  )
-}
-
-
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     alignContent: "center",
     flexWrap: "wrap",
+    marginTop: 15,
   },
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 22,
   },
   flatListStyle: {
@@ -150,7 +172,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   segButton: {
-    backgroundColor: 'blue'
+    backgroundColor: "blue",
   },
 
   cardStyle: {
@@ -158,16 +180,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   inputContainer: {
-    width: '80%'
+    width: "80%",
   },
 
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -178,15 +200,15 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
-    textAlign: 'center',
+    textAlign: "center",
   },
   inputTitle: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
-    fontWeight: '700',
+    fontWeight: "700",
     fontSize: 16,
   },
   postTitle: {
@@ -194,8 +216,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
-    textAlign: 'center',
-    fontWeight: '700',
+    textAlign: "center",
+    fontWeight: "700",
     fontSize: 16,
   },
   inputRowcontainer: {
@@ -204,7 +226,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     borderWidth: 1,
     flexWrap: "wrap",
-    alignItems: "center"
+    alignItems: "center",
   },
   inputRowcontainerNoborder: {
     flexDirection: "row",
@@ -220,7 +242,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   input: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 10,
@@ -228,34 +250,45 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    width: '60%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "60%",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 40,
   },
   buttonConfirm: {
-    backgroundColor: '#0782F9',
-    alignItems: 'center',
+    backgroundColor: "#0782F9",
+    alignItems: "center",
     marginBottom: 5,
     marginHorizontal: 5,
   },
   buttonCancel: {
-    backgroundColor: 'red',
+    backgroundColor: "red",
     // borderColor: '#000000',
     // color:"#000000",
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 5,
     marginHorizontal: 5,
   },
   buttonOutline: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     marginTop: 5,
-    borderColor: '#0782F9',
+    borderColor: "#0782F9",
     borderWidth: 2,
   },
   buttonOutlineText: {
-    color: '#0782F9',
-    fontWeight: '700',
+    color: "#0782F9",
+    fontWeight: "700",
     fontSize: 16,
   },
-})
+  buttonContainer: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "black",
+    fontWeight: "bold",
+  },
+});

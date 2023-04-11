@@ -1,32 +1,43 @@
-import { Avatar, Card, Text, Checkbox, SegmentedButtons, Button } from 'react-native-paper';
-import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
-import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
-import React, { useRef, useState, useCallback } from 'react'
-import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal } from 'react-native'
-import { createCarpool, getCarpool } from '../logic/carpoolHandler'
-import { auth } from '../api/firebase';
-import { usersCollection, userConverter } from '../logic/userHandler';
-
-
-
-
+import {
+  Avatar,
+  Card,
+  Text,
+  Checkbox,
+  SegmentedButtons,
+  Button,
+} from "react-native-paper";
+import { DateTimePickerModal } from "react-native-paper-datetimepicker";
+import {
+  NavigationHelpersContext,
+  useNavigation,
+} from "@react-navigation/core";
+import React, { useRef, useState, useCallback } from "react";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  KeyboardAvoidingView,
+  TextInput,
+  FlatList,
+  Modal,
+} from "react-native";
+import { createCarpool, getCarpool } from "../logic/carpoolHandler";
+import { auth } from "../api/firebase";
+import { usersCollection, userConverter } from "../logic/userHandler";
 
 const ServiceScreen = () => {
-
-
-
-  const [carpoolData, setCarpoolData] = useState(getCarpool())
-  const [title, onChangeTitle] = useState("")
-  const [departureLocation, onChangeDepartureLocation] = useState("")
-  const [destination, onChangeDestination] = useState("")
-  const [modalVisible, setModalVisible] = useState(false)
-  const [flatlistRefresh, flipBit] = useState(true)
-  const [dateTimePickerVisible, setDateTimePickerVisible] = useState(false)
+  const [carpoolData, setCarpoolData] = useState(getCarpool());
+  const [title, onChangeTitle] = useState("");
+  const [departureLocation, onChangeDepartureLocation] = useState("");
+  const [destination, onChangeDestination] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [flatlistRefresh, flipBit] = useState(true);
+  const [dateTimePickerVisible, setDateTimePickerVisible] = useState(false);
   const onDateTimePickerDismiss = useCallback(() => {
     setDateTimePickerVisible(false);
   }, [setDateTimePickerVisible]);
-  const [requesterGTID, setRequesterGTID] = useState("")
-  const [isDriver, setIsDriver] = useState(true)
+  const [requesterGTID, setRequesterGTID] = useState("");
+  const [isDriver, setIsDriver] = useState(true);
   const [date, setDate] = useState(new Date());
   const onDateTimeChange = useCallback((newDate) => {
     // console.log(newDate);
@@ -34,8 +45,7 @@ const ServiceScreen = () => {
     setDate(newDate);
   }, []);
 
-  const [value, setValue] = useState('myTrip');
-
+  const [value, setValue] = useState("myTrip");
 
   // useEffect(() => {
   //   const unsubscribe = auth.onAuthStateChanged(user => {
@@ -48,79 +58,75 @@ const ServiceScreen = () => {
   // }, [])
 
   /**
- * hide the carpool from user's feed
- * @param {string} carpoolId 
- */
-const skipCarpool = (carpoolId) => {
-  // console.log(carpoolId)
-  // console.log(carpoolData.length)
-  const newCarpoolArray = carpoolData.filter((value) => {
-    return value.id != carpoolId
-  })
-  // console.log(newCarpoolArray.length)
-  setCarpoolData(newCarpoolArray)
-  flipBit(!flatlistRefresh)
-  console.log("pressed")
-}
-
-/**
- * add the carpool to user's ongoing carpool
- * 1) add carpool id to user's ongoingCarpool
- * 2) remove the card from feed
- * @param {string} email 
- * @param {string} carpoolId 
- */
-const joinCarpool = (carpoolId) => {
-  // find the user from firebase, call User.addTripId(carpoolId)
-  const email = auth.currentUser.email
-  console.log(email, carpoolId)
-  // console.log(usersCollection)
-  usersCollection.where('email', '==', email)
-  .withConverter(userConverter)
-  .get()
-  .then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        const user = doc.data()
-        const docId = doc.id
-        // console.log(user)
-        if (user.addTripId(carpoolId)) {
-          // console.log(user)
-          usersCollection.doc(docId)
-          .withConverter(userConverter)
-          .set(user)
-
-          alert("Successfully joined the carpool!")
-        }
-          
-        // else
-        //   alert("Error in joining the carpool")
-        skipCarpool(carpoolId)
+   * hide the carpool from user's feed
+   * @param {string} carpoolId
+   */
+  const skipCarpool = (carpoolId) => {
+    // console.log(carpoolId)
+    // console.log(carpoolData.length)
+    const newCarpoolArray = carpoolData.filter((value) => {
+      return value.id != carpoolId;
     });
-  })
-  .catch((error) => {
-      console.log("Error getting documents: ", error);
-  });
-  
-}
+    // console.log(newCarpoolArray.length)
+    setCarpoolData(newCarpoolArray);
+    flipBit(!flatlistRefresh);
+    console.log("pressed");
+  };
 
+  /**
+   * add the carpool to user's ongoing carpool
+   * 1) add carpool id to user's ongoingCarpool
+   * 2) remove the card from feed
+   * @param {string} email
+   * @param {string} carpoolId
+   */
+  const joinCarpool = (carpoolId) => {
+    // find the user from firebase, call User.addTripId(carpoolId)
+    const email = auth.currentUser.email;
+    console.log(email, carpoolId);
+    // console.log(usersCollection)
+    usersCollection
+      .where("email", "==", email)
+      .withConverter(userConverter)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          const user = doc.data();
+          const docId = doc.id;
+          // console.log(user)
+          if (user.addTripId(carpoolId)) {
+            // console.log(user)
+            usersCollection.doc(docId).withConverter(userConverter).set(user);
 
+            alert("Successfully joined the carpool!");
+          }
+
+          // else
+          //   alert("Error in joining the carpool")
+          skipCarpool(carpoolId);
+        });
+      })
+      .catch((error) => {
+        console.log("Error getting documents: ", error);
+      });
+  };
 
   /**
    * This function is called for every item in the flatlist
    * It will create a card for each carpool instance
    * @param {Carpool} item I think it has to be named "item", it represents a carpool instance
-   * @returns 
+   * @returns
    */
   const renderCards = ({ item }) => {
     // console.log(typeof(item))
     const remainingSeats = item.capacity - item.userGTIDs.length;
     // I think title is not necessary
-    const subtitle = "From " + item.departureLocation + "\n" + "To " + item.destination
+    const subtitle =
+      "From " + item.departureLocation + "\n" + "To " + item.destination;
     if (item)
       return (
-        <Card
-          style={styles.cardStyle}>
+        <Card style={styles.cardStyle}>
           <Card.Title
             title={item.title}
             titleStyle={styles.postTitle}
@@ -134,28 +140,44 @@ const joinCarpool = (carpoolId) => {
           </Card.Content>
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
           <Card.Actions>
-            <Button style={styles.buttonCancel} mode='contained' onPress={() => skipCarpool(item.id)}>Skip</Button>
-            <Button style={styles.buttonConfirm} mode='contained' onPress={() => joinCarpool(item.id)}>Join</Button>
+            <Button
+              style={styles.buttonCancel}
+              mode="contained"
+              onPress={() => skipCarpool(item.id)}
+            >
+              Skip
+            </Button>
+            <Button
+              style={styles.buttonConfirm}
+              mode="contained"
+              onPress={() => joinCarpool(item.id)}
+            >
+              Join
+            </Button>
           </Card.Actions>
         </Card>
-      )
-    else
-      return <></>
-  }
-
+      );
+    else return <></>;
+  };
 
   /**
    * This function closes the modal and calls the handler in carpoolHandler.js
    * after checking that the required fields are all filled up
    */
   const makePost = () => {
-    setModalVisible(!modalVisible)
-    try
-    {
-      const GTIDNumber = Number(requesterGTID)
-      if (title.length == 0 || date == null || date == undefined || departureLocation.length == 0 ||
-        destination.length == 0 || requesterGTID.length != 9 || isNaN(GTIDNumber))
-        throw new Error()
+    setModalVisible(!modalVisible);
+    try {
+      const GTIDNumber = Number(requesterGTID);
+      if (
+        title.length == 0 ||
+        date == null ||
+        date == undefined ||
+        departureLocation.length == 0 ||
+        destination.length == 0 ||
+        requesterGTID.length != 9 ||
+        isNaN(GTIDNumber)
+      )
+        throw new Error();
 
       createCarpool(
         title,
@@ -163,50 +185,37 @@ const joinCarpool = (carpoolId) => {
         departureLocation,
         destination,
         GTIDNumber,
-        !isDriver,
-      )
-    } catch (error)
-    {
-      alert("Incomplete or invalid input!")
+        !isDriver
+      );
+    } catch (error) {
+      alert("Incomplete or invalid input!");
     }
-
-  }
+  };
 
   /**
    * This function resets carpool data and force rerendering of the UI
    */
   const updateData = () => {
-    getCarpool()
-      .then((data) => setCarpoolData(data))
+    getCarpool().then((data) => setCarpoolData(data));
     // .then(()=>console.log(carpoolData))
 
     // console.log(carpoolData)
-    flipBit(!flatlistRefresh)
-    if (auth.currentUser)
-      console.log(auth.currentUser)
+    flipBit(!flatlistRefresh);
+    if (auth.currentUser) console.log(auth.currentUser);
     // console.log(flatlistRefresh)
-  }
+  };
 
   const theme = {
     colors: {
-      primary: '#3498db',
-      accent: '#f1c40f',
+      primary: "#3498db",
+      accent: "#f1c40f",
       backgroundColor: "red",
-      surface: "red"
-    }
-  }
-
+      surface: "red",
+    },
+  };
 
   return (
-
-
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior="padding"
-    >
-
-
-
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
       <SegmentedButtons
         value={value}
         onValueChange={setValue}
@@ -214,43 +223,52 @@ const joinCarpool = (carpoolId) => {
         theme={theme}
         buttons={[
           {
-            value: 'myTrip',
-            label: 'My Trip',
+            value: "myTrip",
+            label: "My Trip",
             // TODO: need two themes for the button, one for the unchecked state and another for the checked state
             // checkedColor: 'black',
             // showSelectedCheck:'true'
           },
           {
-            value: 'rider',
-            label: 'Riders',
+            value: "rider",
+            label: "Riders",
             // showSelectedCheck:'true'
           },
           {
-            value: 'request',
-            label: 'Request',
+            value: "request",
+            label: "Request",
             // showSelectedCheck:'true'
           },
           {
-            value: 'contact',
-            label: 'Contacts',
+            value: "contact",
+            label: "Contacts",
             // showSelectedCheck:'true'
           },
-
         ]}
       />
-      <Button onPress={() => setModalVisible(true)} mode='contained' style={styles.buttonConfirm}>Make post</Button>
+      <Button
+        onPress={() => setModalVisible(true)}
+        mode="contained"
+        style={styles.buttonConfirm}
+      >
+        Make post
+      </Button>
 
-      <Button onPress={updateData} mode='contained' style={styles.buttonConfirm}>Refresh carpools</Button>
+      <Button
+        onPress={updateData}
+        mode="contained"
+        style={styles.buttonConfirm}
+      >
+        Refresh carpools
+      </Button>
       <FlatList
         data={carpoolData}
         style={styles.flatListStyle}
         contentContainerStyle={{ alignItems: "stretch" }}
         renderItem={renderCards}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         extraData={flatlistRefresh}
-      >
-
-      </FlatList>
+      ></FlatList>
 
       {/* ---------------Modal will be dispalyed below---------------- */}
 
@@ -273,9 +291,7 @@ const joinCarpool = (carpoolId) => {
               value={title}
             />
 
-            <View
-              style={styles.inputRowcontainer}>
-
+            <View style={styles.inputRowcontainer}>
               <Text style={styles.inputLabel}>From:</Text>
               <TextInput
                 style={styles.input}
@@ -286,9 +302,7 @@ const joinCarpool = (carpoolId) => {
               />
             </View>
 
-            <View
-              style={styles.inputRowcontainer}>
-
+            <View style={styles.inputRowcontainer}>
               <Text style={styles.inputLabel}>To:</Text>
               <TextInput
                 style={styles.input}
@@ -299,10 +313,7 @@ const joinCarpool = (carpoolId) => {
               />
             </View>
 
-
-            <View
-              style={styles.inputRowcontainer}>
-
+            <View style={styles.inputRowcontainer}>
               <DateTimePickerModal
                 visible={dateTimePickerVisible}
                 onDismiss={onDateTimePickerDismiss}
@@ -312,13 +323,12 @@ const joinCarpool = (carpoolId) => {
               />
 
               <Text style={styles.input}>{date.toLocaleString()}</Text>
-              <Button onPress={() => setDateTimePickerVisible(true)}>Pick date</Button>
+              <Button onPress={() => setDateTimePickerVisible(true)}>
+                Pick date
+              </Button>
             </View>
 
-
-            <View
-              style={styles.inputRowcontainer}>
-
+            <View style={styles.inputRowcontainer}>
               <Text style={styles.inputLabel}>Your GTID:</Text>
               <TextInput
                 style={styles.input}
@@ -329,61 +339,53 @@ const joinCarpool = (carpoolId) => {
               />
             </View>
 
-            <View
-              style={styles.inputRowcontainer}>
-
+            <View style={styles.inputRowcontainer}>
               <Text style={styles.inputLabel}>Are you a driver?</Text>
               <Checkbox
-                status={isDriver ? 'checked' : 'unchecked'}
+                status={isDriver ? "checked" : "unchecked"}
                 color="green"
-                onPress={() => setIsDriver(!isDriver)} />
+                onPress={() => setIsDriver(!isDriver)}
+              />
             </View>
 
-
-
-            <View
-              style={styles.inputRowcontainerNoborder}>
-
+            <View style={styles.inputRowcontainerNoborder}>
               <Button
                 onPress={() => setModalVisible(!modalVisible)}
-                mode='contained'
-                style={styles.buttonCancel}>
+                mode="contained"
+                style={styles.buttonCancel}
+              >
                 Cancel
               </Button>
 
               <Button
                 onPress={makePost}
-                mode='contained'
-                style={styles.buttonConfirm}>
+                mode="contained"
+                style={styles.buttonConfirm}
+              >
                 Post
-
               </Button>
             </View>
-
-
           </View>
         </View>
       </Modal>
-
     </KeyboardAvoidingView>
-  )
-}
+  );
+};
 
-export default ServiceScreen
-
+export default ServiceScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     alignContent: "center",
     flexWrap: "wrap",
   },
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 22,
   },
   flatListStyle: {
@@ -396,7 +398,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   segButton: {
-    backgroundColor: 'blue'
+    backgroundColor: "blue",
   },
 
   cardStyle: {
@@ -404,16 +406,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   inputContainer: {
-    width: '80%'
+    width: "80%",
   },
 
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -424,15 +426,15 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
-    textAlign: 'center',
+    textAlign: "center",
   },
   inputTitle: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
-    fontWeight: '700',
+    fontWeight: "700",
     fontSize: 16,
   },
   postTitle: {
@@ -440,8 +442,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
-    textAlign: 'center',
-    fontWeight: '700',
+    textAlign: "center",
+    fontWeight: "700",
     fontSize: 16,
   },
   inputRowcontainer: {
@@ -450,7 +452,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     borderWidth: 1,
     flexWrap: "wrap",
-    alignItems: "center"
+    alignItems: "center",
   },
   inputRowcontainerNoborder: {
     flexDirection: "row",
@@ -466,7 +468,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   input: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 10,
@@ -474,34 +476,34 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    width: '60%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "60%",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 40,
   },
   buttonConfirm: {
-    backgroundColor: '#0782F9',
-    alignItems: 'center',
+    backgroundColor: "#0782F9",
+    alignItems: "center",
     marginBottom: 5,
     marginHorizontal: 5,
   },
   buttonCancel: {
-    backgroundColor: 'red',
+    backgroundColor: "red",
     // borderColor: '#000000',
     // color:"#000000",
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 5,
     marginHorizontal: 5,
   },
   buttonOutline: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     marginTop: 5,
-    borderColor: '#0782F9',
+    borderColor: "#0782F9",
     borderWidth: 2,
   },
   buttonOutlineText: {
-    color: '#0782F9',
-    fontWeight: '700',
+    color: "#0782F9",
+    fontWeight: "700",
     fontSize: 16,
   },
-})
+});
