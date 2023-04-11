@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
 import RiderScreen from './screens/RiderScreen';
 import HomeScreen from './screens/HomeScreen';
+import ChatScreen from './screens/ChatScreen';
 import { ProfileScreen } from './screens/ProfileScreen'
 import { Navigator } from './components/navigator'
 import { auth } from './api/firebase';
@@ -40,7 +41,7 @@ export default function App() {
               component={ChatScreen}
               options={{
                 title: "ChatScreen",
-                gestureEnabled: false,
+                // gestureEnabled: false,
                 // headerBackVisible: false
               }}
             />
@@ -62,21 +63,21 @@ export default function App() {
               }}
             />
             <Stack.Screen
-              name="ChatScreen"
-              component={ChatScreen}
-              options={{
-                title: "ChatScreen",
-                gestureEnabled: false,
-                // headerBackVisible: false
-              }}
-            />
-            <Stack.Screen
               name="Navigator"
               component={Navigator}
               options={{
                 title: "Buzzpool",
                 gestureEnabled: false,
                 // headerLeft: () => {}
+                // headerBackVisible: false
+              }}
+            />
+            <Stack.Screen
+              name="ChatScreen"
+              component={ChatScreen}
+              options={{
+                title: "ChatScreen",
+                // gestureEnabled: false,
                 // headerBackVisible: false
               }}
             />

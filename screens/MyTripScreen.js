@@ -25,7 +25,7 @@ import {
   getCarpool,
 } from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
-import { showMyCarpool } from "../logic/userHandler";
+import { getLoginUser, showMyCarpool } from "../logic/userHandler";
 import Carpool from "../model/Carpool";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -56,8 +56,18 @@ export const MytripScreen = () => {
     // Pass the departureLocation value to the Chat screen
     console.log(departureLocation);
     console.log(departureTime);
-    const combinedString = departureLocation + " " + departureTime;
-    navigation.navigate("ChatScreen", { combinedString: combinedString });
+    const chatIdString = departureLocation + " " + departureTime;
+    getLoginUser()
+    .then(({userId, userData}) => {
+      return {_id: userId, name: userData.firstName}
+      
+    })
+    .then((userdata) => {
+      console.log(userdata)
+      navigation.navigate("ChatScreen", { chatIdString: chatIdString,  userdata: userdata})
+    })
+    .catch(error => console.log(error.message))
+    
   };
 
   /**
@@ -72,7 +82,7 @@ export const MytripScreen = () => {
     // I think title is not necessary
     const subtitle =
       "From " + item.departureLocation + "\n" + "To " + item.destination;
-    console.log("Document ID:", item);
+    // console.log("Document ID:", item);
     if (item)
       return (
         <Card style={styles.cardStyle}>

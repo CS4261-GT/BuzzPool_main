@@ -4,6 +4,8 @@ import { AsyncStorage } from "react-native";
 import { StyleSheet, TextInput, View, YellowBox, Button } from "react-native";
 import * as firebase from "firebase";
 import "firebase/firestore";
+import { auth } from "../api/firebase";
+import { getLoginUser } from "../logic/userHandler";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBQZXcrStyOlnuf2oU1MPm-CVVnQIPGWZU",
@@ -24,22 +26,27 @@ YellowBox.ignoreWarnings(["Setting a timer for a long period of time"]);
 const db = firebase.firestore();
 
 const ChatScreen = ({ route }) => {
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState({_id: "", name: ""});
   const [name, setName] = useState("");
   const [messages, setMessages] = useState([]);
   const [chatRoom, setChatRoom] = useState(null); // Added chatRoom state variable
 
-  const { combinedString } = route.params;
-
+  const { chatIdString, userdata } = route.params;
+  console.log(chatIdString)
   const handleChatRoomPress = () => {
     // Perform any actions or API calls related to joining chat room here
     // ...Your code here...
-    setChatRoom(combinedString);
-    console.log("Joining chat room:", combinedString);
+    setChatRoom(chatIdString);
+    console.log("Joining chat room:", chatIdString);
   };
+  // console.log("current user:")
 
+  
+
+  console.log()
+  
   useEffect(() => {
-    readUser();
+    
     const unsubscribe = chatRoom // Only listen for chat room changes if chatRoom is set
       ? db
           .collection("chats")
@@ -71,7 +78,9 @@ const ChatScreen = ({ route }) => {
   );
 
   async function readUser() {
+
     const user = await AsyncStorage.getItem("user");
+    console.log(user)
     if (user) {
       setUser(JSON.parse(user));
     }
@@ -100,8 +109,8 @@ const ChatScreen = ({ route }) => {
       messages={messages}
       onSend={handleSend}
       user={{
-        _id: user._id,
-        name: user.name,
+        _id: userdata._id,
+        name: userdata.name,
       }}
     />
   );

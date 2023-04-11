@@ -25,7 +25,7 @@ export const showMyCarpool = async () => {
       }
         
     });
-    console.log(carpoolList.length)
+    // console.log(carpoolList.length)
   })
   // .then(()=>console.log(carpools))
   .catch((error) => {
@@ -33,7 +33,7 @@ export const showMyCarpool = async () => {
   });
 
   console.log("Here " + carpoolList.length)
-  console.log(carpoolList)
+  // console.log(carpoolList)
   return carpoolList
 }
 
