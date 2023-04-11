@@ -10,7 +10,6 @@ import { usersCollection, userConverter, getLoginUser } from '../logic/userHandl
 
 
 
-
 export const DriverScreen = () => {
 
 
