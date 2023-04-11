@@ -9,16 +9,8 @@ export const getDataUsingPost = () => {
     dateSent: "4-11-2023 1:23PM"
     // pushData: { test: "test" },
     // bigPictureURL: ""
-  };
-  //making data to send on server
-  // var formBody = [];
-  // for (var key in dataToSend) {
-  //   var encodedKey = encodeURIComponent(key);
-  //   var encodedValue = encodeURIComponent(dataToSend[key]);
-  //   formBody.push(String(encodedKey + '=' + encodedValue);
-  // }
-  // formBody = formBody.join('&');
-  // console.log(formBody)
+  }
+
   //POST request
   const url = 'https://app.nativenotify.com/api/notification'
   const otherParams = {
@@ -34,13 +26,6 @@ export const getDataUsingPost = () => {
       console.log(response)
       // return response.json()
     })
-    // //If response is in json then in success
-    // .then((responseJson) => {
-    //   console.log(responseJson);
-    //   // alert(JSON.stringify(responseJson));
-      
-    // })
-    //If response is not in json then in error
     .catch((error) => {
       // console.log(error.message);
       // alert(JSON.stringify(error));

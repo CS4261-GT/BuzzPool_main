@@ -33,6 +33,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 export const MytripScreen = () => {
   const navigation = useNavigation();
 
+  const [refreshing, setrefreshing] = useState(false);
   const [carpoolData, setCarpoolData] = useState();
   const [flatlistRefresh, flipBit] = useState(true);
 
@@ -42,15 +43,21 @@ export const MytripScreen = () => {
     showMyCarpool().then((data) => setCarpoolData(data));
   }, []);
 
-  // useEffect(() => {
-  //   const unsubscribe = auth.onAuthStateChanged(user => {
-  //     if (user) {
-  //       navigation.replace("Home")
-  //     }
-  //   })
-
-  //   return unsubscribe
-  // }, [])
+  
+  /**
+   * This function resets carpool data and force rerendering of the UI
+   */
+  const onRefresh = () => {
+    setrefreshing(true);
+    setTimeout(() => {
+      showMyCarpool()
+      .then((data) => {
+        setCarpoolData(data)
+        setrefreshing(false)
+      });
+      
+    }, 500);
+  };
 
   const handleChatPress = (id) => {
     // Pass carpool id as the chatroom id
@@ -111,38 +118,8 @@ export const MytripScreen = () => {
     )
   }
 
-  /**
-   * This function resets carpool data and force rerendering of the UI
-   */
-  const updateData = () => {
-    showMyCarpool().then((data) => setCarpoolData(data));
-    // .then(()=>console.log(carpoolData))
-
-    // console.log(carpoolData)
-    flipBit(!flatlistRefresh);
-    // if (auth.currentUser)
-    // console.log(auth.currentUser)
-    // console.log(flatlistRefresh)
-  };
-
-  const theme = {
-    colors: {
-      primary: "#3498db",
-      accent: "#f1c40f",
-      backgroundColor: "red",
-      surface: "red",
-    },
-  };
-
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <Button
-        onPress={updateData}
-        mode="contained"
-        style={styles.buttonConfirm}
-      >
-        Refresh carpools
-      </Button>
       <FlatList
         data={carpoolData}
         style={styles.flatListStyle}
@@ -150,6 +127,8 @@ export const MytripScreen = () => {
         renderItem={renderCards}
         keyExtractor={(item) => item.id}
         extraData={flatlistRefresh}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
       ></FlatList>
     </KeyboardAvoidingView>
   );
@@ -172,6 +151,7 @@ const styles = StyleSheet.create({
   },
   flatListStyle: {
     // flexWrap: "wrap",
+    paddingVertical: 10,
     width: "100%",
     paddingHorizontal: 10,
   },

@@ -21,7 +21,6 @@ export default function App() {
 
   registerNNPushToken(7334, 'd1AFABt39G4VjuJZ4ymIbt');
 
-
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -32,7 +31,7 @@ export default function App() {
               component={Navigator}
               options={{
                 title: "Buzzpool",
-                // gestureEnabled: false,
+                gestureEnabled: false,
                 // headerBackVisible: false
               }}
             />
