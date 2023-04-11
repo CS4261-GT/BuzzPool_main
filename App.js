@@ -6,7 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
 import RiderScreen from './screens/RiderScreen';
 import HomeScreen from './screens/HomeScreen';
-import ProfileScreen from './screens/ProfileScreen';
+import { ProfileScreen } from './screens/ProfileScreen';
 import ChatScreen from './screens/ChatScreen';
 import { Navigator } from './components/navigator';
 import { auth } from './api/firebase';
