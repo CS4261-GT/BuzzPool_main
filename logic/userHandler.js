@@ -17,9 +17,11 @@ export const showMyCarpool = async () => {
     querySnapshot.forEach((doc) => {
       // doc.data() is never undefined for query doc snapshots
       // console.log(doc.id, " => ", doc.data());
-      const carpool = doc.data()
-      const carpoolID = doc.id
+      var carpool = doc.data()
       
+      const carpoolID = doc.id
+      carpool['id'] = carpoolID
+      // console.log(carpool)
       if (userData.ongoingTripID.includes(carpoolID)) {
         carpoolList.push(carpool)
       }

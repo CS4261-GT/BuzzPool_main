@@ -62,6 +62,7 @@ export const getCarpool = async () => {
         var carpool = doc.data();
         carpool['id'] = doc.id;
         carpools.push(carpool);
+        // consolel
       });
     })
     // .then(()=>console.log(carpools))

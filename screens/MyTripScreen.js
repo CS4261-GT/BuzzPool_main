@@ -52,11 +52,9 @@ export const MytripScreen = () => {
   //   return unsubscribe
   // }, [])
 
-  const handleChatPress = (departureLocation, departureTime) => {
-    // Pass the departureLocation value to the Chat screen
-    console.log(departureLocation);
-    console.log(departureTime);
-    const chatIdString = departureLocation + " " + departureTime;
+  const handleChatPress = (id) => {
+    // Pass carpool id as the chatroom id
+    console.log(id)
     getLoginUser()
     .then(({userId, userData}) => {
       return {_id: userId, name: userData.firstName}
@@ -64,7 +62,7 @@ export const MytripScreen = () => {
     })
     .then((userdata) => {
       console.log(userdata)
-      navigation.navigate("ChatScreen", { chatIdString: chatIdString,  userdata: userdata})
+      navigation.navigate("ChatScreen", { chatIdString: id,  userdata: userdata})
     })
     .catch(error => console.log(error.message))
     
@@ -83,35 +81,35 @@ export const MytripScreen = () => {
     const subtitle =
       "From " + item.departureLocation + "\n" + "To " + item.destination;
     // console.log("Document ID:", item);
-    if (item)
-      return (
-        <Card style={styles.cardStyle}>
-          <Card.Title
-            title={item.title}
-            titleStyle={styles.postTitle}
-            subtitleNumberOfLines={2}
-            subtitle={subtitle}
-          />
-          <Card.Content>
-            <Text variant="bodyLarge">{item.departureTime}</Text>
-            <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
-            <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
-          </Card.Content>
-          {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
-          <Card.Actions></Card.Actions>
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={() =>
-              handleChatPress(item.departureLocation, item.departureTime)
-            }
-          >
-            
-            <Icon name="comments-o" size={25} color="black" />
-          </TouchableOpacity>
-        </Card>
-      );
-    else return <></>;
-  };
+
+    // console.log(item)
+    return (
+      <Card style={styles.cardStyle}>
+        <Card.Title
+          title={item.title}
+          titleStyle={styles.postTitle}
+          subtitleNumberOfLines={2}
+          subtitle={subtitle}
+        />
+        <Card.Content>
+          <Text variant="bodyLarge">{item.departureTime}</Text>
+          <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
+          <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
+        </Card.Content>
+        {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
+        <Card.Actions></Card.Actions>
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={() =>
+            handleChatPress(item.id)
+          }
+        >
+          
+          <Icon name="comments-o" size={25} color="black" />
+        </TouchableOpacity>
+      </Card>
+    )
+  }
 
   /**
    * This function resets carpool data and force rerendering of the UI
