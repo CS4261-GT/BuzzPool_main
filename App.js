@@ -1,19 +1,26 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LoginScreen from "./screens/LoginScreen";
-import RiderScreen from "./screens/RiderScreen";
-import HomeScreen from "./screens/HomeScreen";
-import { ProfileScreen } from "./screens/ProfileScreen";
-import ChatScreen from "./screens/ChatScreen";
-import { Navigator } from "./components/navigator";
-import { auth } from "./api/firebase";
+
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import LoginScreen from './screens/LoginScreen';
+import RiderScreen from './screens/RiderScreen';
+import HomeScreen from './screens/HomeScreen';
+import { ProfileScreen } from './screens/ProfileScreen'
+import { Navigator } from './components/navigator'
+import { auth } from './api/firebase';
+import React, { useEffect } from 'react';
+import registerNNPushToken from 'native-notify';
+
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+
+  registerNNPushToken(7334, 'd1AFABt39G4VjuJZ4ymIbt');
+
+
   return (
     <NavigationContainer>
       <Stack.Navigator>

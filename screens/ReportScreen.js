@@ -1,21 +1,39 @@
 import React from 'react';
+import { auth } from '../api/firebase';
+import { useNavigation } from '@react-navigation/core'
 import {
   SafeAreaView,
   StyleSheet,
   View,
   Text,
   TouchableOpacity,
+  KeyboardAvoidingView,
 } from 'react-native';
 
 import {
-    phonecall,
-    text,
-  } from 'react-native-communications';
+  phonecall,
+  text,
+} from 'react-native-communications';
+import { Button } from 'react-native-paper';
+import { getDataUsingPost } from '../api/nativeNotify';
 
 
 const ReportScreen = () => {
+
+  const navigation = useNavigation()
+
+  const logOut = () => {
+    auth.signOut()
+      .then(() => {
+        alert("User successfully logged out")
+        navigation.navigate("Login")
+      })
+      .catch((error) => alert(error.message))
+
+  }
+
   return (
-    <SafeAreaView style={styles.container}>
+    <KeyboardAvoidingView style={styles.container}>
       <View style={styles.container}>
         <Text style={styles.titleText}>
           Contact Georgia Tech Police Department (GTPD)
@@ -25,14 +43,14 @@ const ReportScreen = () => {
           activeOpacity={0.7}
           style={styles.buttonStyle}
           onPress={
-            () => phonecall('4048942500',true)
+            () => phonecall('4048942500', true)
           }>
           <Text style={styles.buttonTextStyle}>
             Call GTPD
           </Text>
         </TouchableOpacity>
 
-
+        
         {/* SMS: text(phoneNumber = null, body = null) */}
         <TouchableOpacity
           activeOpacity={0.7}
@@ -46,8 +64,27 @@ const ReportScreen = () => {
             Text GTPD
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.buttonStyle}
+          onPress={logOut}>
+          <Text style={styles.buttonTextStyle}>
+            Log Out
+          </Text>
+        </TouchableOpacity>
+
+        {/* <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.buttonStyle}
+          onPress={getDataUsingPost}>
+          <Text style={styles.buttonTextStyle}>
+            send notification
+          </Text>
+        </TouchableOpacity> */}
+
       </View>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -62,6 +99,12 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 22,
     textAlign: 'center',
+  },
+  buttonConfirm: {
+    backgroundColor: '#0782F9',
+    alignItems: 'center',
+    marginBottom: 5,
+    marginHorizontal: 5,
   },
   buttonStyle: {
     backgroundColor: '#0782F9',
