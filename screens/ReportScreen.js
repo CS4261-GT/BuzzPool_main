@@ -15,6 +15,7 @@ import {
   text,
 } from 'react-native-communications';
 import { Button } from 'react-native-paper';
+import { getDataUsingPost } from '../api/nativeNotify';
 
 
 const ReportScreen = () => {
@@ -72,6 +73,16 @@ const ReportScreen = () => {
             Log Out
           </Text>
         </TouchableOpacity>
+
+        {/* <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.buttonStyle}
+          onPress={getDataUsingPost}>
+          <Text style={styles.buttonTextStyle}>
+            send notification
+          </Text>
+        </TouchableOpacity> */}
+
       </View>
     </KeyboardAvoidingView>
   );
