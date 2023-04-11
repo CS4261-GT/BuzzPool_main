@@ -37,6 +37,8 @@ import {
 } from "../logic/userHandler";
 
 export const RiderScreen = () => {
+
+  const [refreshing, setrefreshing] = useState(false);
   const [carpoolData, setCarpoolData] = useState();
   const [title, onChangeTitle] = useState("");
   const [departureLocation, onChangeDepartureLocation] = useState("");
@@ -56,25 +58,29 @@ export const RiderScreen = () => {
     setDate(newDate);
   }, []);
 
-  const [value, setValue] = useState("myTrip");
+  // const [value, setValue] = useState("myTrip");
 
-  useEffect(() => {
-    getCarpool().then((data) => {
-      const newData = data.filter((carpool) => {
-        return carpool.requireDriver;
-      });
-      setCarpoolData(newData);
-    });
-  }, []);
   // useEffect(() => {
-  //   const unsubscribe = auth.onAuthStateChanged(user => {
-  //     if (user) {
-  //       navigation.replace("Home")
-  //     }
-  //   })
+  //   getCarpool().then((data) => {
+  //     setCarpoolData(data);
+  //   });
+  // }, []);
 
-  //   return unsubscribe
-  // }, [])
+  /**
+   * This function resets carpool data and force rerendering of the UI
+   */
+  const onRefresh = () => {
+    setrefreshing(true);
+    setTimeout(() => {
+      getCarpool()
+      .then((data) => {
+        setCarpoolData(data)
+        setrefreshing(false)
+      });
+      
+    }, 500);
+  };
+
 
   /**
    * Rerender the RiderScreen UI by removing the skipped carpool
@@ -176,32 +182,6 @@ export const RiderScreen = () => {
     }
   };
 
-  /**
-   * This function resets carpool data and force rerendering of the UI
-   */
-  const updateData = () => {
-    getCarpool().then((data) => {
-      const newData = data.filter((carpool) => {
-        return carpool.requireDriver;
-      });
-      setCarpoolData(newData);
-    });
-    // .then(()=>console.log(carpoolData))
-
-    // console.log(carpoolData)
-    flipBit(!flatlistRefresh);
-    if (auth.currentUser) console.log(auth.currentUser);
-    // console.log(flatlistRefresh)
-  };
-
-  const theme = {
-    colors: {
-      primary: "#3498db",
-      accent: "#f1c40f",
-      backgroundColor: "red",
-      surface: "red",
-    },
-  };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -244,20 +224,14 @@ export const RiderScreen = () => {
         Make post
       </Button>
 
-      <Button
-        onPress={updateData}
-        mode="contained"
-        style={styles.buttonConfirm}
-      >
-        Refresh carpools
-      </Button>
       <FlatList
         data={carpoolData}
         style={styles.flatListStyle}
         contentContainerStyle={{ alignItems: "stretch" }}
         renderItem={renderCards}
         keyExtractor={(item) => item.id}
-        extraData={flatlistRefresh}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
       ></FlatList>
 
       {/* ---------------Modal will be dispalyed below---------------- */}
@@ -380,7 +354,7 @@ const styles = StyleSheet.create({
   flatListStyle: {
     // flexWrap: "wrap",
     width: "100%",
-    paddingHorizontal: 10,
+    padding: 10,
   },
   segmentedButtons: {
     padding: 10,
