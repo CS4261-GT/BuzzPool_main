@@ -9,7 +9,8 @@ import HomeScreen from './screens/HomeScreen';
 import { ProfileScreen } from './screens/ProfileScreen'
 import { Navigator } from './components/navigator'
 import { auth } from './api/firebase';
-
+import React, { useEffect } from 'react';
+import registerNNPushToken from 'native-notify';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,7 +18,7 @@ const Stack = createNativeStackNavigator();
 
 
 export default function App() {
-
+  registerNNPushToken(7334, 'd1AFABt39G4VjuJZ4ymIbt');
 
   return (
 
