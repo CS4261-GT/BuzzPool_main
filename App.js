@@ -32,7 +32,7 @@ export default function App() {
               component={Navigator}
               options={{
                 title: "Buzzpool",
-                gestureEnabled: false,
+                // gestureEnabled: false,
                 // headerBackVisible: false
               }}
             />
@@ -58,7 +58,7 @@ export default function App() {
               component={ProfileScreen}
               options={{
                 title: "Add to Your Profile",
-                gestureEnabled: false,
+                // gestureEnabled: false,
                 // headerBackVisible: false
               }}
             />
@@ -67,7 +67,7 @@ export default function App() {
               component={Navigator}
               options={{
                 title: "Buzzpool",
-                gestureEnabled: false,
+                // gestureEnabled: false,
                 // headerLeft: () => {}
                 // headerBackVisible: false
               }}
@@ -77,7 +77,7 @@ export default function App() {
               component={ChatScreen}
               options={{
                 title: "ChatScreen",
-                // gestureEnabled: false,
+                gestureEnabled: false,
                 // headerBackVisible: false
               }}
             />

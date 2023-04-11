@@ -37,7 +37,7 @@ export const Navigator = () => {
       />
 
       <Tab.Screen
-        name="Requests"
+        name="Trips"
         component={RiderScreen}
 
         options={{
@@ -48,7 +48,7 @@ export const Navigator = () => {
         }}
       />
 
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Trips"
         component={DriverScreen}
 
@@ -58,7 +58,7 @@ export const Navigator = () => {
           ),
           headerShown: false
         }}
-      />
+      /> */}
       {/* <Tab.Screen name="Provider" component={Provider} /> */}
       <Tab.Screen
         name="Report"
