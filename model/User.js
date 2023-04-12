@@ -19,6 +19,7 @@ export default class User {
    * @return {boolean} true if the action is successful
    */
   addTripId(tripId){
+    console.log("trying to add a trip to a user")
     if (this.ongoingTripID.includes(tripId))
       return false
     this.ongoingTripID.push(tripId)

@@ -1,7 +1,10 @@
 export default class Carpool {
-  constructor(title, departureTime, departureLocation, destination,
-    requireDriver = true, capacity = 4, userGTIDs = [],
-    isTransactionFinished = false, isTripFinished = false) {
+  constructor(
+    // requried fields for creation
+    title, departureTime, departureLocation, destination,
+    requireDriver = true, capacity = 4, userGTIDs = [], driverGTID = "",
+    // auto set fields
+    tripStatus = "Not started", isTransactionFinished = false) {
     this.title = title
     this.departureTime = departureTime
     this.departureLocation = departureLocation
@@ -9,8 +12,9 @@ export default class Carpool {
     this.capacity = capacity
     this.requireDriver = requireDriver
     this.userGTIDs = userGTIDs
+    this.driverGTID = driverGTID
+    this.tripStatus = tripStatus
     this.isTransactionFinished = isTransactionFinished
-    this.isTripFinished = isTripFinished
   }
 
   /**
@@ -27,10 +31,11 @@ export default class Carpool {
    * @return {boolean} true if the action is successful, false otherwise
    */
   addDriver(gtid) {
-    if (!this.requireDriver || this.userGTIDs.length == this.capacity)
+    if (!this.requireDriver)
       return false
     this.userGTIDs.push(gtid)
     this.requireDriver = false
+    this.driverGTID = gtid
     return true
   }
 
@@ -40,8 +45,6 @@ export default class Carpool {
    * @return {boolean} true if the action is successful, false otherwise
    */
   addRider(gtid) {
-    if (this.userGTIDs.length == this.capacity)
-      return false
     this.userGTIDs.push(gtid)
     return true
   }
@@ -57,7 +60,9 @@ export default class Carpool {
    */
   addUser(gtid, isDriver) {
     console.log("Add user")
-    if (this.userGTIDs.includes(gtid))
+    console.log(gtid)
+    console.log(isDriver)
+    if (this.userGTIDs.includes(gtid) || this.userGTIDs.length >= this.capacity)
       return false
     return isDriver ? this.addDriver(gtid) : this.addRider(gtid)
   }

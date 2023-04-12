@@ -36,7 +36,6 @@ export const MytripScreen = () => {
 
   const [refreshing, setrefreshing] = useState(false);
   const [carpoolData, setCarpoolData] = useState();
-  const [flatlistRefresh, flipBit] = useState(true);
 
   const [value, setValue] = useState("myTrip");
 
@@ -101,7 +100,7 @@ export const MytripScreen = () => {
       <View
         style={{
           flex: 1,
-          backgroundColor: '#ccffbd',
+          backgroundColor: '#dc143c',
           justifyContent: 'center',
           alignItems: 'flex-end',
         }}
@@ -115,7 +114,7 @@ export const MytripScreen = () => {
             paddingVertical: 20,
           }}
         >
-          Details
+          Delete
         </Text>
       </View>
     );
@@ -168,7 +167,15 @@ export const MytripScreen = () => {
             <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
           </Card.Content>
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
-          <Card.Actions></Card.Actions>
+          <Card.Actions>
+            <Button
+              onPress={null}
+              mode="contained"
+              style={styles.buttonConfirm}
+            >
+              Trip Details
+            </Button>
+          </Card.Actions>
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={() =>
@@ -191,7 +198,6 @@ export const MytripScreen = () => {
         contentContainerStyle={{ alignItems: "stretch" }}
         renderItem={renderCards}
         keyExtractor={(item) => item.id}
-        extraData={flatlistRefresh}
         refreshing={refreshing}
         onRefresh={onRefresh}
         ItemSeparatorComponent={() => <Separator />}
@@ -319,7 +325,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   buttonConfirm: {
-    backgroundColor: "#0782F9",
+    backgroundColor: "#f0e68c",
     alignItems: "center",
     marginBottom: 5,
     marginHorizontal: 5,
