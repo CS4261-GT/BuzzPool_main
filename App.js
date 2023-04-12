@@ -13,6 +13,7 @@ import { Navigator } from './components/navigator'
 import { auth } from './api/firebase';
 import React, { useEffect } from 'react';
 import registerNNPushToken from 'native-notify';
+import { SingleTripScreen } from './screens/SingleTripScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -32,6 +33,24 @@ export default function App() {
               options={{
                 title: "Buzzpool",
                 gestureEnabled: false,
+                // headerBackVisible: false
+              }}
+            />
+            {/* <Stack.Screen
+              name="ChatScreen"
+              component={ChatScreen}
+              options={{
+                title: "ChatScreen",
+                // gestureEnabled: false,
+                // headerBackVisible: false
+              }}
+            /> */}
+            <Stack.Screen
+              name="SingleTripScreen"
+              component={SingleTripScreen}
+              options={{
+                title: "placeholder",
+                // gestureEnabled: false,
                 // headerBackVisible: false
               }}
             />
@@ -72,14 +91,24 @@ export default function App() {
               }}
             />
             <Stack.Screen
+              name="SingleTripScreen"
+              component={SingleTripScreen}
+              options={{
+                title: "placeholder",
+                // gestureEnabled: false,
+                // headerBackVisible: false
+              }}
+            />
+            <Stack.Screen
               name="ChatScreen"
               component={ChatScreen}
               options={{
                 title: "ChatScreen",
-                gestureEnabled: false,
+                // gestureEnabled: false,
                 // headerBackVisible: false
               }}
             />
+            
           </>
         )}
       </Stack.Navigator>

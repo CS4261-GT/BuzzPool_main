@@ -31,175 +31,69 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
-export const MytripScreen = () => {
+const dummy = [
+  {firstName: "Joe"}, 
+  {firstName: "Sriram"},
+]
+
+export const SingleTripScreen = ({ route }) => {
   const navigation = useNavigation();
 
-  const [refreshing, setrefreshing] = useState(false);
-  const [carpoolData, setCarpoolData] = useState();
+  // const [refreshing, setrefreshing] = useState(false);
+  const [passengerData, setpassengerData] = useState(dummy);
 
   const [value, setValue] = useState("myTrip");
 
-  useEffect(() => {
-    showMyCarpool().then((data) => setCarpoolData(data));
-  }, []);
+  const { carpoolWithId, userData } = route.params
 
 
-  /**
-   * This function resets carpool data and force rerendering of the UI
-   */
-  const onRefresh = () => {
-    setrefreshing(true);
-    setTimeout(() => {
-      showMyCarpool()
-        .then((data) => {
-          setCarpoolData(data)
-          setrefreshing(false)
-        });
+  console.log("userData in single trip screen")
+  console.log(userData)
 
-    }, 500);
+  const handleChatPress = () => {
+    navigation.navigate("ChatScreen", { chatIdString: carpoolWithId.id, userdata: userData })
+     
   };
 
-  const handleMoreInfoPress = (carpoolWithId) => {
-    // Pass carpool id as the chatroom id
-    // console.log(id)
-    getLoginUser()
-      .then(({ userId, userData }) => {
-        userData['_id'] = userId
-        return userData
-      })
-      .then((userData) => {
-        console.log("user data to be passed to single trip screen")
-        console.log(userData)
-        navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData })
-        // navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })
-      })
-      .catch(error => console.log(error.message))
-
-  };
-
-  // const handleMoreInfoPress = (id) => {
-  //   // Pass carpool id as the chatroom id
-  //   console.log(id)
-  //   getLoginUser()
-  //     .then(({ userId, userData }) => {
-  //       return { _id: userId, name: userData.firstName }
-
-  //     })
-  //     .then((userdata) => {
-  //       console.log(userdata)
-  //       navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })
-  //     })
-  //     .catch(error => console.log(error.message))
-
-  // };
-
-  const LeftSwipeActions = () => {
-    return (
-      <View
-        style={{ flex: 1, backgroundColor: '#f1c40f', justifyContent: 'center' }}
-      >
-        <Text
-          style={{
-            color: '#40394a',
-            paddingHorizontal: 10,
-            fontWeight: '600',
-            paddingHorizontal: 30,
-            paddingVertical: 20,
-          }}
-        >
-          Archive
-        </Text>
-      </View>
-    );
-  }
-
-  const RightSwipeActions = () => {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: '#dc143c',
-          justifyContent: 'center',
-          alignItems: 'flex-end',
-        }}
-      >
-        <Text
-          style={{
-            color: '#1b1a17',
-            paddingHorizontal: 10,
-            fontWeight: '600',
-            paddingHorizontal: 30,
-            paddingVertical: 20,
-          }}
-        >
-          Delete
-        </Text>
-      </View>
-    );
-  }
-
-
-  const Separator = () => <View style={styles.itemSeparator} />;
-
-
-  const swipeFromLeftOpen = () => {
-    alert('Swipe from left');
-  }
-
-  const swipeFromRightOpen = () => {
-    alert('Swipe from right');
-  }
 
   /**
    * This function is called for every item in the flatlist
-   * It will create a card for each carpool instance
-   * @param {Carpool} item I think it has to be named "item", it represents a carpool instance
+   * It will create a card for each passenger
+   * @param {PassengerWithId} item I think it has to be named "item", it represents a carpool instance
    * @returns
    */
   const renderCards = ({ item }) => {
-    // console.log(typeof(item))
-    const remainingSeats = item.capacity - item.userGTIDs.length;
-    // I think title is not necessary
-    const subtitle =
-      "From " + item.departureLocation + "\n" + "To " + item.destination;
-    // console.log("Document ID:", item);
-
-    // console.log(item)
+   
     return (
-      <Swipeable
-        renderLeftActions={LeftSwipeActions}
-        onSwipeableLeftOpen={swipeFromLeftOpen}
-        renderRightActions={RightSwipeActions}
-        onSwipeableRightOpen={swipeFromRightOpen}
-      >
-        <Card style={styles.cardStyle}>
-          <Card.Title
-            title={item.title}
-            titleStyle={styles.postTitle}
-            subtitleNumberOfLines={2}
-            subtitle={subtitle}
-          />
-          <Card.Content>
-            <Text variant="bodyLarge">{item.departureTime}</Text>
-            <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
-            <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
-          </Card.Content>
-          {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
+      <Card style={styles.cardStyle}>
+        {/* <Card.Title
+          title={item.title}
+          titleStyle={styles.postTitle}
+          subtitleNumberOfLines={2}
+          subtitle={subtitle}
+        /> */}
+        <Card.Content>
+          <Text variant="bodyLarge">{item.firstName}</Text>
+          {/* <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
+          <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text> */}
+        </Card.Content>
+        {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
 
-          <Card.Actions>
+        {/* <Card.Actions>
           <TouchableOpacity
               style={styles.buttonContainer}
-              onPress={() => { handleMoreInfoPress(item) }
+              onPress={() =>
+                handleChatPress(item.id)
               }
             >
 
-              <Icon name="ellipsis-v" size={25} color="black" />
+              <Icon name="comments-o" size={25} color="black" />
             </TouchableOpacity>
-          </Card.Actions>
-          {/* <View
+        </Card.Actions> */}
+        {/* <View
           // style={styles.buttonContainer}
           > */}
-            {/* <TouchableOpacity
+        {/* <TouchableOpacity
               style={styles.buttonContainer}
               onPress={() =>
                 handleChatPress(item.id)
@@ -209,28 +103,61 @@ export const MytripScreen = () => {
               <Icon name="comments-o" size={25} color="black" />
             </TouchableOpacity> */}
 
-            
-          {/* </View> */}
+
+        {/* </View> */}
 
 
 
 
-        </Card>
-      </Swipeable>
+      </Card>
     )
   }
 
+  const remainingSeats = carpoolWithId.capacity - carpoolWithId.userGTIDs.length;
+    // I think title is not necessary
+    const subtitle =
+      "From " + carpoolWithId.departureLocation + "\n" + "To " + carpoolWithId.destination;
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <Card style={styles.cardStyle}>
+        <Card.Title
+          title={carpoolWithId.title}
+          titleStyle={styles.postTitle}
+          subtitleNumberOfLines={2}
+          subtitle={subtitle}
+        />
+        <Card.Content>
+          <Text variant="bodyLarge">{carpoolWithId.departureTime}</Text>
+          <Text variant="bodyMedium">car capacity: {carpoolWithId.capacity}</Text>
+          <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
+        </Card.Content>
+
+        <Card.Actions>
+          <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={handleChatPress}
+            >
+
+              <Icon name="comments-o" size={25} color="black" />
+            </TouchableOpacity>
+        </Card.Actions>
+  
+
+
+      </Card>
+
+      <Text style={styles.postTitle}>
+        Passengers
+      </Text>
+
       <FlatList
-        data={carpoolData}
+        data={passengerData}
         style={styles.flatListStyle}
         contentContainerStyle={{ alignItems: "stretch" }}
         renderItem={renderCards}
         keyExtractor={(item) => item.id}
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-        // ItemSeparatorComponent={() => <Separator />}
+      // ItemSeparatorComponent={() => <Separator />}
       ></FlatList>
     </KeyboardAvoidingView>
   );
@@ -238,6 +165,7 @@ export const MytripScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
+    width: "100%",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -272,10 +200,12 @@ const styles = StyleSheet.create({
   },
 
   cardStyle: {
+    width: "90%",
     // marginVertical: 10,
     borderColor: "grey",
     // paddingVertical: 10,
     margin: 20,
+    
     marginHorizontal: 10,
   },
   inputContainer: {
