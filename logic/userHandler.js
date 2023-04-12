@@ -100,8 +100,8 @@ export const addUser = async (fname, lname, phoneNumber, GTID) => {
 export var userConverter = {
   toFirestore: function (user) {
 
-    // console.log("To firebase")
-    // console.log(user)
+    console.log("To firebase")
+    console.log(user)
 
     return {
       email: user.email,
@@ -115,8 +115,8 @@ export var userConverter = {
   fromFirestore: function (snapshot, options) {
     const data = snapshot.data(options);
 
-    // console.log("From firebase")
-    // console.log(data)
+    console.log("From firebase")
+    console.log(data)
 
     var user = new User(
       data.GTID,

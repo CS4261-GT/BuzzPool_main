@@ -49,7 +49,7 @@ export const RiderScreen = () => {
   const onDateTimePickerDismiss = useCallback(() => {
     setDateTimePickerVisible(false);
   }, [setDateTimePickerVisible]);
-  const [requesterGTID, setRequesterGTID] = useState("");
+
   const [isDriver, setIsDriver] = useState(true);
   const [date, setDate] = useState(new Date());
   const onDateTimeChange = useCallback((newDate) => {
@@ -89,15 +89,15 @@ export const RiderScreen = () => {
   const skipCarpoolUI = (carpoolId) => {
     const newCarpoolArray = skipCarpool(carpoolData, carpoolId);
     setCarpoolData(newCarpoolArray);
-    flipBit(!flatlistRefresh);
   };
 
   /**
    * Rerender the RiderScreen UI by removing the joined carpool
    * This alsos add data to MyTripScreen UI
-   * @param {Carpool} carpool
+   * @param {CarpoolWithId} carpool
    */
   const joinCarpoolUI = (carpool) => {
+    
     joinCarpool(carpool, false);
     skipCarpoolUI(carpoolData, carpool.id);
   };
@@ -105,7 +105,7 @@ export const RiderScreen = () => {
   /**
    * This function is called for every item in the flatlist
    * It will create a card for each carpool instance
-   * @param {Carpool} item I think it has to be named "item", it represents a carpool instance
+   * @param {CarpoolWithId} item I think it has to be named "item", it represents a carpool instance
    * @returns
    */
   const renderCards = ({ item }) => {
@@ -113,6 +113,7 @@ export const RiderScreen = () => {
     // I think title is not necessary
     const subtitle =
       "From " + item.departureLocation + "\n" + "To " + item.destination;
+    console.log(item)
     if (item)
       return (
         <Card style={styles.cardStyle}>
@@ -156,27 +157,34 @@ export const RiderScreen = () => {
   const makePost = () => {
     setModalVisible(!modalVisible);
     try {
-      const GTIDNumber = Number(requesterGTID);
-      if (
-        title.length == 0 ||
-        date == null ||
-        date == undefined ||
-        departureLocation.length == 0 ||
-        destination.length == 0 ||
-        requesterGTID.length != 9 ||
-        isNaN(GTIDNumber)
-      )
-        throw new Error();
+      getLoginUser()
+      .then(({ userId, userData }) => {
+        console.log(userId, userData)
+        const GTIDNumber = userData.GTID
+        if (
+          title.length == 0 ||
+          date == null ||
+          date == undefined ||
+          departureLocation.length == 0 ||
+          destination.length == 0 ||
+          isNaN(GTIDNumber)
+        )
+          throw new Error("invalid post data");
 
-      createCarpool(
-        title,
-        date.toLocaleString(),
-        departureLocation,
-        destination,
-        !isDriver,
-        5,
-        GTIDNumber
-      );
+        createCarpool(
+          title,
+          date.toLocaleString(),
+          departureLocation,
+          destination,
+          !isDriver,
+          5,
+          GTIDNumber,
+        );
+
+        
+      })
+      .catch(e => alert(e.message))
+  
     } catch (error) {
       alert("Incomplete or invalid input!");
     }
@@ -284,15 +292,21 @@ export const RiderScreen = () => {
                 date={date}
                 onConfirm={onDateTimeChange}
                 label="Pick A Date"
+                color="black"
+                // style={{color:"black"}}
               />
 
               <Text style={styles.input}>{date.toLocaleString()}</Text>
-              <Button onPress={() => setDateTimePickerVisible(true)}>
+              <Button 
+                onPress={() => setDateTimePickerVisible(true)}
+                textColor="black"
+
+              >
                 Pick date
               </Button>
             </View>
 
-            <View style={styles.inputRowcontainer}>
+            {/* <View style={styles.inputRowcontainer}>
               <Text style={styles.inputLabel}>Your GTID:</Text>
               <TextInput
                 style={styles.input}
@@ -301,7 +315,7 @@ export const RiderScreen = () => {
                 placeholderTextColor="grey"
                 value={requesterGTID}
               />
-            </View>
+            </View> */}
 
             <View style={styles.inputRowcontainer}>
               <Text style={styles.inputLabel}>Are you a driver?</Text>

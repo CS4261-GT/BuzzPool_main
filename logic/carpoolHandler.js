@@ -17,8 +17,10 @@ export const carpoolCollection = firestore.collection('Carpools');
  * @param {string} datetime datetime = Date.toLocaleString(), this is the departure time
  * @param {string} from departure location
  * @param {string} to destination
- * @param {number} GTID requester's GTID
  * @param {boolean} requireDriver true if a driver is still needed for the carpool
+ * @param {number} capacity capacity of the car
+ * @param {number} GTID requester's GTID
+
  */
 export const createCarpool = (title, datetime, from, to, requireDriver, capacity, GTID) => {
 
@@ -30,6 +32,7 @@ export const createCarpool = (title, datetime, from, to, requireDriver, capacity
     requireDriver,
     capacity,
     [GTID],
+    !requireDriver? GTID : "",
   );
 
   
@@ -37,9 +40,14 @@ export const createCarpool = (title, datetime, from, to, requireDriver, capacity
   carpoolCollection
     .withConverter(carpoolConverter)
     .add(carpool)
-    .then(() => {
+    .then((docRef) => {
       console.log('New carpool added!');
       alert("New carpool added!")
+      // console.log(docRef) 
+      var carpoolWithId = docRef.get()
+      carpoolWithId['id'] = docRef.id
+      console.log(carpoolWithId)
+      addInitialCarpoolCreator(carpoolWithId, !requireDriver)
     })
     .catch(error => console.log(error.message));
   // console.log(carpool);
@@ -90,27 +98,62 @@ export const skipCarpool = (carpoolData, carpoolId) => {
 }
 
 /**
- * add the carpool to user's ongoing carpool
- * 1) add carpool id to user's ongoingCarpool and push user data to firestore
- * 2) remove the card from feed
- * 3) update carpool's data and push carpool data to firestore
- * @param {Carpool} carpool 
+ * Add the carpool creator to the trip
+ * @param {CarpoolWithId} carpool 
  * @param {boolean} isDriver
  */
-export const joinCarpool = async (carpool, isDriver) => {
+export const addInitialCarpoolCreator = (carpool, isDriver) => {
   // console.log(auth.currentUser)
-  await getLoginUser()
+  // console.log("trying to join a carpool")
+  // console.log("inside joinCarpool")
+  // console.log(carpool)
+  getLoginUser()
   .then(({userId, userData}) => {
-    console.log(userData)
-    console.log(carpool)
+    // console.log(userData)
+    
     // add carpoolId to user
     if (userData.addTripId(carpool.id)) {
-      // console.log(user)
+      console.log(userData)
 
       // update user data in firestore
       usersCollection.doc(userId)
       .withConverter(userConverter)
       .set(userData)
+      .catch(e => console.error(e.message))
+
+    }
+    else
+      alert("Error in joining the carpool")
+  })
+  .catch(error => console.log(error.message))
+}
+
+/**
+ * add the carpool to user's ongoing carpool
+ * 1) add carpool id to user's ongoingCarpool and push user data to firestore
+ * 2) remove the card from feed
+ * 3) update carpool's data and push carpool data to firestore
+ * @param {CarpoolWithId} carpool 
+ * @param {boolean} isDriver
+ */
+export const joinCarpool = (carpool, isDriver) => {
+  // console.log(auth.currentUser)
+  // console.log("trying to join a carpool")
+  // console.log("inside joinCarpool")
+  // console.log(carpool)
+  getLoginUser()
+  .then(({userId, userData}) => {
+    // console.log(userData)
+    
+    // add carpoolId to user
+    if (userData.addTripId(carpool.id)) {
+      console.log(userData)
+
+      // update user data in firestore
+      usersCollection.doc(userId)
+      .withConverter(userConverter)
+      .set(userData)
+      .catch(e => console.error(e.message))
 
       // add user to the carpool instance
       if (carpool.addUser(userData.GTID, isDriver)) {
@@ -165,8 +208,10 @@ export var carpoolConverter = {
       requireDriver: carpool.requireDriver,
       capacity: carpool.capacity,
       userGTIDs: carpool.userGTIDs,
+      driverGTID: carpool.driverGTID,
+      tripStatus: carpool.tripStatus,
       isTransactionFinished: carpool.isTransactionFinished,
-      isTripFinished: carpool.isTripFinished,
+      
     };
   },
   fromFirestore: function (snapshot, options) {
@@ -193,8 +238,11 @@ export var carpoolConverter = {
       data.requireDriver,
       data.capacity,
       data.userGTIDs,
+      data.driverGTID,
+      data.tripStatus,
       data.isTransactionFinished,
-      data.isTripFinished);
+      
+    );
 
     return carpool;
   }
