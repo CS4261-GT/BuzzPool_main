@@ -100,7 +100,11 @@ export const RiderScreen = () => {
     // });
     console.log(defaultCalendar.id)
     await Calendar.createEventAsync(defaultCalendar.id, {
-      title: 'Buzzpool Event',
+      alarms: [{relativeOffset: -10}, {relativeOffset: -30}],
+      location: departureLocation,
+      source: defaultCalendar.source,
+      allowsModifications: true,
+      title: 'Buzzpool: ' + title,
       creationDate: date,
       startDate: date,
       endDate: date,
