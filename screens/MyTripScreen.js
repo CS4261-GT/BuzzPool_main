@@ -176,16 +176,18 @@ export const MytripScreen = () => {
         onSwipeableRightOpen={swipeFromRightOpen}
       >
         <Card style={styles.cardStyle}>
-          <Card.Title
+           <Card.Title
             title={item.title}
             titleStyle={styles.postTitle}
             subtitleNumberOfLines={2}
             subtitle={subtitle}
           />
+          
           <Card.Content>
             <Text variant="bodyLarge">{item.departureTime}</Text>
             <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
             <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
+            <Text variant="bodyLarge" style={{fontWeight:"700"}}>{item.tripStatus}</Text>
           </Card.Content>
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
 
@@ -233,7 +235,7 @@ export const MytripScreen = () => {
         keyExtractor={(item) => {return item.id}}
         refreshing={refreshing}
         onRefresh={onRefresh}
-        // ItemSeparatorComponent={() => <Separator />}
+        ItemSeparatorComponent={() => <Separator />}
       ></FlatList>
     </KeyboardAvoidingView>
   );
@@ -249,10 +251,11 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   itemSeparator: {
+    // borderWidth:
     flex: 1,
-    marginVertical: 10,
+    marginVertical: 20,
     height: 1,
-    backgroundColor: 'grey',
+    // backgroundColor: 'grey',
   },
   centeredView: {
     flex: 1,
@@ -275,10 +278,10 @@ const styles = StyleSheet.create({
   },
 
   cardStyle: {
-    // marginVertical: 10,
-    borderColor: "grey",
+    marginVertical: 1,
+    // borderColor: "grey",
     // paddingVertical: 10,
-    margin: 20,
+    // margin: 20,
     marginHorizontal: 10,
   },
   inputContainer: {
