@@ -44,6 +44,7 @@ export const SingleTripScreen = ({ route }) => {
 
   // const [refreshing, setrefreshing] = useState(false);
   const [passengerData, setpassengerData] = useState([]);
+  const [driver, setDriver] = useState("No driver available")
   const [loading, setLoading] = useState(false);
 
 
@@ -51,11 +52,27 @@ export const SingleTripScreen = ({ route }) => {
 
   const { carpoolWithId, userData } = route.params
   const usersIDs = carpoolWithId['userIDs']
-  
+  console.log(carpoolWithId)
   useEffect(() => {
     setLoading(!loading)
-    getAllUsersInCarpool(usersIDs).then((data) => setpassengerData(data));
+    getAllUsersInCarpool(usersIDs).then((data) => {
+
+      const newData = data.filter((user) => {
+        if (user.GTID != carpoolWithId.driverGTID) {
+          // console.log("This is a passenger")
+          // console.log(user)
+          return true
+        }
+        else {
+          setDriver(user)
+          return false
+        }
+      })
+      setpassengerData(newData)
+    });
   }, []);
+
+
 
   console.log("userData in single trip screen")
   console.log(userData)
@@ -158,13 +175,26 @@ export const SingleTripScreen = ({ route }) => {
       </Card>
 
       <Text style={styles.postTitle}>
+        Driver
+      </Text>
+
+      <Card style={styles.cardStyle}>
+        <Card.Content>
+          <Text variant="bodyLarge">{driver.firstName}</Text>
+        </Card.Content>
+  
+      </Card>
+
+      
+
+      <Text style={styles.postTitle}>
         Passengers
       </Text>
 
       <FlatList
         data={passengerData}
         style={styles.flatListStyle}
-        contentContainerStyle={{ alignItems: "stretch" }}
+        contentContainerStyle={{ alignItems: "stretch", justifyContent: "center", alignContent: "center" }}
         renderItem={renderCards}
         keyExtractor={(item) => {return item.id}}
       // ItemSeparatorComponent={() => <Separator />}
@@ -200,10 +230,13 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     // borderCurve: "circular",
     // borderRadius: 1
-    margin: 10,
+    // margin: 10,
+    // justifyContent: "center",
+    // marginStart: 10,
+    padding: 20,
     paddingVertical: 10,
-    width: "90%",
-    paddingHorizontal: 10,
+    width: "100%",
+    // paddingHorizontal: 10,
   },
   segmentedButtons: {
     padding: 10,
