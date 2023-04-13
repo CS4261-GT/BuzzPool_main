@@ -35,6 +35,8 @@ import {
   userConverter,
   getLoginUser,
 } from "../logic/userHandler";
+import * as Calendar from 'expo-calendar';
+
 
 export const RiderScreen = () => {
 
@@ -65,7 +67,41 @@ export const RiderScreen = () => {
     getAllCarpools().then((data) => {
       setCarpoolData(data);
     });
+    (async () => {
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      if (status === 'granted') {
+        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+        console.log('Here are all your calendars:');
+        console.log({ calendars });
+      }
+    })();
   }, []);
+
+  async function getDefaultCalendarSource() {
+    const defaultCalendar = await Calendar.getDefaultCalendarAsync();
+    console.log(defaultCalendar)
+    return defaultCalendar.source;
+  }
+  
+  async function createCalendar() {
+    const defaultCalendarSource =
+      Platform.OS === 'ios'
+        ? await getDefaultCalendarSource()
+        : { isLocalAccount: true, name: 'Expo Calendar' };
+    const newCalendarID = await Calendar.createCalendarAsync({
+      title: 'Expo Calendar',
+      color: 'blue',
+      entityType: Calendar.EntityTypes.EVENT,
+      sourceId: defaultCalendarSource.id,
+      source: defaultCalendarSource,
+      name: 'test',
+      ownerAccount: 'personal',
+      accessLevel: Calendar.CalendarAccessLevel.OWNER,
+    });
+    // await Calendar.createEventAsync(newCalendarID)
+    console.log(`Your new calendar ID is: ${newCalendarID}`);
+  }
+
 
   /**
    * This function resets carpool data and force rerendering of the UI
@@ -181,11 +217,15 @@ export const RiderScreen = () => {
           5,
           GTIDNumber,
           userId,
-        );
+        )
+
+        // console.log("before creating a calendar event")
+        createCalendar()
+        
 
         
       })
-      .catch(e => alert(e.message))
+      .catch(e => console.error(e.message))
   
     } catch (error) {
       alert("Incomplete or invalid input!");
