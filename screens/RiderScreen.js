@@ -99,13 +99,18 @@ export const RiderScreen = () => {
     //   accessLevel: Calendar.CalendarAccessLevel.OWNER,
     // });
     console.log(defaultCalendar.id)
-    await Calendar.createEventAsync(defaultCalendar.id, {
-      title: 'Buzzpool Event',
+    Calendar.createEventAsync(defaultCalendar.id, {
+      alarms: [{relativeOffset: -10}, {relativeOffset: -30}],
+      location: departureLocation,
+      source: defaultCalendar.source,
+      allowsModifications: true,
+      title: 'Buzzpool: ' + title,
       creationDate: date,
       startDate: date,
       endDate: date,
       
     })
+    .then(() => alert("A calendar event is created on your phone!"))
     // console.log(`Your new calendar ID is: ${newCalendarID}`);
   }
 
