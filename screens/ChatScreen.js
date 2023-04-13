@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { GiftedChat } from "react-native-gifted-chat";
 import { AsyncStorage } from "react-native";
-import { StyleSheet, TextInput, View, Button } from "react-native";
+import { StyleSheet, TextInput, View, Button, KeyboardAvoidingView } from "react-native";
 import * as firebase from "firebase";
 import "firebase/firestore";
 import { auth, firestore } from "../api/firebase";
@@ -27,26 +27,26 @@ const ChatScreen = ({ route }) => {
   };
   // console.log("current user:")
 
-  
+
   useEffect(() => {
-    
+
     const unsubscribe = chatRoom // Only listen for chat room changes if chatRoom is set
       ? firestore
-          .collection("chats")
-          .doc(chatRoom)
-          .collection("messages")
-          .orderBy("createdAt", "desc")
-          .onSnapshot((querySnapshot) => {
-            const messagesFirestore = querySnapshot
-              .docChanges()
-              .filter(({ type }) => type === "added")
-              .map(({ doc }) => {
-                const message = doc.data();
-                return { ...message, createdAt: message.createdAt.toDate() };
-              })
-              .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-            appendMessages(messagesFirestore);
-          })
+        .collection("chats")
+        .doc(chatRoom)
+        .collection("messages")
+        .orderBy("createdAt", "desc")
+        .onSnapshot((querySnapshot) => {
+          const messagesFirestore = querySnapshot
+            .docChanges()
+            .filter(({ type }) => type === "added")
+            .map(({ doc }) => {
+              const message = doc.data();
+              return { ...message, createdAt: message.createdAt.toDate() };
+            })
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+          appendMessages(messagesFirestore);
+        })
       : null;
     return () => unsubscribe && unsubscribe(); // Unsubscribe if chatRoom is unset
   }, [chatRoom]);
@@ -80,7 +80,8 @@ const ChatScreen = ({ route }) => {
     await Promise.all(writes);
   }
 
-  if (!chatRoom) {
+  if (!chatRoom)
+  {
     return (
       <View style={styles.container}>
         <Button onPress={handleChatRoomPress} title="Join Chat Room" />
@@ -88,14 +89,17 @@ const ChatScreen = ({ route }) => {
     );
   }
   return (
-    <GiftedChat
-      messages={messages}
-      onSend={handleSend}
-      user={{
-        _id: userdata._id,
-        name: userdata.name,
-      }}
-    />
+    <View style={styles.container} behavior="padding">
+      <GiftedChat
+        messages={messages}
+        onSend={handleSend}
+        user={{
+          _id: userdata._id,
+          name: userdata.firstName,
+        }}
+      />
+    </View>
+
   );
 };
 
@@ -105,7 +109,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "stretch",
+    alignContent: "center",
+    // flexWrap: "wrap",
+    height: "90%",
+    marginVertical: 15,
   },
   input: {
     height: 40,
