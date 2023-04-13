@@ -71,15 +71,15 @@ export const RiderScreen = () => {
       const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status === 'granted') {
         const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-        console.log('Here are all your calendars:');
-        console.log({ calendars });
+        // console.log('Here are all your calendars:');
+        // console.log({ calendars });
       }
     })();
   }, []);
 
   async function getDefaultCalendar() {
     const defaultCalendar = await Calendar.getDefaultCalendarAsync();
-    console.log(defaultCalendar)
+    // console.log(defaultCalendar)
     return defaultCalendar;
   }
   
@@ -162,7 +162,7 @@ export const RiderScreen = () => {
     // I think title is not necessary
     const subtitle =
       "From " + item.departureLocation + "\n" + "To " + item.destination;
-    console.log(item)
+    // console.log(item)
     if (item)
       return (
         <Card style={styles.cardStyle}>

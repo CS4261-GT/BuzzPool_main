@@ -57,7 +57,7 @@ export default function App() {
           name="SingleTripScreen"
           component={SingleTripScreen}
           options={{
-            title: "placeholder",
+            title: "My Trip",
             // gestureEnabled: false,
             // headerBackVisible: false
           }}

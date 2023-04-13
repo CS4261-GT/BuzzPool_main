@@ -45,10 +45,12 @@ export const createCarpool = (title, datetime, from, to, requireDriver, capacity
       console.log('New carpool added!');
       alert("New carpool added!")
       // console.log(docRef) 
-      docRef.get(carpoolwithId => {
-        carpoolwithId['id'] = docRef.id
-        // console.log(carpoolWithId)
-        addInitialCarpoolCreator(carpoolwithId, !requireDriver)
+      docRef.get()
+      .then(carpoolWithId => {
+        carpoolWithId['id'] = docRef.id
+        console.log("this is the new carpool")
+        console.log(carpoolWithId)
+        addInitialCarpoolCreator(carpoolWithId, !requireDriver)
       })
 
     })
@@ -84,6 +86,14 @@ export const getAllCarpools = async () => {
   return carpools
 }
 
+
+export const updateCarpool = async (carpoolWithId) => {
+  carpoolCollection
+  .doc(carpoolWithId.id)
+  .withConverter(carpoolConverter)
+  .set(carpoolWithId)
+  .catch(e => console.error(e.message))
+}
 
 // /**
 //  * This class returns a selected carpool
@@ -138,7 +148,7 @@ export const addInitialCarpoolCreator = (carpool) => {
   // console.log(auth.currentUser)
   // console.log("trying to join a carpool")
   // console.log("inside joinCarpool")
-  console.log(carpool)
+  // console.log(carpool)
   getLoginUser()
     .then(({ userId, userData }) => {
       // console.log(userData)
@@ -146,6 +156,7 @@ export const addInitialCarpoolCreator = (carpool) => {
       // add carpoolId to user
       if (userData.addTripId(carpool.id))
       {
+        console.log("about to add carpool to carpool creator")
         console.log(userData)
 
         // update user data in firestore
