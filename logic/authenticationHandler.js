@@ -78,7 +78,7 @@ export const handleLogin = async (email, password, navigation) => {
           } else
           {
             console.log('Logged in with:', user.email);
-            navigation.navigate('Navigator');
+            navigation.navigate('Navigator', {screen: "MyTrip"});
           }
         })
 

@@ -25,7 +25,7 @@ import {
   carpoolCollection,
   carpoolConverter,
   createCarpool,
-  getCarpool,
+  getAllCarpools,
   joinCarpool,
   skipCarpool,
 } from "../logic/carpoolHandler";
@@ -35,6 +35,8 @@ import {
   userConverter,
   getLoginUser,
 } from "../logic/userHandler";
+import * as Calendar from 'expo-calendar';
+
 
 export const RiderScreen = () => {
 
@@ -44,7 +46,7 @@ export const RiderScreen = () => {
   const [departureLocation, onChangeDepartureLocation] = useState("");
   const [destination, onChangeDestination] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [flatlistRefresh, flipBit] = useState(true);
+  const [reload, setReload] = useState(true);
   const [dateTimePickerVisible, setDateTimePickerVisible] = useState(false);
   const onDateTimePickerDismiss = useCallback(() => {
     setDateTimePickerVisible(false);
@@ -60,11 +62,53 @@ export const RiderScreen = () => {
 
   // const [value, setValue] = useState("myTrip");
 
-  // useEffect(() => {
-  //   getCarpool().then((data) => {
-  //     setCarpoolData(data);
-  //   });
-  // }, []);
+  useEffect(() => {
+    setReload(!reload)
+    getAllCarpools().then((data) => {
+      setCarpoolData(data);
+    });
+    (async () => {
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      if (status === 'granted') {
+        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+        console.log('Here are all your calendars:');
+        console.log({ calendars });
+      }
+    })();
+  }, []);
+
+  async function getDefaultCalendar() {
+    const defaultCalendar = await Calendar.getDefaultCalendarAsync();
+    console.log(defaultCalendar)
+    return defaultCalendar;
+  }
+  
+  async function createCalendar() {
+    const defaultCalendar =
+      Platform.OS === 'ios'
+        ? await getDefaultCalendar()
+        : { isLocalAccount: true, name: 'Expo Calendar' };
+    // const newCalendarID = await Calendar.createCalendarAsync({
+    //   title: 'Expo Calendar',
+    //   color: 'blue',
+    //   entityType: Calendar.EntityTypes.EVENT,
+    //   sourceId: defaultCalendarSource.id,
+    //   source: defaultCalendarSource,
+    //   name: 'test',
+    //   ownerAccount: 'personal',
+    //   accessLevel: Calendar.CalendarAccessLevel.OWNER,
+    // });
+    console.log(defaultCalendar.id)
+    await Calendar.createEventAsync(defaultCalendar.id, {
+      title: 'Buzzpool Event',
+      creationDate: date,
+      startDate: date,
+      endDate: date,
+      
+    })
+    // console.log(`Your new calendar ID is: ${newCalendarID}`);
+  }
+
 
   /**
    * This function resets carpool data and force rerendering of the UI
@@ -72,7 +116,7 @@ export const RiderScreen = () => {
   const onRefresh = () => {
     setrefreshing(true);
     setTimeout(() => {
-      getCarpool()
+      getAllCarpools()
       .then((data) => {
         setCarpoolData(data)
         setrefreshing(false)
@@ -179,11 +223,16 @@ export const RiderScreen = () => {
           !isDriver,
           5,
           GTIDNumber,
-        );
+          userId,
+        )
+
+        // console.log("before creating a calendar event")
+        createCalendar()
+        
 
         
       })
-      .catch(e => alert(e.message))
+      .catch(e => console.error(e.message))
   
     } catch (error) {
       alert("Incomplete or invalid input!");
@@ -237,7 +286,7 @@ export const RiderScreen = () => {
         style={styles.flatListStyle}
         contentContainerStyle={{ alignItems: "stretch" }}
         renderItem={renderCards}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => {return item.id}}
         refreshing={refreshing}
         onRefresh={onRefresh}
       ></FlatList>
@@ -347,7 +396,7 @@ export const RiderScreen = () => {
         </View>
       </Modal>
     </KeyboardAvoidingView>
-  );
+  )
 };
 
 const styles = StyleSheet.create({

@@ -22,10 +22,10 @@ import {
   carpoolCollection,
   carpoolConverter,
   createCarpool,
-  getCarpool,
+  getAllCarpools,
 } from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
-import { getLoginUser, showMyCarpool } from "../logic/userHandler";
+import { getLoginUser, getAllUsersInCarpool } from "../logic/userHandler";
 import Carpool from "../model/Carpool";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -34,18 +34,28 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 const dummy = [
   {firstName: "Joe"}, 
   {firstName: "Sriram"},
+  {},
+  {},
+  {},
 ]
 
 export const SingleTripScreen = ({ route }) => {
   const navigation = useNavigation();
 
   // const [refreshing, setrefreshing] = useState(false);
-  const [passengerData, setpassengerData] = useState(dummy);
+  const [passengerData, setpassengerData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
 
   const [value, setValue] = useState("myTrip");
 
   const { carpoolWithId, userData } = route.params
-
+  const usersIDs = carpoolWithId['userIDs']
+  
+  useEffect(() => {
+    setLoading(!loading)
+    getAllUsersInCarpool(usersIDs).then((data) => setpassengerData(data));
+  }, []);
 
   console.log("userData in single trip screen")
   console.log(userData)
@@ -63,7 +73,7 @@ export const SingleTripScreen = ({ route }) => {
    * @returns
    */
   const renderCards = ({ item }) => {
-   
+    console.log(item)
     return (
       <Card style={styles.cardStyle}>
         {/* <Card.Title
@@ -117,7 +127,7 @@ export const SingleTripScreen = ({ route }) => {
     // I think title is not necessary
     const subtitle =
       "From " + carpoolWithId.departureLocation + "\n" + "To " + carpoolWithId.destination;
-
+  
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <Card style={styles.cardStyle}>
@@ -156,7 +166,7 @@ export const SingleTripScreen = ({ route }) => {
         style={styles.flatListStyle}
         contentContainerStyle={{ alignItems: "stretch" }}
         renderItem={renderCards}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => {return item.id}}
       // ItemSeparatorComponent={() => <Separator />}
       ></FlatList>
     </KeyboardAvoidingView>
@@ -187,8 +197,12 @@ const styles = StyleSheet.create({
   },
   flatListStyle: {
     // flexWrap: "wrap",
+    // borderWidth: 1,
+    // borderCurve: "circular",
+    // borderRadius: 1
+    margin: 10,
     paddingVertical: 10,
-    width: "100%",
+    width: "90%",
     paddingHorizontal: 10,
   },
   segmentedButtons: {

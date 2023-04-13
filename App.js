@@ -25,92 +25,53 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {auth.currentUser ? (
-          <>
-            <Stack.Screen
-              name="Navigator"
-              component={Navigator}
-              options={{
-                title: "Buzzpool",
-                gestureEnabled: false,
-                // headerBackVisible: false
-              }}
-            />
-            {/* <Stack.Screen
-              name="ChatScreen"
-              component={ChatScreen}
-              options={{
-                title: "ChatScreen",
-                // gestureEnabled: false,
-                // headerBackVisible: false
-              }}
-            /> */}
-            <Stack.Screen
-              name="SingleTripScreen"
-              component={SingleTripScreen}
-              options={{
-                title: "placeholder",
-                // gestureEnabled: false,
-                // headerBackVisible: false
-              }}
-            />
-            <Stack.Screen
-              name="ChatScreen"
-              component={ChatScreen}
-              options={{
-                title: "ChatScreen",
-                // gestureEnabled: false,
-                // headerBackVisible: false
-              }}
-            />
-          </>
-        ) : (
-          <>
-            <Stack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{ title: "Welcome" }}
-            />
-            <Stack.Screen
-              name="Profile"
-              component={ProfileScreen}
-              options={{
-                title: "Add to Your Profile",
-                // gestureEnabled: false,
-                // headerBackVisible: false
-              }}
-            />
-            <Stack.Screen
-              name="Navigator"
-              component={Navigator}
-              options={{
-                title: "Buzzpool",
-                // gestureEnabled: false,
-                // headerLeft: () => {}
-                // headerBackVisible: false
-              }}
-            />
-            <Stack.Screen
-              name="SingleTripScreen"
-              component={SingleTripScreen}
-              options={{
-                title: "placeholder",
-                // gestureEnabled: false,
-                // headerBackVisible: false
-              }}
-            />
-            <Stack.Screen
-              name="ChatScreen"
-              component={ChatScreen}
-              options={{
-                title: "ChatScreen",
-                // gestureEnabled: false,
-                // headerBackVisible: false
-              }}
-            />
-            
-          </>
-        )}
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ 
+            title: "Welcome",
+            gestureEnabled: false,
+            headerBackVisible: false
+          }}
+        />
+        <Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{
+            title: "Add to Your Profile",
+            // gestureEnabled: false,
+            // headerBackVisible: false
+          }}
+        />
+        <Stack.Screen
+          name="Navigator"
+          component={Navigator}
+          options={{
+            title: "Buzzpool",
+            gestureEnabled: false,
+            // headerLeft: () => {}
+            headerBackVisible: false
+          }}
+        />
+        <Stack.Screen
+          name="SingleTripScreen"
+          component={SingleTripScreen}
+          options={{
+            title: "placeholder",
+            // gestureEnabled: false,
+            // headerBackVisible: false
+          }}
+        />
+        <Stack.Screen
+          name="ChatScreen"
+          component={ChatScreen}
+          options={{
+            title: "ChatScreen",
+            // gestureEnabled: false,
+            // headerBackVisible: false
+          }}
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
