@@ -87,6 +87,14 @@ export const getAllCarpools = async () => {
 }
 
 
+export const updateCarpool = async (carpoolWithId) => {
+  carpoolCollection
+  .doc(carpoolWithId.id)
+  .withConverter(carpoolConverter)
+  .set(carpoolWithId)
+  .catch(e => console.error(e.message))
+}
+
 // /**
 //  * This class returns a selected carpool
 //  * @returns {Promise<Carpool>} carpool
