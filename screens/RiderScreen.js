@@ -77,29 +77,36 @@ export const RiderScreen = () => {
     })();
   }, []);
 
-  async function getDefaultCalendarSource() {
+  async function getDefaultCalendar() {
     const defaultCalendar = await Calendar.getDefaultCalendarAsync();
     console.log(defaultCalendar)
-    return defaultCalendar.source;
+    return defaultCalendar;
   }
   
   async function createCalendar() {
-    const defaultCalendarSource =
+    const defaultCalendar =
       Platform.OS === 'ios'
-        ? await getDefaultCalendarSource()
+        ? await getDefaultCalendar()
         : { isLocalAccount: true, name: 'Expo Calendar' };
-    const newCalendarID = await Calendar.createCalendarAsync({
-      title: 'Expo Calendar',
-      color: 'blue',
-      entityType: Calendar.EntityTypes.EVENT,
-      sourceId: defaultCalendarSource.id,
-      source: defaultCalendarSource,
-      name: 'test',
-      ownerAccount: 'personal',
-      accessLevel: Calendar.CalendarAccessLevel.OWNER,
-    });
-    // await Calendar.createEventAsync(newCalendarID)
-    console.log(`Your new calendar ID is: ${newCalendarID}`);
+    // const newCalendarID = await Calendar.createCalendarAsync({
+    //   title: 'Expo Calendar',
+    //   color: 'blue',
+    //   entityType: Calendar.EntityTypes.EVENT,
+    //   sourceId: defaultCalendarSource.id,
+    //   source: defaultCalendarSource,
+    //   name: 'test',
+    //   ownerAccount: 'personal',
+    //   accessLevel: Calendar.CalendarAccessLevel.OWNER,
+    // });
+    console.log(defaultCalendar.id)
+    await Calendar.createEventAsync(defaultCalendar.id, {
+      title: 'Buzzpool Event',
+      creationDate: date,
+      startDate: date,
+      endDate: date,
+      
+    })
+    // console.log(`Your new calendar ID is: ${newCalendarID}`);
   }
 
 
