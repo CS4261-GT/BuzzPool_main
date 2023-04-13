@@ -25,7 +25,7 @@ import {
   carpoolCollection,
   carpoolConverter,
   createCarpool,
-  getCarpool,
+  getAllCarpools,
   joinCarpool,
   skipCarpool,
 } from "../logic/carpoolHandler";
@@ -44,7 +44,7 @@ export const RiderScreen = () => {
   const [departureLocation, onChangeDepartureLocation] = useState("");
   const [destination, onChangeDestination] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [flatlistRefresh, flipBit] = useState(true);
+  const [reload, setReload] = useState(true);
   const [dateTimePickerVisible, setDateTimePickerVisible] = useState(false);
   const onDateTimePickerDismiss = useCallback(() => {
     setDateTimePickerVisible(false);
@@ -60,11 +60,12 @@ export const RiderScreen = () => {
 
   // const [value, setValue] = useState("myTrip");
 
-  // useEffect(() => {
-  //   getCarpool().then((data) => {
-  //     setCarpoolData(data);
-  //   });
-  // }, []);
+  useEffect(() => {
+    setReload(!reload)
+    getAllCarpools().then((data) => {
+      setCarpoolData(data);
+    });
+  }, []);
 
   /**
    * This function resets carpool data and force rerendering of the UI
@@ -72,7 +73,7 @@ export const RiderScreen = () => {
   const onRefresh = () => {
     setrefreshing(true);
     setTimeout(() => {
-      getCarpool()
+      getAllCarpools()
       .then((data) => {
         setCarpoolData(data)
         setrefreshing(false)
@@ -179,6 +180,7 @@ export const RiderScreen = () => {
           !isDriver,
           5,
           GTIDNumber,
+          userId,
         );
 
         
@@ -237,7 +239,7 @@ export const RiderScreen = () => {
         style={styles.flatListStyle}
         contentContainerStyle={{ alignItems: "stretch" }}
         renderItem={renderCards}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => {return item.id}}
         refreshing={refreshing}
         onRefresh={onRefresh}
       ></FlatList>
@@ -347,7 +349,7 @@ export const RiderScreen = () => {
         </View>
       </Modal>
     </KeyboardAvoidingView>
-  );
+  )
 };
 
 const styles = StyleSheet.create({

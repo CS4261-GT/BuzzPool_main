@@ -22,7 +22,7 @@ import {
   carpoolCollection,
   carpoolConverter,
   createCarpool,
-  getCarpool,
+  getAllCarpools,
 } from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
 import { getLoginUser, showMyCarpool } from "../logic/userHandler";
@@ -35,11 +35,13 @@ export const MytripScreen = () => {
   const navigation = useNavigation();
 
   const [refreshing, setrefreshing] = useState(false);
-  const [carpoolData, setCarpoolData] = useState();
+  const [carpoolData, setCarpoolData] = useState([]);
 
   const [value, setValue] = useState("myTrip");
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    setLoading(!loading)
     showMyCarpool().then((data) => setCarpoolData(data));
   }, []);
 
@@ -70,6 +72,7 @@ export const MytripScreen = () => {
       .then((userData) => {
         console.log("user data to be passed to single trip screen")
         console.log(userData)
+        navigation.setOptions({title: carpoolWithId.title})
         navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData })
         // navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })
       })
@@ -227,7 +230,7 @@ export const MytripScreen = () => {
         style={styles.flatListStyle}
         contentContainerStyle={{ alignItems: "stretch" }}
         renderItem={renderCards}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => {return item.id}}
         refreshing={refreshing}
         onRefresh={onRefresh}
         // ItemSeparatorComponent={() => <Separator />}

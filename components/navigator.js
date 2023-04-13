@@ -25,7 +25,7 @@ export const Navigator = () => {
     >
 
       <Tab.Screen
-        name="My Trip"
+        name="MyTrip"
         component={MytripScreen}
 
         options={{
@@ -71,7 +71,7 @@ export const Navigator = () => {
           headerShown: false
         }}
       />
-            <Tab.Screen
+            {/* <Tab.Screen
         name="Settings"
         component={SettingScreen}
 
@@ -80,8 +80,8 @@ export const Navigator = () => {
             <Icon name="gear" size={size} color={color} />
           ),
           headerShown: false
-        }}
-      />
+        }} */}
+      {/* /> */}
     </Tab.Navigator>
 
   )

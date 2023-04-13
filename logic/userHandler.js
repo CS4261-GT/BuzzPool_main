@@ -39,6 +39,23 @@ export const showMyCarpool = async () => {
   return carpoolList
 }
 
+export const getAllUsersInCarpool = async(userIDs) => {
+  var userArr = []
+  await usersCollection
+  .withConverter(userConverter)
+  .get()
+  .then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      if (userIDs.includes(doc.id))
+        userArr.push(doc.data())
+    })
+  })
+  .catch((error) => {
+      console.log('Error getting documents: ', error)
+  })
+  return userArr
+}
+
 export const getLoginUser = async () => {
   var returnUser = {};
   console.log("attemp to get user")

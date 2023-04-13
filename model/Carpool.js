@@ -2,7 +2,7 @@ export default class Carpool {
   constructor(
     // requried fields for creation
     title, departureTime, departureLocation, destination,
-    requireDriver = true, capacity = 4, userGTIDs = [], driverGTID = "",
+    requireDriver = true, capacity = 4, userGTIDs = [], driverGTID = "", userIDs = [],
     // auto set fields
     tripStatus = "Not started", isTransactionFinished = false) {
     this.title = title
@@ -13,6 +13,8 @@ export default class Carpool {
     this.requireDriver = requireDriver
     this.userGTIDs = userGTIDs
     this.driverGTID = driverGTID
+    this.userIDs = userIDs
+
     this.tripStatus = tripStatus
     this.isTransactionFinished = isTransactionFinished
   }
@@ -23,6 +25,15 @@ export default class Carpool {
    */
   getRemainingSeats() {
     return this.capacity - this.userGTIDs.length
+  }
+
+
+  /**
+   * Get all users' GTIDs in this carpool
+   * @returns {number[]} user GTIDs
+   */
+  getAllUsers() {
+    return this.userGTIDs
   }
  
   /**
