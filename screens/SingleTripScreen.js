@@ -23,6 +23,7 @@ import {
   carpoolConverter,
   createCarpool,
   getAllCarpools,
+  updateCarpool,
 } from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
 import { getLoginUser, getAllUsersInCarpool } from "../logic/userHandler";
@@ -32,8 +33,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 const dummy = [
-  {firstName: "Joe"}, 
-  {firstName: "Sriram"},
+  { firstName: "Joe" },
+  { firstName: "Sriram" },
   {},
   {},
   {},
@@ -58,12 +59,14 @@ export const SingleTripScreen = ({ route }) => {
     getAllUsersInCarpool(usersIDs).then((data) => {
 
       const newData = data.filter((user) => {
-        if (user.GTID != carpoolWithId.driverGTID) {
+        if (user.GTID != carpoolWithId.driverGTID)
+        {
           // console.log("This is a passenger")
           // console.log(user)
           return true
         }
-        else {
+        else
+        {
           setDriver(user)
           return false
         }
@@ -79,8 +82,20 @@ export const SingleTripScreen = ({ route }) => {
 
   const handleChatPress = () => {
     navigation.navigate("ChatScreen", { chatIdString: carpoolWithId.id, userdata: userData })
-     
+
   };
+
+  const startCarpool = async () => {
+    carpoolWithId.tripStatus = "Started"
+    await updateCarpool(carpoolWithId)
+    setLoading(!loading)
+  }
+
+  const finishCarpool = async () => {
+    carpoolWithId.tripStatus = "Finished"
+    await updateCarpool(carpoolWithId)
+    setLoading(!loading)
+  }
 
 
   /**
@@ -141,13 +156,14 @@ export const SingleTripScreen = ({ route }) => {
   }
 
   const remainingSeats = carpoolWithId.capacity - carpoolWithId.userGTIDs.length;
-    // I think title is not necessary
-    const subtitle =
-      "From " + carpoolWithId.departureLocation + "\n" + "To " + carpoolWithId.destination;
-  
+  // I think title is not necessary
+  const subtitle =
+    "From " + carpoolWithId.departureLocation + "\n" + "To " + carpoolWithId.destination;
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <Card style={styles.cardStyle}>
+
         <Card.Title
           title={carpoolWithId.title}
           titleStyle={styles.postTitle}
@@ -158,21 +174,45 @@ export const SingleTripScreen = ({ route }) => {
           <Text variant="bodyLarge">{carpoolWithId.departureTime}</Text>
           <Text variant="bodyMedium">car capacity: {carpoolWithId.capacity}</Text>
           <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
+          <Text variant="bodyLarge" style={{fontWeight:"700"}}>{carpoolWithId.tripStatus}</Text>
         </Card.Content>
 
         <Card.Actions>
-          <TouchableOpacity
+
+          <Button
+            style={styles.buttonCancel}
+            mode="contained"
+            onPress={finishCarpool}
+          >
+            Finish
+          </Button>
+          <Button
+            style={styles.buttonConfirm}
+            mode="contained"
+            onPress={startCarpool}
+          >
+            Start
+          </Button>
+          {/* <TouchableOpacity
               style={styles.buttonContainer}
               onPress={handleChatPress}
             >
 
               <Icon name="comments-o" size={25} color="black" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </Card.Actions>
-  
+
 
 
       </Card>
+
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={handleChatPress}
+      >
+
+
+      </TouchableOpacity>
 
       <Text style={styles.postTitle}>
         Driver
@@ -182,10 +222,10 @@ export const SingleTripScreen = ({ route }) => {
         <Card.Content>
           <Text variant="bodyLarge">{driver.firstName}</Text>
         </Card.Content>
-  
+
       </Card>
 
-      
+
 
       <Text style={styles.postTitle}>
         Passengers
@@ -196,7 +236,7 @@ export const SingleTripScreen = ({ route }) => {
         style={styles.flatListStyle}
         contentContainerStyle={{ alignItems: "stretch", justifyContent: "center", alignContent: "center" }}
         renderItem={renderCards}
-        keyExtractor={(item) => {return item.id}}
+        keyExtractor={(item) => { return item.id }}
       // ItemSeparatorComponent={() => <Separator />}
       ></FlatList>
     </KeyboardAvoidingView>
@@ -252,7 +292,7 @@ const styles = StyleSheet.create({
     borderColor: "grey",
     // paddingVertical: 10,
     margin: 20,
-    
+
     marginHorizontal: 10,
   },
   inputContainer: {
@@ -336,7 +376,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   buttonConfirm: {
-    backgroundColor: "#f0e68c",
+    backgroundColor: "#1fdf99",
     alignItems: "center",
     marginBottom: 5,
     marginHorizontal: 5,
