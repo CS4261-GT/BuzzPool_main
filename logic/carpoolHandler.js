@@ -180,12 +180,10 @@ export const joinCarpool = async (carpoolWithId, isDriver) => {
   // console.log("trying to join a carpool")
   // console.log("inside joinCarpool")
   // console.log(carpool)
-  var tripSuccess = false
+  var tripSuccess;
   await getLoginUser()
     .then(({ userId, userData }) => {
       // console.log(userData)
-
-      
       const carpool = convertToCarpool(carpoolWithId)
       if (userData.addTripId(carpoolWithId.id) && carpool.addUser(userData.GTID, userId, isDriver)) {
         console.log(userData)
@@ -203,11 +201,10 @@ export const joinCarpool = async (carpoolWithId, isDriver) => {
           .set(carpool)
 
         alert("Successfully joined the carpool!")
-        tripSuccess = true
+        tripSuccess = carpool
       }
       else {
         alert("Error in joining the carpool")
-        tripSuccess = false
       }
         
     })

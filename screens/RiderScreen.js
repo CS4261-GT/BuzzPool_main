@@ -6,7 +6,8 @@ import {
   SegmentedButtons,
   Button,
 } from "react-native-paper";
-import { DateTimePickerModal } from "react-native-paper-datetimepicker";
+// import DateTimePicker from '@react-native-community/datetimepicker';
+import RNDateTimePicker from "@react-native-community/datetimepicker";
 import {
   NavigationHelpersContext,
   useNavigation,
@@ -47,19 +48,17 @@ export const RiderScreen = () => {
   const [joinTripModalVisible, setjoinTripModalVisible] = useState(false);
 
   const [reload, setReload] = useState(true);
-  const [dateTimePickerVisible, setDateTimePickerVisible] = useState(false);
-  const onDateTimePickerDismiss = useCallback(() => {
-    setDateTimePickerVisible(false);
-  }, [setDateTimePickerVisible]);
 
   const [isDriver, setIsDriver] = useState(true);
   const [date, setDate] = useState(new Date());
   const [carpool, setCarpool] = useState({})
-  const onDateTimeChange = useCallback((newDate) => {
-    // console.log(newDate);
-    setDateTimePickerVisible(false);
-    setDate(newDate);
-  }, []);
+  const onDateTimeChange = (event, selectedDate) => {
+    // const currentDate = selectedDate;
+    // setShow(false);
+    setDate(selectedDate);
+    console.log("new date...")
+    console.log(selectedDate)
+  };
 
   // const [value, setValue] = useState("myTrip");
   const { calendar, timeZone, uses24hourClock, firstWeekday } = getCalendars()[0];
@@ -87,7 +86,7 @@ export const RiderScreen = () => {
     return defaultCalendar;
   }
 
-  async function createCalendar() {
+  async function createCalendar(calendarDate) {
     const defaultCalendar =
       Platform.OS === 'ios'
         ? await getDefaultCalendar()
@@ -95,8 +94,9 @@ export const RiderScreen = () => {
     // console.log(defaultCalendar.id)
 
     // setDate(carpool.departureTime)
-    const calendarDate = carpool ? carpool.departureTime : date
-    console.log(calendarDate)
+    // const calendarDate = carpool ? carpool.departureTime : date
+    // console.log("try to add to calendar")
+    // console.log(calendarDate)
     // console.log(carpool)
     Calendar.createEventAsync(defaultCalendar.id, {
       alarms: [{ relativeOffset: -10 }, { relativeOffset: -30 }],
@@ -144,14 +144,18 @@ export const RiderScreen = () => {
    * Rerender the RiderScreen UI by removing the joined carpool
    * This alsos add data to MyTripScreen UI
    */
-  const joinCarpoolUI = async () => {
+  const joinCarpoolUI = () => {
     // const carpoolObject = convertToCarpool(carpool)
     // console.log("in joinCarpoolUI")
     // console.log(carpool)
     setjoinTripModalVisible(!joinTripModalVisible)
-    const tripJoinSuccess = await joinCarpool(carpool, isDriver)
-    if (tripJoinSuccess)
-      createCalendar()
+    joinCarpool(carpool, isDriver)
+    .then(joinedTrip => {
+      console.log("trying to join a trip.....")
+      console.log(joinedTrip)
+      createCalendar(joinedTrip.departureTime)
+    })
+    .catch(error => console.error(error.message))
     // skipCarpoolUI(carpoolData, carpool.id);
   };
 
@@ -166,7 +170,7 @@ export const RiderScreen = () => {
       .then((userData) => {
         // console.log("user data to be passed to single trip screen")
         // console.log(userData)
-        navigation.setOptions({title: carpoolWithId.title})
+        navigation.setOptions({ title: carpoolWithId.title })
         navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData, from: "RiderScreen" })
         // navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })
       })
@@ -174,7 +178,7 @@ export const RiderScreen = () => {
 
   };
 
-  
+
 
   /**
    * This function is called for every item in the flatlist
@@ -201,7 +205,7 @@ export const RiderScreen = () => {
             <Text variant="bodyLarge">{item.departureTime.toLocaleString()}</Text>
             <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
             <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
-            <Text variant="bodyLarge" style={{fontWeight:"700"}}>{item.tripStatus}</Text>
+            <Text variant="bodyLarge" style={{ fontWeight: "700" }}>{item.tripStatus}</Text>
           </Card.Content>
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
           <Card.Actions>
@@ -219,7 +223,7 @@ export const RiderScreen = () => {
                 setCarpool(item)
                 // console.log(carpool)
                 setjoinTripModalVisible(!joinTripModalVisible)
-                
+
               }}
             >
               Join
@@ -244,10 +248,12 @@ export const RiderScreen = () => {
    */
   const makePost = () => {
     setModalVisible(!modalVisible);
+    // setDate(date)
+    // setCarpool({})
     try
     {
       getLoginUser()
-        .then(async({ userId, userData }) => {
+        .then(async ({ userId, userData }) => {
           // console.log(userId, userData)
           const GTIDNumber = userData.GTID
           if (
@@ -270,8 +276,10 @@ export const RiderScreen = () => {
             GTIDNumber,
             userId,
           ).then(newCarpool => {
-            setCarpool(newCarpool)
-            createCalendar()
+            // setCarpool(newCarpool)
+            console.log("just created a carpool...")
+            console.log(newCarpool)
+            createCalendar(newCarpool.departureTime)
           })
 
         })
@@ -423,13 +431,26 @@ export const RiderScreen = () => {
             </View>
 
             <View style={styles.inputRowcontainer}>
-              <DateTimePickerModal
+              <Text style={styles.inputLabel}>Departure Time:</Text>
+              <RNDateTimePicker
+                value={date}
+                mode={"datetime"}
+                onChange={onDateTimeChange}
+                style={{ paddingVertical: 8 }}
+                // textColor="black"
+                themeVariant="light"
+                // accentColor="#dddfff"
+                minimumDate={new Date()}
+                minuteInterval={5}
+              />
+
+              {/* <DateTimePicker
                 visible={dateTimePickerVisible}
                 onDismiss={onDateTimePickerDismiss}
-                date={date}
+                value={new Date()}
+                mode={"time"}
                 onConfirm={onDateTimeChange}
-                label="Pick A Date"
-                color="black"
+                label="Pick A Time"
               // style={{color:"black"}}
               />
 
@@ -440,7 +461,7 @@ export const RiderScreen = () => {
 
               >
                 Pick date
-              </Button>
+              </Button> */}
             </View>
 
             {/* <View style={styles.inputRowcontainer}>
@@ -561,12 +582,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   inputRowcontainer: {
+    // width: "100%",
+    minWidth: "100%",
     flexDirection: "row",
     marginVertical: 5,
     paddingHorizontal: 5,
     borderWidth: 1,
-    flexWrap: "wrap",
+    // flexWrap: "wrap",
     alignItems: "center",
+    justifyContent: "center",
   },
   inputRowcontainerNoborder: {
     flexDirection: "row",
