@@ -193,7 +193,7 @@ export const MytripScreen = () => {
           />
           
           <Card.Content>
-            <Text variant="bodyLarge">{item.departureTime}</Text>
+            <Text variant="bodyLarge">{item.departureTime.toLocaleString()}</Text>
             <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
             <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
             <Text variant="bodyLarge" style={{fontWeight:"700"}}>{item.tripStatus}</Text>

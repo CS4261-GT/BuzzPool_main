@@ -33,7 +33,7 @@ import {
 } from "../logic/userHandler";
 import * as Calendar from 'expo-calendar';
 import Icon from 'react-native-vector-icons/FontAwesome';
-// import DeviceInfo from 'expo-device';
+import { getCalendars } from "expo-localization";
 
 export const RiderScreen = () => {
   const navigation = useNavigation()
@@ -62,7 +62,9 @@ export const RiderScreen = () => {
   }, []);
 
   // const [value, setValue] = useState("myTrip");
-  console.log(date)
+  const { calendar, timeZone, uses24hourClock, firstWeekday } = getCalendars()[0];
+
+  // console.log(date)
   useEffect(() => {
     setReload(!reload)
     getAllCarpools().then((data) => {
@@ -93,22 +95,22 @@ export const RiderScreen = () => {
     // console.log(defaultCalendar.id)
 
     // setDate(carpool.departureTime)
-    // const calendarDate = carpool ? carpool.departureTime : date
-    // // console.log(calendarDate)
-    // // console.log(carpool)
-    // Calendar.createEventAsync(defaultCalendar.id, {
-    //   alarms: [{ relativeOffset: -10 }, { relativeOffset: -30 }],
-    //   location: departureLocation,
-    //   source: defaultCalendar.source,
-    //   allowsModifications: true,
-    //   timeZone: DeviceInfo.getTimezone(),
-    //   title: 'Buzzpool: ' + title,
-    //   creationDate: calendarDate,
-    //   startDate: calendarDate,
-    //   endDate: calendarDate,
+    const calendarDate = carpool ? carpool.departureTime : date
+    console.log(calendarDate)
+    // console.log(carpool)
+    Calendar.createEventAsync(defaultCalendar.id, {
+      alarms: [{ relativeOffset: -10 }, { relativeOffset: -30 }],
+      location: departureLocation,
+      source: defaultCalendar.source,
+      allowsModifications: true,
+      timeZone: timeZone,
+      title: 'Buzzpool: ' + title,
+      creationDate: calendarDate,
+      startDate: calendarDate,
+      endDate: calendarDate,
 
-    // })
-    //   .then(() => alert("A calendar event is created on your phone!"))
+    })
+      .then(() => alert("A calendar event is created on your phone!"))
     // console.log(`Your new calendar ID is: ${newCalendarID}`);
   }
 
@@ -196,7 +198,7 @@ export const RiderScreen = () => {
             subtitle={subtitle}
           />
           <Card.Content>
-            <Text variant="bodyLarge">{item.departureTime}</Text>
+            <Text variant="bodyLarge">{item.departureTime.toLocaleString()}</Text>
             <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
             <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
             <Text variant="bodyLarge" style={{fontWeight:"700"}}>{item.tripStatus}</Text>
@@ -257,10 +259,10 @@ export const RiderScreen = () => {
             isNaN(GTIDNumber)
           )
             throw new Error("invalid post data");
-          console.log(date.toLocaleString())
+          // console.log(date.toLocaleString())
           createCarpool(
             title,
-            date.toLocaleString(),
+            date,
             departureLocation,
             destination,
             !isDriver,
@@ -424,7 +426,7 @@ export const RiderScreen = () => {
               <DateTimePickerModal
                 visible={dateTimePickerVisible}
                 onDismiss={onDateTimePickerDismiss}
-                date={new Date()}
+                date={date}
                 onConfirm={onDateTimeChange}
                 label="Pick A Date"
                 color="black"

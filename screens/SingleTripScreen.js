@@ -205,7 +205,7 @@ export const SingleTripScreen = ({ route }) => {
           subtitle={subtitle}
         />
         <Card.Content>
-          <Text variant="bodyLarge">{carpoolWithId.departureTime}</Text>
+          <Text variant="bodyLarge">{carpoolWithId.departureTime.toLocaleString()}</Text>
           <Text variant="bodyMedium">car capacity: {carpoolWithId.capacity}</Text>
           <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
           <Text variant="bodyLarge" style={{ fontWeight: "700" }}>{carpoolWithId.tripStatus}</Text>

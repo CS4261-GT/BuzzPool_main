@@ -28,6 +28,8 @@ export var carpoolConverter = {
     return {
       // required fields
       title: carpool.title,
+
+      // timestamp instance at firebase
       departureTime: carpool.departureTime,
       departureLocation: carpool.departureLocation,
       destination: carpool.destination,
@@ -57,14 +59,16 @@ export var carpoolConverter = {
     // isTransactionFinished = false, 
     // isTripFinished = false
 
-    // console.log("Carpool from firebase")
-    // console.log(data)
+    console.log("Carpool from firebase")
+    console.log(data.departureTime.toDate())
 
     var carpool = new Carpool(
 
       // required fields
       data.title,
-      data.departureTime,
+
+      // timestamp instance at firebase
+      data.departureTime.toDate(),
       data.departureLocation,
       data.destination,
       data.requireDriver,
