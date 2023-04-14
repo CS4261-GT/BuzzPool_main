@@ -65,8 +65,8 @@ export const MytripScreen = () => {
         return userData
       })
       .then((userData) => {
-        console.log("user data to be passed to single trip screen")
-        console.log(userData)
+        // console.log("user data to be passed to single trip screen")
+        // console.log(userData)
         navigation.setOptions({title: carpoolWithId.title})
         navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData, from: "MyTripScreen" })
         // navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })

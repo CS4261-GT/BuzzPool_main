@@ -42,8 +42,8 @@ export const createCarpool = async(title, datetime, from, to, requireDriver, cap
       docRef.get()
       .then(carpoolWithId => {
         carpoolWithId['id'] = docRef.id
-        console.log("this is the new carpool")
-        console.log(carpoolWithId)
+        // console.log("this is the new carpool")
+        // console.log(carpoolWithId)
         addInitialCarpoolCreator(carpoolWithId, !requireDriver)
       })
 

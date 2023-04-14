@@ -33,7 +33,7 @@ import {
 } from "../logic/userHandler";
 import * as Calendar from 'expo-calendar';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import DeviceInfo from 'expo-device';
+// import DeviceInfo from 'expo-device';
 
 export const RiderScreen = () => {
   const navigation = useNavigation()
@@ -62,7 +62,7 @@ export const RiderScreen = () => {
   }, []);
 
   // const [value, setValue] = useState("myTrip");
-
+  console.log(date)
   useEffect(() => {
     setReload(!reload)
     getAllCarpools().then((data) => {
@@ -92,23 +92,23 @@ export const RiderScreen = () => {
         : { isLocalAccount: true, name: 'Expo Calendar' };
     // console.log(defaultCalendar.id)
 
-    setDate(carpool.departureTime)
-    const calendarDate = carpool.departureTime ? carpool.departureTime : date
-    console.log(calendarDate)
-    console.log(carpool)
-    Calendar.createEventAsync(defaultCalendar.id, {
-      alarms: [{ relativeOffset: -10 }, { relativeOffset: -30 }],
-      location: departureLocation,
-      source: defaultCalendar.source,
-      allowsModifications: true,
-      timeZone: DeviceInfo.getTimezone(),
-      title: 'Buzzpool: ' + title,
-      creationDate: calendarDate,
-      startDate: calendarDate,
-      endDate: calendarDate,
+    // setDate(carpool.departureTime)
+    // const calendarDate = carpool ? carpool.departureTime : date
+    // // console.log(calendarDate)
+    // // console.log(carpool)
+    // Calendar.createEventAsync(defaultCalendar.id, {
+    //   alarms: [{ relativeOffset: -10 }, { relativeOffset: -30 }],
+    //   location: departureLocation,
+    //   source: defaultCalendar.source,
+    //   allowsModifications: true,
+    //   timeZone: DeviceInfo.getTimezone(),
+    //   title: 'Buzzpool: ' + title,
+    //   creationDate: calendarDate,
+    //   startDate: calendarDate,
+    //   endDate: calendarDate,
 
-    })
-      .then(() => alert("A calendar event is created on your phone!"))
+    // })
+    //   .then(() => alert("A calendar event is created on your phone!"))
     // console.log(`Your new calendar ID is: ${newCalendarID}`);
   }
 
@@ -144,8 +144,8 @@ export const RiderScreen = () => {
    */
   const joinCarpoolUI = async () => {
     // const carpoolObject = convertToCarpool(carpool)
-    console.log("in joinCarpoolUI")
-    console.log(carpool)
+    // console.log("in joinCarpoolUI")
+    // console.log(carpool)
     setjoinTripModalVisible(!joinTripModalVisible)
     const tripJoinSuccess = await joinCarpool(carpool, isDriver)
     if (tripJoinSuccess)
@@ -162,8 +162,8 @@ export const RiderScreen = () => {
         return userData
       })
       .then((userData) => {
-        console.log("user data to be passed to single trip screen")
-        console.log(userData)
+        // console.log("user data to be passed to single trip screen")
+        // console.log(userData)
         navigation.setOptions({title: carpoolWithId.title})
         navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData, from: "RiderScreen" })
         // navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })
@@ -215,7 +215,7 @@ export const RiderScreen = () => {
               mode="contained"
               onPress={() => {
                 setCarpool(item)
-                console.log(carpool)
+                // console.log(carpool)
                 setjoinTripModalVisible(!joinTripModalVisible)
                 
               }}
@@ -246,7 +246,7 @@ export const RiderScreen = () => {
     {
       getLoginUser()
         .then(async({ userId, userData }) => {
-          console.log(userId, userData)
+          // console.log(userId, userData)
           const GTIDNumber = userData.GTID
           if (
             title.length == 0 ||
@@ -257,14 +257,14 @@ export const RiderScreen = () => {
             isNaN(GTIDNumber)
           )
             throw new Error("invalid post data");
-
+          console.log(date.toLocaleString())
           createCarpool(
             title,
             date.toLocaleString(),
             departureLocation,
             destination,
             !isDriver,
-            5,
+            4,
             GTIDNumber,
             userId,
           ).then(newCarpool => {
@@ -424,7 +424,7 @@ export const RiderScreen = () => {
               <DateTimePickerModal
                 visible={dateTimePickerVisible}
                 onDismiss={onDateTimePickerDismiss}
-                date={date}
+                date={new Date()}
                 onConfirm={onDateTimeChange}
                 label="Pick A Date"
                 color="black"
