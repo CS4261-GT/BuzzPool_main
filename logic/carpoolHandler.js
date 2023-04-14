@@ -1,16 +1,10 @@
-import { Avatar, Button, Card, Text } from 'react-native-paper';
-import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
-import React, { useRef, useState } from 'react'
-import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList } from 'react-native'
-import { auth, firestore } from '../api/firebase'
-// import firestore from 'firebase/firestore';
 import Carpool from '../model/Carpool';
-import { userConverter, usersCollection, getLoginUser } from './userHandler';
+import { getLoginUser } from './userHandler';
+import { carpoolConverter, userConverter, carpoolCollection, usersCollection } from '../constants/converters';
 
 
 
 
-export const carpoolCollection = firestore.collection('Carpools');
 /**
  * This function writes a carpool instance to firebase firestore
  * @param {string} title title of the post
@@ -242,83 +236,3 @@ export const convertToCarpool = (carpool) => {
   
 
 }
-
-
-/**
- * This object uses the firebase interface of datatype conversion
- * This converts a carpool object to a firestore compatible object upon write
- * and converts a firestore compatible object to a carpool object upon read
- */
-export var carpoolConverter = {
-  toFirestore: function (carpool) {
-    // data fields for reference
-
-    // this.departureTime = departureTime
-    // this.departureLocation = departureLocation
-    // this.destination = destination
-    // this.capacity = capacity
-    // this.requireDriver = true
-    // this.userGTIDs = [gtid]
-    // this.isTransactionFinished = false
-    // this.isTripFinished = false
-    // console.log(carpool);
-
-    // console.log("Carpool to firebase")
-    // console.log(carpool)
-    return {
-      // required fields
-      title: carpool.title,
-      departureTime: carpool.departureTime,
-      departureLocation: carpool.departureLocation,
-      destination: carpool.destination,
-      requireDriver: carpool.requireDriver,
-      capacity: carpool.capacity,
-      userGTIDs: carpool.userGTIDs,
-      driverGTID: carpool.driverGTID,
-      userIDs: carpool.userIDs,
-
-
-      // internal fields
-      tripStatus: carpool.tripStatus,
-      isTransactionFinished: carpool.isTransactionFinished,
-
-    };
-  },
-  fromFirestore: function (snapshot, options) {
-    const data = snapshot.data(options);
-
-    // title, 
-    // departureTime, 
-    // departureLocation, 
-    // destination, 
-    // requireDriver = true, 
-    // capacity = 5, 
-    // userGTIDs = [],
-    // isTransactionFinished = false, 
-    // isTripFinished = false
-
-    // console.log("Carpool from firebase")
-    // console.log(data)
-
-    var carpool = new Carpool(
-
-      // required fields
-      data.title,
-      data.departureTime,
-      data.departureLocation,
-      data.destination,
-      data.requireDriver,
-      data.capacity,
-      data.userGTIDs,
-      data.driverGTID,
-      data.userIDs,
-
-      // internal fields
-      data.tripStatus,
-      data.isTransactionFinished,
-
-    );
-
-    return carpool;
-  }
-};

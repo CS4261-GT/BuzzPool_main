@@ -22,9 +22,6 @@ import {
   Modal,
 } from "react-native";
 import {
-  carpoolCollection,
-  carpoolConverter,
-  convertToCarpool,
   createCarpool,
   getAllCarpools,
   joinCarpool,
@@ -32,14 +29,14 @@ import {
 } from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
 import {
-  usersCollection,
-  userConverter,
   getLoginUser,
 } from "../logic/userHandler";
 import * as Calendar from 'expo-calendar';
-
+import Icon from 'react-native-vector-icons/FontAwesome';
+import DeviceInfo from 'expo-device';
 
 export const RiderScreen = () => {
+  const navigation = useNavigation()
 
   const [refreshing, setrefreshing] = useState(false);
   const [carpoolData, setCarpoolData] = useState();
@@ -93,18 +90,22 @@ export const RiderScreen = () => {
       Platform.OS === 'ios'
         ? await getDefaultCalendar()
         : { isLocalAccount: true, name: 'Expo Calendar' };
-    console.log(defaultCalendar.id)
+    // console.log(defaultCalendar.id)
+
     setDate(carpool.departureTime)
-    console.log(date)
+    const calendarDate = carpool.departureTime ? carpool.departureTime : date
+    console.log(calendarDate)
+    console.log(carpool)
     Calendar.createEventAsync(defaultCalendar.id, {
       alarms: [{ relativeOffset: -10 }, { relativeOffset: -30 }],
       location: departureLocation,
       source: defaultCalendar.source,
       allowsModifications: true,
+      timeZone: DeviceInfo.getTimezone(),
       title: 'Buzzpool: ' + title,
-      creationDate: date,
-      startDate: date,
-      endDate: date,
+      creationDate: calendarDate,
+      startDate: calendarDate,
+      endDate: calendarDate,
 
     })
       .then(() => alert("A calendar event is created on your phone!"))
@@ -142,7 +143,7 @@ export const RiderScreen = () => {
    * This alsos add data to MyTripScreen UI
    */
   const joinCarpoolUI = async () => {
-    const carpoolObject = convertToCarpool(carpool)
+    // const carpoolObject = convertToCarpool(carpool)
     console.log("in joinCarpoolUI")
     console.log(carpool)
     setjoinTripModalVisible(!joinTripModalVisible)
@@ -150,6 +151,25 @@ export const RiderScreen = () => {
     if (tripJoinSuccess)
       createCalendar()
     // skipCarpoolUI(carpoolData, carpool.id);
+  };
+
+  const handleMoreInfoPress = (carpoolWithId) => {
+    // Pass carpool id as the chatroom id
+    // console.log(id)
+    getLoginUser()
+      .then(({ userId, userData }) => {
+        userData['_id'] = userId
+        return userData
+      })
+      .then((userData) => {
+        console.log("user data to be passed to single trip screen")
+        console.log(userData)
+        navigation.setOptions({title: carpoolWithId.title})
+        navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData, from: "RiderScreen" })
+        // navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })
+      })
+      .catch(error => console.log(error.message))
+
   };
 
   
@@ -179,6 +199,7 @@ export const RiderScreen = () => {
             <Text variant="bodyLarge">{item.departureTime}</Text>
             <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
             <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
+            <Text variant="bodyLarge" style={{fontWeight:"700"}}>{item.tripStatus}</Text>
           </Card.Content>
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
           <Card.Actions>
@@ -201,6 +222,14 @@ export const RiderScreen = () => {
             >
               Join
             </Button>
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={() => { handleMoreInfoPress(item) }
+              }
+            >
+
+              <Icon name="ellipsis-v" size={25} color="black" />
+            </TouchableOpacity>
           </Card.Actions>
         </Card>
       );
@@ -559,10 +588,8 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    width: "60%",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 40,
+    marginHorizontal: 10,
+    paddingHorizontal: 10,
   },
   buttonConfirm: {
     backgroundColor: "#0782F9",

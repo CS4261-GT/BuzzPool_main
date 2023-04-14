@@ -19,10 +19,6 @@ import {
   Modal,
 } from "react-native";
 import {
-  carpoolCollection,
-  carpoolConverter,
-  createCarpool,
-  getAllCarpools,
   updateCarpool,
 } from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
@@ -48,13 +44,15 @@ export const SingleTripScreen = ({ route }) => {
   const [driver, setDriver] = useState("No driver available")
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  
+
 
 
   const [value, setValue] = useState("myTrip");
 
-  const { carpoolWithId, userData } = route.params
-  const usersIDs = carpoolWithId['userIDs']
+  const { carpoolWithId, userData, from } = route.params
+  const tripStatusVisible = from == 'MyTripScreen'
+  console.log(from)
+  const usersIDs = carpoolWithId.userIDs
   console.log(carpoolWithId)
   useEffect(() => {
     setLoading(!loading)
@@ -63,21 +61,25 @@ export const SingleTripScreen = ({ route }) => {
       const newData = data.filter((user) => {
         if (user.GTID != carpoolWithId.driverGTID)
         {
-          // console.log("This is a passenger")
-          // console.log(user)
+          console.log("This is a passenger")
+          console.log(user)
           return true
         }
         else
         {
           setDriver(user)
+          console.log("driver:")
+          console.log(user)
+          setLoading(!loading)
           return false
         }
       })
-      console.log("passenger data")
-      console.log(newData)
+      // console.log("passenger data")
+      // console.log(newData)
       setpassengerData(newData)
     });
   }, []);
+  console.log(driver)
 
   const [requestedUserInfo, setRequestedUserInfo] = useState({
     email: "",
@@ -148,7 +150,7 @@ export const SingleTripScreen = ({ route }) => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-
+      
       <Modal
         animationType="slide"
         transparent={true}
@@ -163,9 +165,9 @@ export const SingleTripScreen = ({ route }) => {
             <Text
               style={styles.postTitle}
             >
-            {requestedUserInfo.firstName} {requestedUserInfo.lastName}
+              {requestedUserInfo.firstName} {requestedUserInfo.lastName}
             </Text>
-            
+
 
             <View style={styles.inputRowcontainer}>
               <Text style={styles.inputLabel}>GTID: {requestedUserInfo.GTID}</Text>
@@ -210,21 +212,26 @@ export const SingleTripScreen = ({ route }) => {
         </Card.Content>
 
         <Card.Actions>
+          {tripStatusVisible &&
+            <Button
+              style={styles.buttonCancel}
+              mode="contained"
+              onPress={finishCarpool}
+            >
+              Finish
+            </Button>
+          }
 
-          <Button
-            style={styles.buttonCancel}
-            mode="contained"
-            onPress={finishCarpool}
-          >
-            Finish
-          </Button>
-          <Button
-            style={styles.buttonConfirm}
-            mode="contained"
-            onPress={startCarpool}
-          >
-            Start
-          </Button>
+          {tripStatusVisible &&
+            <Button
+              style={styles.buttonConfirm}
+              mode="contained"
+              onPress={startCarpool}
+            >
+              Start
+            </Button>
+          }
+
           {/* <TouchableOpacity
               style={styles.buttonContainer}
               onPress={handleChatPress}
@@ -274,7 +281,7 @@ export const SingleTripScreen = ({ route }) => {
         style={styles.flatListStyle}
         contentContainerStyle={{ alignItems: "stretch", justifyContent: "center", alignContent: "center" }}
         renderItem={renderCards}
-        keyExtractor={(item) => { return item.id }}
+        keyExtractor={(item) => { return item.GTID }}
       // ItemSeparatorComponent={() => <Separator />}
       ></FlatList>
     </KeyboardAvoidingView>

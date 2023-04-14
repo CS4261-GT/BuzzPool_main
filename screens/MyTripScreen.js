@@ -18,12 +18,6 @@ import {
   FlatList,
   Modal,
 } from "react-native";
-import {
-  carpoolCollection,
-  carpoolConverter,
-  createCarpool,
-  getAllCarpools,
-} from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
 import { archiveTrip, getLoginUser, showMyCarpool } from "../logic/userHandler";
 import Carpool from "../model/Carpool";
@@ -74,7 +68,7 @@ export const MytripScreen = () => {
         console.log("user data to be passed to single trip screen")
         console.log(userData)
         navigation.setOptions({title: carpoolWithId.title})
-        navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData })
+        navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData, from: "MyTripScreen" })
         // navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })
       })
       .catch(error => console.log(error.message))

@@ -1,9 +1,9 @@
 import { Review } from '../model/Review'
 import { auth, firestore } from '../api/firebase'
 import User from '../model/User';
-import { carpoolCollection, carpoolConverter } from './carpoolHandler';
+import { carpoolConverter, userConverter, carpoolCollection, usersCollection } from '../constants/converters';
 
-export const usersCollection = firestore.collection('Users');
+
 
 export const archiveTrip = async (userWithId, carpoolWithId) => {
 
@@ -62,16 +62,20 @@ export const showMyCarpool = async () => {
 
 export const getAllUsersInCarpool = async (userIDs) => {
   var userArr = []
-  
+  console.log("These are the user IDs for the carpool")
+  console.log(userIDs)
   await usersCollection
   .withConverter(userConverter)
   .get()
   .then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
-      if (userIDs.includes(doc.id))
+      console.log('user to be compared')
+      console.log(doc.id)
+      if (userIDs.includes(doc.id)) {
         userArr.push(doc.data())
-        // console.log("gotten a user!")
-        // console.log(doc.data())
+        console.log("gotten a user!")
+        console.log(doc.data())
+      }
     })
   })
   .catch((error) => {
@@ -135,47 +139,3 @@ export const addUser = async (fname, lname, phoneNumber, GTID) => {
         .catch( error => console.log(error.message));
 }
 
-/**
- * This object uses the firebase interface of datatype conversion
- * This converts a user object to a firestore compatible object upon write
- * and converts a firestore compatible object to a user object upon read
- */
-export var userConverter = {
-  toFirestore: function (user) {
-
-    console.log("To firebase")
-    console.log(user)
-
-    return {
-      email: user.email,
-      GTID: user.GTID,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      phoneNumber: user.phoneNumber,
-      ongoingTripID: user.ongoingTripID,
-      archivedTripID: user.archivedTripID,
-      };
-  },
-  fromFirestore: function (snapshot, options) {
-    const data = snapshot.data(options);
-
-    console.log("From firebase")
-    console.log(data)
-
-    var user = new User(
-      data.email,
-      data.GTID,
-      data.firstName,
-      data.lastName,
-      data.phoneNumber,
-      data.ongoingTripID,
-      data.archivedTripID,
-      );
-
-    return user;
-  }
-};
-
-
-
-export {}

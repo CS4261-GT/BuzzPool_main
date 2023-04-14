@@ -8,10 +8,6 @@ import { View } from "react-native";
 import { DriverScreen } from "../screens/DriverScreen";
 import { MytripScreen } from "../screens/MyTripScreen";
 import ReportScreen from "../screens/ReportScreen";
-import { userConverter, usersCollection } from "../logic/userHandler";
-import { carpoolCollection } from "../logic/carpoolHandler";
-import { auth } from "../api/firebase";
-import { SettingScreen } from "../screens/SettingScreen";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Tab = createBottomTabNavigator();
