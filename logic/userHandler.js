@@ -29,7 +29,8 @@ export const archiveTrip = async (userWithId, carpoolWithId) => {
 export const showMyCarpool = async () => {
   var carpoolList = []
   const {userId, userData} = await getLoginUser()
-
+  console.log("in showMyCarpool")
+  console.log(userData)
   await carpoolCollection
   .withConverter(carpoolConverter)
   .get()
@@ -61,6 +62,7 @@ export const showMyCarpool = async () => {
 
 export const getAllUsersInCarpool = async (userIDs) => {
   var userArr = []
+  
   await usersCollection
   .withConverter(userConverter)
   .get()
@@ -68,11 +70,15 @@ export const getAllUsersInCarpool = async (userIDs) => {
     querySnapshot.forEach((doc) => {
       if (userIDs.includes(doc.id))
         userArr.push(doc.data())
+        // console.log("gotten a user!")
+        // console.log(doc.data())
     })
   })
   .catch((error) => {
       console.log('Error getting documents: ', error)
   })
+  console.log("trying to get all users")
+  console.log(userArr)
   return userArr
 }
 
@@ -157,6 +163,7 @@ export var userConverter = {
     console.log(data)
 
     var user = new User(
+      data.email,
       data.GTID,
       data.firstName,
       data.lastName,

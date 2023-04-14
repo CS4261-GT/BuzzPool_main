@@ -1,9 +1,10 @@
 import { auth } from "../api/firebase"
 
 export default class User {
-  constructor(GTID, firstName, lastName, phoneNumber, ongoingTripID, archivedTripID) {
+  constructor(email, GTID, firstName, lastName, phoneNumber, ongoingTripID, archivedTripID) {
     // userId from firebase?
-    this.email = auth.currentUser.email
+    // can't use current login user's email, because you may be getting information about another person
+    this.email = email
     this.GTID = GTID,
     this.firstName = firstName
     this.lastName = lastName

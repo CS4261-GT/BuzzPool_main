@@ -73,11 +73,14 @@ export const SingleTripScreen = ({ route }) => {
           return false
         }
       })
+      console.log("passenger data")
+      console.log(newData)
       setpassengerData(newData)
     });
   }, []);
 
   const [requestedUserInfo, setRequestedUserInfo] = useState({
+    email: "",
     firstName: "",
     lastName: "",
     GTID: "",
@@ -86,8 +89,8 @@ export const SingleTripScreen = ({ route }) => {
 
 
 
-  console.log("userData in single trip screen")
-  console.log(userData)
+  // console.log("userData in single trip screen")
+  // console.log(userData)
 
   const handleChatPress = () => {
     navigation.navigate("ChatScreen", { chatIdString: carpoolWithId.id, userdata: userData })
@@ -166,24 +169,14 @@ export const SingleTripScreen = ({ route }) => {
 
             <View style={styles.inputRowcontainer}>
               <Text style={styles.inputLabel}>GTID: {requestedUserInfo.GTID}</Text>
-              {/* <TextInput
-                style={styles.input}
-                onChangeText={onChangeDepartureLocation}
-                placeholder="departure location"
-                placeholderTextColor="grey"
-                value={departureLocation}
-              /> */}
             </View>
 
             <View style={styles.inputRowcontainer}>
               <Text style={styles.inputLabel}>Phone Number: {requestedUserInfo.phoneNumber}</Text>
-              {/* <TextInput
-                style={styles.input}
-                onChangeText={onChangeDestination}
-                placeholder="destination"
-                placeholderTextColor="grey"
-                value={destination}
-              /> */}
+            </View>
+
+            <View style={styles.inputRowcontainer}>
+              <Text style={styles.inputLabel}>Email: {requestedUserInfo.email}</Text>
             </View>
 
             {/* <View style={styles.inputRowcontainer}>
