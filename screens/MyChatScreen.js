@@ -18,28 +18,31 @@ import {
   FlatList,
   Modal,
 } from "react-native";
+import {
+  carpoolCollection,
+  carpoolConverter,
+  createCarpool,
+  getAllCarpools,
+} from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
-import { archiveTrip, getLoginUser, showMyCarpool } from "../logic/userHandler";
+import { getLoginUser, showMyCarpool } from "../logic/userHandler";
 import Carpool from "../model/Carpool";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
-export const MytripScreen = () => {
+export const MyChatScreen = ({ route }) => {
   const navigation = useNavigation();
 
   const [refreshing, setrefreshing] = useState(false);
   const [carpoolData, setCarpoolData] = useState([]);
-
-  const [value, setValue] = useState("myTrip");
   const [loading, setLoading] = useState(false)
-  const [user, setUser] = useState({})
+  
 
   useEffect(() => {
     setLoading(!loading)
     showMyCarpool().then((data) => setCarpoolData(data));
   }, []);
-
 
   /**
    * This function resets carpool data and force rerendering of the UI
@@ -65,31 +68,17 @@ export const MytripScreen = () => {
         return userData
       })
       .then((userData) => {
-        // console.log("user data to be passed to single trip screen")
-        // console.log(userData)
+        console.log("user data to be passed to single trip screen")
+        console.log(userData)
         navigation.setOptions({title: carpoolWithId.title})
-        navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData, from: "MyTripScreen" })
-        // navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })
+        //navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData })
+        navigation.navigate("ChatScreen", { chatIdString: carpoolWithId, userdata: userData })
       })
       .catch(error => console.log(error.message))
 
   };
 
-  // const handleMoreInfoPress = (id) => {
-  //   // Pass carpool id as the chatroom id
-  //   console.log(id)
-  //   getLoginUser()
-  //     .then(({ userId, userData }) => {
-  //       return { _id: userId, name: userData.firstName }
-
-  //     })
-  //     .then((userdata) => {
-  //       console.log(userdata)
-  //       navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })
-  //     })
-  //     .catch(error => console.log(error.message))
-
-  // };
+  /*
 
   const LeftSwipeActions = () => {
     return (
@@ -110,6 +99,7 @@ export const MytripScreen = () => {
       </View>
     );
   }
+
 
   const RightSwipeActions = () => {
     return (
@@ -136,26 +126,14 @@ export const MytripScreen = () => {
     );
   }
 
+  */
+
 
   const Separator = () => <View style={styles.itemSeparator} />;
 
 
-  const swipeFromLeftOpen = (carpoolWithId) => {
-    // alert('Swipe from left');
-    
-    getLoginUser()
-      .then(({ userId, userData }) => {
-        userData['_id'] = userId
-        return userData
-      })
-      .then((userData) => {
-        archiveTrip(userData, carpoolWithId)
-        .then(() => {
-          setLoading(!loading)
-        })
-      })
-      .catch(error => console.log(error.message))
-    
+  const swipeFromLeftOpen = () => {
+    alert('Swipe from left');
   }
 
   const swipeFromRightOpen = () => {
@@ -165,7 +143,7 @@ export const MytripScreen = () => {
   /**
    * This function is called for every item in the flatlist
    * It will create a card for each carpool instance
-   * @param {CarpoolWithId} item I think it has to be named "item", it represents a carpool instance
+   * @param {Carpool} item I think it has to be named "item", it represents a carpool instance
    * @returns
    */
   const renderCards = ({ item }) => {
@@ -174,65 +152,31 @@ export const MytripScreen = () => {
     // I think title is not necessary
     const subtitle =
       "From: " + item.departureLocation + "\n" + "To: " + item.destination;
-    // console.log("Document ID:", item);
-
-    // console.log(item)
-    return (
-      <Swipeable
-        renderLeftActions={LeftSwipeActions}
-        onSwipeableLeftOpen={() => swipeFromLeftOpen(item)}
-        renderRightActions={RightSwipeActions}
-        onSwipeableRightOpen={swipeFromRightOpen}
-      >
+    console.log("Document ID:", item);
+    if (item)
+      return (
         <Card style={styles.cardStyle}>
-           <Card.Title
+          <Card.Title
             title={item.title}
             titleStyle={styles.postTitle}
             subtitleNumberOfLines={2}
             subtitle={subtitle}
           />
-          
-          <Card.Content>
-            <Text variant="bodyLarge">{item.departureTime.toLocaleString()}</Text>
-            <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
-            <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
-            <Text variant="bodyLarge" style={{fontWeight:"700"}}>{item.tripStatus}</Text>
-          </Card.Content>
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
-
-          <Card.Actions>
+          <Card.Actions></Card.Actions>
           <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={() => { handleMoreInfoPress(item) }
-              }
-            >
-
-              <Icon name="ellipsis-v" size={25} color="black" />
-            </TouchableOpacity>
-          </Card.Actions>
-          {/* <View
-          // style={styles.buttonContainer}
-          > */}
-            {/* <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={() =>
-                handleChatPress(item.id)
-              }
-            >
-
-              <Icon name="comments-o" size={25} color="black" />
-            </TouchableOpacity> */}
-
+            style={styles.buttonContainer}
+            onPress={() =>
+              handleMoreInfoPress(item.id)
+            }
+          >
             
-          {/* </View> */}
-
-
-
-
+            <Icon name="comments-o" size={35} color="black" />
+          </TouchableOpacity>
         </Card>
-      </Swipeable>
-    )
-  }
+      );
+    else return <></>;
+  };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
