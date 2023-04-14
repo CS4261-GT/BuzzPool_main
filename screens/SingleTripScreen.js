@@ -47,6 +47,8 @@ export const SingleTripScreen = ({ route }) => {
   const [passengerData, setpassengerData] = useState([]);
   const [driver, setDriver] = useState("No driver available")
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  
 
 
   const [value, setValue] = useState("myTrip");
@@ -75,6 +77,13 @@ export const SingleTripScreen = ({ route }) => {
     });
   }, []);
 
+  const [requestedUserInfo, setRequestedUserInfo] = useState({
+    firstName: "",
+    lastName: "",
+    GTID: "",
+    phoneNumber: ""
+  })
+
 
 
   console.log("userData in single trip screen")
@@ -97,6 +106,13 @@ export const SingleTripScreen = ({ route }) => {
     setLoading(!loading)
   }
 
+  const getUserInfo = (user) => {
+    console.log("requested info")
+    console.log(user)
+    setRequestedUserInfo(user)
+    setModalVisible(!modalVisible)
+  }
+
 
   /**
    * This function is called for every item in the flatlist
@@ -107,51 +123,18 @@ export const SingleTripScreen = ({ route }) => {
   const renderCards = ({ item }) => {
     console.log(item)
     return (
-      <Card style={styles.cardStyle}>
-        {/* <Card.Title
-          title={item.title}
-          titleStyle={styles.postTitle}
-          subtitleNumberOfLines={2}
-          subtitle={subtitle}
-        /> */}
+
+      <Card
+        style={styles.cardStyle}
+        onPress={() => getUserInfo(item)}
+      >
         <Card.Content>
           <Text variant="bodyLarge">{item.firstName}</Text>
-          {/* <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
-          <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text> */}
         </Card.Content>
-        {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
-
-        {/* <Card.Actions>
-          <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={() =>
-                handleChatPress(item.id)
-              }
-            >
-
-              <Icon name="comments-o" size={25} color="black" />
-            </TouchableOpacity>
-        </Card.Actions> */}
-        {/* <View
-          // style={styles.buttonContainer}
-          > */}
-        {/* <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={() =>
-                handleChatPress(item.id)
-              }
-            >
-
-              <Icon name="comments-o" size={25} color="black" />
-            </TouchableOpacity> */}
-
-
-        {/* </View> */}
-
-
-
-
       </Card>
+
+
+
     )
   }
 
@@ -162,6 +145,110 @@ export const SingleTripScreen = ({ route }) => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          // Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text
+              style={styles.postTitle}
+            >
+            {requestedUserInfo.firstName} {requestedUserInfo.lastName}
+            </Text>
+            
+
+            <View style={styles.inputRowcontainer}>
+              <Text style={styles.inputLabel}>GTID: {requestedUserInfo.GTID}</Text>
+              {/* <TextInput
+                style={styles.input}
+                onChangeText={onChangeDepartureLocation}
+                placeholder="departure location"
+                placeholderTextColor="grey"
+                value={departureLocation}
+              /> */}
+            </View>
+
+            <View style={styles.inputRowcontainer}>
+              <Text style={styles.inputLabel}>Phone Number: {requestedUserInfo.phoneNumber}</Text>
+              {/* <TextInput
+                style={styles.input}
+                onChangeText={onChangeDestination}
+                placeholder="destination"
+                placeholderTextColor="grey"
+                value={destination}
+              /> */}
+            </View>
+
+            {/* <View style={styles.inputRowcontainer}>
+              <DateTimePickerModal
+                visible={dateTimePickerVisible}
+                onDismiss={onDateTimePickerDismiss}
+                date={date}
+                onConfirm={onDateTimeChange}
+                label="Pick A Date"
+                color="black"
+              // style={{color:"black"}}
+              />
+
+              <Text style={styles.input}>{date.toLocaleString()}</Text>
+              <Button
+                onPress={() => setDateTimePickerVisible(true)}
+                textColor="black"
+
+              >
+                Pick date
+              </Button>
+            </View> */}
+
+            {/* <View style={styles.inputRowcontainer}>
+              <Text style={styles.inputLabel}>Your GTID:</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={setRequesterGTID}
+                placeholder="123456789"
+                placeholderTextColor="grey"
+                value={requesterGTID}
+              />
+            </View> */}
+
+            {/* <View style={styles.inputRowcontainer}>
+              <Text style={styles.inputLabel}>Are you a driver?</Text>
+              <Checkbox
+                status={isDriver ? "checked" : "unchecked"}
+                color="green"
+                onPress={() => setIsDriver(!isDriver)}
+              />
+            </View> */}
+
+            <View style={styles.inputRowcontainerNoborder}>
+              {/* <Button
+                onPress={() => setModalVisible(!modalVisible)}
+                mode="contained"
+                style={styles.buttonCancel}
+              >
+                Cancel
+              </Button> */}
+
+              <Button
+                onPress={() => setModalVisible(!modalVisible)}
+                mode="contained"
+                style={styles.buttonConfirm}
+              >
+                OK
+              </Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+
       <Card style={styles.cardStyle}>
 
         <Card.Title
@@ -174,7 +261,7 @@ export const SingleTripScreen = ({ route }) => {
           <Text variant="bodyLarge">{carpoolWithId.departureTime}</Text>
           <Text variant="bodyMedium">car capacity: {carpoolWithId.capacity}</Text>
           <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
-          <Text variant="bodyLarge" style={{fontWeight:"700"}}>{carpoolWithId.tripStatus}</Text>
+          <Text variant="bodyLarge" style={{ fontWeight: "700" }}>{carpoolWithId.tripStatus}</Text>
         </Card.Content>
 
         <Card.Actions>
@@ -218,12 +305,18 @@ export const SingleTripScreen = ({ route }) => {
         Driver
       </Text>
 
-      <Card style={styles.cardStyle}>
+
+      <Card
+        style={styles.cardStyle}
+        onPress={() => getUserInfo(driver)}
+      >
         <Card.Content>
           <Text variant="bodyLarge">{driver.firstName}</Text>
         </Card.Content>
 
       </Card>
+
+
 
 
 
@@ -301,9 +394,10 @@ const styles = StyleSheet.create({
 
   modalView: {
     margin: 20,
+    marginTop: 5,
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 35,
+    padding: 20,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -329,7 +423,8 @@ const styles = StyleSheet.create({
   },
   postTitle: {
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    // paddingVertical: 10,
+    paddingBottom: 10,
     borderRadius: 10,
     marginTop: 5,
     textAlign: "center",
@@ -340,7 +435,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginVertical: 5,
     paddingHorizontal: 5,
-    borderWidth: 1,
+    // borderWidth: 1,
     flexWrap: "wrap",
     alignItems: "center",
   },
@@ -367,7 +462,7 @@ const styles = StyleSheet.create({
 
   buttonContainer: {
     width: "100%",
-    flex: 0,
+    // flex: 0,
     flexDirection: "row",
     justifyContent: "space-between",
     // alignItems: "center",

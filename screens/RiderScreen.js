@@ -24,6 +24,7 @@ import {
 import {
   carpoolCollection,
   carpoolConverter,
+  convertToCarpool,
   createCarpool,
   getAllCarpools,
   joinCarpool,
@@ -46,6 +47,8 @@ export const RiderScreen = () => {
   const [departureLocation, onChangeDepartureLocation] = useState("");
   const [destination, onChangeDestination] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [joinTripModalVisible, setjoinTripModalVisible] = useState(false);
+
   const [reload, setReload] = useState(true);
   const [dateTimePickerVisible, setDateTimePickerVisible] = useState(false);
   const onDateTimePickerDismiss = useCallback(() => {
@@ -54,6 +57,7 @@ export const RiderScreen = () => {
 
   const [isDriver, setIsDriver] = useState(true);
   const [date, setDate] = useState(new Date());
+  const [carpool, setCarpool] = useState({})
   const onDateTimeChange = useCallback((newDate) => {
     // console.log(newDate);
     setDateTimePickerVisible(false);
@@ -69,7 +73,8 @@ export const RiderScreen = () => {
     });
     (async () => {
       const { status } = await Calendar.requestCalendarPermissionsAsync();
-      if (status === 'granted') {
+      if (status === 'granted')
+      {
         const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
         // console.log('Here are all your calendars:');
         // console.log({ calendars });
@@ -82,7 +87,7 @@ export const RiderScreen = () => {
     // console.log(defaultCalendar)
     return defaultCalendar;
   }
-  
+
   async function createCalendar() {
     const defaultCalendar =
       Platform.OS === 'ios'
@@ -100,7 +105,7 @@ export const RiderScreen = () => {
     // });
     console.log(defaultCalendar.id)
     Calendar.createEventAsync(defaultCalendar.id, {
-      alarms: [{relativeOffset: -10}, {relativeOffset: -30}],
+      alarms: [{ relativeOffset: -10 }, { relativeOffset: -30 }],
       location: departureLocation,
       source: defaultCalendar.source,
       allowsModifications: true,
@@ -108,9 +113,9 @@ export const RiderScreen = () => {
       creationDate: date,
       startDate: date,
       endDate: date,
-      
+
     })
-    .then(() => alert("A calendar event is created on your phone!"))
+      .then(() => alert("A calendar event is created on your phone!"))
     // console.log(`Your new calendar ID is: ${newCalendarID}`);
   }
 
@@ -122,11 +127,11 @@ export const RiderScreen = () => {
     setrefreshing(true);
     setTimeout(() => {
       getAllCarpools()
-      .then((data) => {
-        setCarpoolData(data)
-        setrefreshing(false)
-      });
-      
+        .then((data) => {
+          setCarpoolData(data)
+          setrefreshing(false)
+        });
+
     }, 500);
   };
 
@@ -143,13 +148,17 @@ export const RiderScreen = () => {
   /**
    * Rerender the RiderScreen UI by removing the joined carpool
    * This alsos add data to MyTripScreen UI
-   * @param {CarpoolWithId} carpool
    */
-  const joinCarpoolUI = (carpool) => {
-    
-    joinCarpool(carpool, false);
-    skipCarpoolUI(carpoolData, carpool.id);
+  const joinCarpoolUI = async () => {
+    const carpoolObject = convertToCarpool(carpool)
+    console.log("in joinCarpoolUI")
+    console.log(carpool)
+    setjoinTripModalVisible(!joinTripModalVisible)
+    joinCarpool(carpool, isDriver);
+    // skipCarpoolUI(carpoolData, carpool.id);
   };
+
+  
 
   /**
    * This function is called for every item in the flatlist
@@ -189,7 +198,12 @@ export const RiderScreen = () => {
             <Button
               style={styles.buttonConfirm}
               mode="contained"
-              onPress={() => joinCarpoolUI(item)}
+              onPress={() => {
+                setCarpool(item)
+                console.log(carpool)
+                setjoinTripModalVisible(!joinTripModalVisible)
+                
+              }}
             >
               Join
             </Button>
@@ -205,41 +219,43 @@ export const RiderScreen = () => {
    */
   const makePost = () => {
     setModalVisible(!modalVisible);
-    try {
+    try
+    {
       getLoginUser()
-      .then(({ userId, userData }) => {
-        console.log(userId, userData)
-        const GTIDNumber = userData.GTID
-        if (
-          title.length == 0 ||
-          date == null ||
-          date == undefined ||
-          departureLocation.length == 0 ||
-          destination.length == 0 ||
-          isNaN(GTIDNumber)
-        )
-          throw new Error("invalid post data");
+        .then(({ userId, userData }) => {
+          console.log(userId, userData)
+          const GTIDNumber = userData.GTID
+          if (
+            title.length == 0 ||
+            date == null ||
+            date == undefined ||
+            departureLocation.length == 0 ||
+            destination.length == 0 ||
+            isNaN(GTIDNumber)
+          )
+            throw new Error("invalid post data");
 
-        createCarpool(
-          title,
-          date.toLocaleString(),
-          departureLocation,
-          destination,
-          !isDriver,
-          5,
-          GTIDNumber,
-          userId,
-        )
+          createCarpool(
+            title,
+            date.toLocaleString(),
+            departureLocation,
+            destination,
+            !isDriver,
+            5,
+            GTIDNumber,
+            userId,
+          )
 
-        // console.log("before creating a calendar event")
-        createCalendar()
-        
+          // console.log("before creating a calendar event")
+          createCalendar()
 
-        
-      })
-      .catch(e => console.error(e.message))
-  
-    } catch (error) {
+
+
+        })
+        .catch(e => console.error(e.message))
+
+    } catch (error)
+    {
       alert("Incomplete or invalid input!");
     }
   };
@@ -291,10 +307,54 @@ export const RiderScreen = () => {
         style={styles.flatListStyle}
         contentContainerStyle={{ alignItems: "stretch" }}
         renderItem={renderCards}
-        keyExtractor={(item) => {return item.id}}
+        keyExtractor={(item) => { return item.id }}
         refreshing={refreshing}
         onRefresh={onRefresh}
       ></FlatList>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={joinTripModalVisible}
+        onRequestClose={() => {
+          // Alert.alert('Modal has been closed.');
+          setjoinTripModalVisible(!joinTripModalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+
+
+            <View style={styles.inputRowcontainer}>
+              <Text style={styles.inputLabel}>Driving?</Text>
+              <Checkbox
+                status={isDriver ? "checked" : "unchecked"}
+                color="green"
+                onPress={() => setIsDriver(!isDriver)}
+              />
+            </View>
+
+            <View style={styles.inputRowcontainerNoborder}>
+              <Button
+                onPress={() => setjoinTripModalVisible(!joinTripModalVisible)}
+                mode="contained"
+                style={styles.buttonCancel}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                onPress={() => joinCarpoolUI(carpool)}
+                mode="contained"
+                style={styles.buttonConfirm}
+              >
+                Yes
+              </Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
 
       {/* ---------------Modal will be dispalyed below---------------- */}
 
@@ -347,11 +407,11 @@ export const RiderScreen = () => {
                 onConfirm={onDateTimeChange}
                 label="Pick A Date"
                 color="black"
-                // style={{color:"black"}}
+              // style={{color:"black"}}
               />
 
               <Text style={styles.input}>{date.toLocaleString()}</Text>
-              <Button 
+              <Button
                 onPress={() => setDateTimePickerVisible(true)}
                 textColor="black"
 

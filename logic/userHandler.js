@@ -5,7 +5,27 @@ import { carpoolCollection, carpoolConverter } from './carpoolHandler';
 
 export const usersCollection = firestore.collection('Users');
 
+export const archiveTrip = async (userWithId, carpoolWithId) => {
 
+  const ongoingTrips = userWithId.ongoingTripID.filter(trip => {
+    return !(trip == carpoolWithId.id)
+  })
+
+  const archivedTrips = [...userWithId.archivedTripID, carpoolWithId.id]
+  userWithId.ongoingTripID = ongoingTrips
+  userWithId.archiveTrip = archivedTrips
+  console.log(archivedTrips)
+  usersCollection
+  .doc(userWithId.id)
+  .withConverter(userConverter)
+  .set(userWithId)
+  .catch(e => console.error(e.message))
+}
+
+/**
+ * return all the carpools in a user's ongoing trips
+ * @returns {Promise<Carpool[]>} a list of carpool stored in Promise
+ */
 export const showMyCarpool = async () => {
   var carpoolList = []
   const {userId, userData} = await getLoginUser()
@@ -20,7 +40,7 @@ export const showMyCarpool = async () => {
       var carpool = doc.data()
       
       const carpoolID = doc.id
-      carpool['id'] = carpoolID
+      carpool.id = carpoolID
       // console.log(carpool)
       if (userData.ongoingTripID.includes(carpoolID)) {
         carpoolList.push(carpool)
@@ -127,6 +147,7 @@ export var userConverter = {
       lastName: user.lastName,
       phoneNumber: user.phoneNumber,
       ongoingTripID: user.ongoingTripID,
+      archivedTripID: user.archivedTripID,
       };
   },
   fromFirestore: function (snapshot, options) {
@@ -141,6 +162,7 @@ export var userConverter = {
       data.lastName,
       data.phoneNumber,
       data.ongoingTripID,
+      data.archivedTripID,
       );
 
     return user;

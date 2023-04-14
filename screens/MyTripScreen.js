@@ -25,7 +25,7 @@ import {
   getAllCarpools,
 } from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
-import { getLoginUser, showMyCarpool } from "../logic/userHandler";
+import { archiveTrip, getLoginUser, showMyCarpool } from "../logic/userHandler";
 import Carpool from "../model/Carpool";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -39,6 +39,7 @@ export const MytripScreen = () => {
 
   const [value, setValue] = useState("myTrip");
   const [loading, setLoading] = useState(false)
+  const [user, setUser] = useState({})
 
   useEffect(() => {
     setLoading(!loading)
@@ -145,8 +146,22 @@ export const MytripScreen = () => {
   const Separator = () => <View style={styles.itemSeparator} />;
 
 
-  const swipeFromLeftOpen = () => {
-    alert('Swipe from left');
+  const swipeFromLeftOpen = (carpoolWithId) => {
+    // alert('Swipe from left');
+    
+    getLoginUser()
+      .then(({ userId, userData }) => {
+        userData['_id'] = userId
+        return userData
+      })
+      .then((userData) => {
+        archiveTrip(userData, carpoolWithId)
+        .then(() => {
+          setLoading(!loading)
+        })
+      })
+      .catch(error => console.log(error.message))
+    
   }
 
   const swipeFromRightOpen = () => {
@@ -156,7 +171,7 @@ export const MytripScreen = () => {
   /**
    * This function is called for every item in the flatlist
    * It will create a card for each carpool instance
-   * @param {Carpool} item I think it has to be named "item", it represents a carpool instance
+   * @param {CarpoolWithId} item I think it has to be named "item", it represents a carpool instance
    * @returns
    */
   const renderCards = ({ item }) => {
@@ -171,7 +186,7 @@ export const MytripScreen = () => {
     return (
       <Swipeable
         renderLeftActions={LeftSwipeActions}
-        onSwipeableLeftOpen={swipeFromLeftOpen}
+        onSwipeableLeftOpen={() => swipeFromLeftOpen(item)}
         renderRightActions={RightSwipeActions}
         onSwipeableRightOpen={swipeFromRightOpen}
       >

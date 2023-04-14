@@ -177,10 +177,10 @@ export const addInitialCarpoolCreator = (carpool) => {
  * 1) add carpool id to user's ongoingCarpool and push user data to firestore
  * 2) remove the card from feed
  * 3) update carpool's data and push carpool data to firestore
- * @param {CarpoolWithId} carpool 
+ * @param {CarpoolWithId} carpoolWithId
  * @param {boolean} isDriver
  */
-export const joinCarpool = (carpool, isDriver) => {
+export const joinCarpool = (carpoolWithId, isDriver) => {
   // console.log(auth.currentUser)
   // console.log("trying to join a carpool")
   // console.log("inside joinCarpool")
@@ -190,7 +190,7 @@ export const joinCarpool = (carpool, isDriver) => {
       // console.log(userData)
 
       // add carpoolId to user
-      if (userData.addTripId(carpool.id))
+      if (userData.addTripId(carpoolWithId.id))
       {
         console.log(userData)
 
@@ -201,11 +201,12 @@ export const joinCarpool = (carpool, isDriver) => {
           .catch(e => console.error(e.message))
 
         // add user to the carpool instance
-        if (carpool.addUser(userData.GTID, isDriver))
+        const carpool = convertToCarpool(carpoolWithId)
+        if (carpool.addUser(userData.GTID, userId, isDriver))
         {
           // update carpool data in firestore
           console.log("trying to update firestore carpool")
-          carpoolCollection.doc(carpool.id)
+          carpoolCollection.doc(carpoolWithId.id)
             .withConverter(carpoolConverter)
             .set(carpool)
 
@@ -222,7 +223,28 @@ export const joinCarpool = (carpool, isDriver) => {
       else
         alert("Error in joining the carpool")
     })
-    .catch(error => console.log(error.message))
+    .catch(error => console.error(error.message))
+}
+
+export const convertToCarpool = (carpool) => {
+  return new Carpool(
+    carpool.title,
+    carpool.departureTime,
+    carpool.departureLocation,
+    carpool.destination,
+    carpool.requireDriver,
+    carpool.capacity,
+    carpool.userGTIDs,
+    carpool.driverGTID,
+    carpool.userIDs,
+
+
+    // internal fields
+    carpool.tripStatus,
+    carpool.isTransactionFinished,
+  )
+  
+
 }
 
 

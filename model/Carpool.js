@@ -29,34 +29,38 @@ export default class Carpool {
 
 
   /**
-   * Get all users' GTIDs in this carpool
-   * @returns {number[]} user GTIDs
+   * Get all users' id in this carpool
+   * @returns {string[]} user ids
    */
   getAllUsers() {
-    return this.userGTIDs
+    return this.userIDs
   }
  
   /**
    * This method adds a driver to the carpool
    * @param {number} gtid 
+   * @param {string} id
    * @return {boolean} true if the action is successful, false otherwise
    */
-  addDriver(gtid) {
+  addDriver(gtid, id) {
     if (!this.requireDriver)
       return false
     this.userGTIDs.push(gtid)
     this.requireDriver = false
     this.driverGTID = gtid
+    this.userIDs.push(id)
     return true
   }
 
   /**
    * This method adds a rider to the carpool
    * @param {number} gtid 
+   * @param {string} id
    * @return {boolean} true if the action is successful, false otherwise
    */
-  addRider(gtid) {
+  addRider(gtid, id) {
     this.userGTIDs.push(gtid)
+    this.userIDs.push(id)
     return true
   }
 
@@ -69,13 +73,14 @@ export default class Carpool {
    * @param {boolean} isDriver 
    * @returns {boolean}
    */
-  addUser(gtid, isDriver) {
-    console.log("Add user")
-    console.log(gtid)
-    console.log(isDriver)
+  addUser(gtid, id, isDriver) {
+    // console.log("Add user")
+    // console.log(gtid)
+    // console.log(isDriver)
     if (this.userGTIDs.includes(gtid) || this.userGTIDs.length >= this.capacity)
       return false
-    return isDriver ? this.addDriver(gtid) : this.addRider(gtid)
+    
+    return isDriver ? this.addDriver(gtid, id) : this.addRider(gtid, id)
   }
 
 
