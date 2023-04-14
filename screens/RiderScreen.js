@@ -93,17 +93,9 @@ export const RiderScreen = () => {
       Platform.OS === 'ios'
         ? await getDefaultCalendar()
         : { isLocalAccount: true, name: 'Expo Calendar' };
-    // const newCalendarID = await Calendar.createCalendarAsync({
-    //   title: 'Expo Calendar',
-    //   color: 'blue',
-    //   entityType: Calendar.EntityTypes.EVENT,
-    //   sourceId: defaultCalendarSource.id,
-    //   source: defaultCalendarSource,
-    //   name: 'test',
-    //   ownerAccount: 'personal',
-    //   accessLevel: Calendar.CalendarAccessLevel.OWNER,
-    // });
     console.log(defaultCalendar.id)
+    setDate(carpool.departureTime)
+    console.log(date)
     Calendar.createEventAsync(defaultCalendar.id, {
       alarms: [{ relativeOffset: -10 }, { relativeOffset: -30 }],
       location: departureLocation,
@@ -154,7 +146,9 @@ export const RiderScreen = () => {
     console.log("in joinCarpoolUI")
     console.log(carpool)
     setjoinTripModalVisible(!joinTripModalVisible)
-    joinCarpool(carpool, isDriver);
+    const tripJoinSuccess = await joinCarpool(carpool, isDriver)
+    if (tripJoinSuccess)
+      createCalendar()
     // skipCarpoolUI(carpoolData, carpool.id);
   };
 
@@ -222,7 +216,7 @@ export const RiderScreen = () => {
     try
     {
       getLoginUser()
-        .then(({ userId, userData }) => {
+        .then(async({ userId, userData }) => {
           console.log(userId, userData)
           const GTIDNumber = userData.GTID
           if (
@@ -244,12 +238,10 @@ export const RiderScreen = () => {
             5,
             GTIDNumber,
             userId,
-          )
-
-          // console.log("before creating a calendar event")
-          createCalendar()
-
-
+          ).then(newCarpool => {
+            setCarpool(newCarpool)
+            createCalendar()
+          })
 
         })
         .catch(e => console.error(e.message))

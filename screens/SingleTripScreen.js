@@ -179,55 +179,7 @@ export const SingleTripScreen = ({ route }) => {
               <Text style={styles.inputLabel}>Email: {requestedUserInfo.email}</Text>
             </View>
 
-            {/* <View style={styles.inputRowcontainer}>
-              <DateTimePickerModal
-                visible={dateTimePickerVisible}
-                onDismiss={onDateTimePickerDismiss}
-                date={date}
-                onConfirm={onDateTimeChange}
-                label="Pick A Date"
-                color="black"
-              // style={{color:"black"}}
-              />
-
-              <Text style={styles.input}>{date.toLocaleString()}</Text>
-              <Button
-                onPress={() => setDateTimePickerVisible(true)}
-                textColor="black"
-
-              >
-                Pick date
-              </Button>
-            </View> */}
-
-            {/* <View style={styles.inputRowcontainer}>
-              <Text style={styles.inputLabel}>Your GTID:</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={setRequesterGTID}
-                placeholder="123456789"
-                placeholderTextColor="grey"
-                value={requesterGTID}
-              />
-            </View> */}
-
-            {/* <View style={styles.inputRowcontainer}>
-              <Text style={styles.inputLabel}>Are you a driver?</Text>
-              <Checkbox
-                status={isDriver ? "checked" : "unchecked"}
-                color="green"
-                onPress={() => setIsDriver(!isDriver)}
-              />
-            </View> */}
-
             <View style={styles.inputRowcontainerNoborder}>
-              {/* <Button
-                onPress={() => setModalVisible(!modalVisible)}
-                mode="contained"
-                style={styles.buttonCancel}
-              >
-                Cancel
-              </Button> */}
 
               <Button
                 onPress={() => setModalVisible(!modalVisible)}

@@ -22,7 +22,7 @@ export const carpoolCollection = firestore.collection('Carpools');
  * @param {number} GTID requester's GTID
 
  */
-export const createCarpool = (title, datetime, from, to, requireDriver, capacity, GTID, userID) => {
+export const createCarpool = async(title, datetime, from, to, requireDriver, capacity, GTID, userID) => {
 
   const carpool = new Carpool(
     title,
@@ -56,7 +56,7 @@ export const createCarpool = (title, datetime, from, to, requireDriver, capacity
     })
     .catch(error => console.log(error.message));
   // console.log(carpool);
-
+  return carpool
 }
 
 /**
@@ -179,19 +179,21 @@ export const addInitialCarpoolCreator = (carpool) => {
  * 3) update carpool's data and push carpool data to firestore
  * @param {CarpoolWithId} carpoolWithId
  * @param {boolean} isDriver
+ * @return {boolean} true if joining the carpool is successful
  */
-export const joinCarpool = (carpoolWithId, isDriver) => {
+export const joinCarpool = async (carpoolWithId, isDriver) => {
   // console.log(auth.currentUser)
   // console.log("trying to join a carpool")
   // console.log("inside joinCarpool")
   // console.log(carpool)
-  getLoginUser()
+  var tripSuccess = false
+  await getLoginUser()
     .then(({ userId, userData }) => {
       // console.log(userData)
 
-      // add carpoolId to user
-      if (userData.addTripId(carpoolWithId.id))
-      {
+      
+      const carpool = convertToCarpool(carpoolWithId)
+      if (userData.addTripId(carpoolWithId.id) && carpool.addUser(userData.GTID, userId, isDriver)) {
         console.log(userData)
 
         // update user data in firestore
@@ -200,30 +202,24 @@ export const joinCarpool = (carpoolWithId, isDriver) => {
           .set(userData)
           .catch(e => console.error(e.message))
 
-        // add user to the carpool instance
-        const carpool = convertToCarpool(carpoolWithId)
-        if (carpool.addUser(userData.GTID, userId, isDriver))
-        {
-          // update carpool data in firestore
-          console.log("trying to update firestore carpool")
-          carpoolCollection.doc(carpoolWithId.id)
-            .withConverter(carpoolConverter)
-            .set(carpool)
+        // update carpool data in firestore
+        console.log("trying to update firestore carpool")
+        carpoolCollection.doc(carpoolWithId.id)
+          .withConverter(carpoolConverter)
+          .set(carpool)
 
-          alert("Successfully joined the carpool!")
-
-
-        } else
-        {
-          alert("Carpool is full or this carpool already has a driver!")
-        }
-
-
+        alert("Successfully joined the carpool!")
+        tripSuccess = true
       }
-      else
+      else {
         alert("Error in joining the carpool")
+        tripSuccess = false
+      }
+        
     })
     .catch(error => console.error(error.message))
+  console.log(tripSuccess)
+  return tripSuccess
 }
 
 export const convertToCarpool = (carpool) => {
