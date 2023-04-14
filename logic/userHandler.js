@@ -39,7 +39,7 @@ export const showMyCarpool = async () => {
   return carpoolList
 }
 
-export const getAllUsersInCarpool = async(userIDs) => {
+export const getAllUsersInCarpool = async (userIDs) => {
   var userArr = []
   await usersCollection
   .withConverter(userConverter)
