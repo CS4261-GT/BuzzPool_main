@@ -27,8 +27,7 @@ import Carpool from "../model/Carpool";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { subscreen } from "./MyTripScreen";
-import { tripStatus } from "../constants/constants";
+import { subscreen, tripStatus } from "../constants/constants";
 
 const dummy = [
   { firstName: "Joe" },
@@ -46,10 +45,6 @@ export const SingleTripScreen = ({ route }) => {
   const [driver, setDriver] = useState("No driver available")
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-
-
-
-  const [value, setValue] = useState("myTrip");
 
   const { carpoolWithId, userData, from } = route.params
   const tripStatusVisible = from == 'MyTripScreen' + subscreen.ongoingTrips
