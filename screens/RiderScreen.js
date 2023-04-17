@@ -32,12 +32,14 @@ import { auth } from "../api/firebase";
 import {
   getLoginUser,
 } from "../logic/userHandler";
+
 import * as Calendar from 'expo-calendar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { getCalendars } from "expo-localization";
 
 export const RiderScreen = () => {
   const navigation = useNavigation()
+
 
   const [refreshing, setrefreshing] = useState(false);
   const [carpoolData, setCarpoolData] = useState();
@@ -62,17 +64,22 @@ export const RiderScreen = () => {
 
   
 
+
   // const [value, setValue] = useState("myTrip");
   const { calendar, timeZone, uses24hourClock, firstWeekday } = getCalendars()[0];
 
   // console.log(date)
   useEffect(() => {
-    // setReload(!reload)
-   
+    // setReload(!reload);
+    getAllCarpools().then((data) => {
+      setCarpoolData(data);
+    });
     (async () => {
       const { status } = await Calendar.requestCalendarPermissionsAsync();
+
       if (status === 'granted')
       {
+
         const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
         // console.log('Here are all your calendars:');
         // console.log({ calendars });
@@ -82,14 +89,18 @@ export const RiderScreen = () => {
 
   async function getDefaultCalendar() {
     const defaultCalendar = await Calendar.getDefaultCalendarAsync();
+
     // console.log(defaultCalendar)
     return defaultCalendar;
   }
 
+
   async function createCalendar(calendarDate) {
+
     const defaultCalendar =
-      Platform.OS === 'ios'
+      Platform.OS === "ios"
         ? await getDefaultCalendar()
+
         : { isLocalAccount: true, name: 'Expo Calendar' };
     // console.log(defaultCalendar.id)
 
@@ -98,6 +109,7 @@ export const RiderScreen = () => {
     // console.log("try to add to calendar")
     // console.log(calendarDate)
     // console.log(carpool)
+
     Calendar.createEventAsync(defaultCalendar.id, {
       alarms: [{ relativeOffset: -10 }, { relativeOffset: -30 }],
       location: departureLocation,
@@ -111,9 +123,9 @@ export const RiderScreen = () => {
 
     })
       .then(() => alert("A calendar event is created on your phone!"))
+
     // console.log(`Your new calendar ID is: ${newCalendarID}`);
   }
-
 
   /**
    * This function resets carpool data and force rerendering of the UI
@@ -121,12 +133,10 @@ export const RiderScreen = () => {
   const onRefresh = () => {
     setrefreshing(true);
     setTimeout(() => {
-      getAllCarpools()
-        .then((data) => {
-          setCarpoolData(data)
-          setrefreshing(false)
-        });
-
+      getAllCarpools().then((data) => {
+        setCarpoolData(data);
+        setrefreshing(false);
+      });
     }, 500);
   };
 
@@ -146,6 +156,7 @@ export const RiderScreen = () => {
    * Rerender the RiderScreen UI by removing the joined carpool
    * This alsos add data to MyTripScreen UI
    */
+
   const joinCarpoolUI = () => {
     // const carpoolObject = convertToCarpool(carpool)
     // console.log("in joinCarpoolUI")
@@ -159,6 +170,7 @@ export const RiderScreen = () => {
     })
     .catch(error => console.error(error.message))
     // skipCarpoolUI(carpoolData, carpool.id);
+
   };
 
   const handleMoreInfoPress = (carpoolWithId) => {
@@ -192,8 +204,9 @@ export const RiderScreen = () => {
     const remainingSeats = item.capacity - item.userGTIDs.length;
     // I think title is not necessary
     const subtitle =
-      "From " + item.departureLocation + "\n" + "To " + item.destination;
-    // console.log(item)
+      "From: " + item.departureLocation + "\n" + "To: " + item.destination;
+    console.log(item);
+
     if (item)
       return (
         <Card style={styles.cardStyle}>
@@ -258,6 +271,7 @@ export const RiderScreen = () => {
         .then(async ({ userId, userData }) => {
           // console.log(userId, userData)
           const GTIDNumber = userData.GTID
+
           if (
             title.length == 0 ||
             date == null ||
@@ -267,6 +281,7 @@ export const RiderScreen = () => {
             isNaN(GTIDNumber)
           )
             throw new Error("invalid post data");
+
           // console.log(date.toLocaleString())
           createCarpool(
             title,
@@ -291,10 +306,10 @@ export const RiderScreen = () => {
 
     } catch (error)
     {
+
       alert("Incomplete or invalid input!");
     }
   };
-
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -342,7 +357,9 @@ export const RiderScreen = () => {
         style={styles.flatListStyle}
         contentContainerStyle={{ alignItems: "stretch" }}
         renderItem={renderCards}
+
         keyExtractor={(item) => { return item.id }}
+
         refreshing={refreshing}
         onRefresh={onRefresh}
       ></FlatList>
@@ -462,7 +479,6 @@ export const RiderScreen = () => {
               <Button
                 onPress={() => setDateTimePickerVisible(true)}
                 textColor="black"
-
               >
                 Pick date
               </Button> */}
@@ -509,7 +525,7 @@ export const RiderScreen = () => {
         </View>
       </Modal>
     </KeyboardAvoidingView>
-  )
+  );
 };
 
 const styles = StyleSheet.create({
@@ -645,5 +661,24 @@ const styles = StyleSheet.create({
     color: "#0782F9",
     fontWeight: "700",
     fontSize: 16,
+  },
+  searchBar: {
+    width: "70%",
+    height: 40,
+    paddingHorizontal: 10,
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 10,
+    marginTop: 10,
+  },
+  searchBar2: {
+    width: "34%",
+    height: 40,
+    paddingHorizontal: 10,
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 10,
+    marginTop: 10,
+    marginHorizontal: 4
   },
 });

@@ -18,39 +18,31 @@ import {
   FlatList,
   Modal,
 } from "react-native";
+import {
+  carpoolCollection,
+  carpoolConverter,
+  createCarpool,
+  getAllCarpools,
+} from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
-import { archiveTrip, getLoginUser, showMyCarpool, unarchiveTrip } from "../logic/userHandler";
+import { getLoginUser, showMyCarpool } from "../logic/userHandler";
 import Carpool from "../model/Carpool";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { skipCarpool } from "../logic/carpoolHandler";
 
-export const subscreen = {
-  ongoingTrips: "ongoingTrips",
-  archivedTrips: "archivedTrips",
-}
-
-export const MytripScreen = () => {
+export const MyChatScreen = ({ route }) => {
   const navigation = useNavigation();
 
   const [refreshing, setrefreshing] = useState(false);
   const [carpoolData, setCarpoolData] = useState([]);
-  const [archiveRefreshing, setArchiveRefreshing] = useState(false)
-  const [archiveCarpoolData, setArchiveCarpoolData] = useState([])
-
-
-  const [value, setValue] = useState(subscreen.ongoingTrips);
-
-
-
+  const [loading, setLoading] = useState(false)
+  
 
   useEffect(() => {
-    // setLoading(!loading)
-    showMyCarpool(subscreen.ongoingTrips).then((data) => setCarpoolData(data));
-    showMyCarpool(subscreen.archivedTrips).then((data) => setArchiveCarpoolData(data));
+    setLoading(!loading)
+    showMyCarpool().then((data) => setCarpoolData(data));
   }, []);
-
 
   /**
    * This function resets carpool data and force rerendering of the UI
@@ -58,25 +50,10 @@ export const MytripScreen = () => {
   const onRefresh = () => {
     setrefreshing(true);
     setTimeout(() => {
-      showMyCarpool(subscreen.ongoingTrips)
+      showMyCarpool()
         .then((data) => {
           setCarpoolData(data)
           setrefreshing(false)
-        });
-
-    }, 500);
-  };
-
-  /**
-   * This function resets carpool data and force rerendering of the UI
-   */
-  const onArchiveRefresh = () => {
-    setArchiveRefreshing(true);
-    setTimeout(() => {
-      showMyCarpool(subscreen.archivedTrips)
-        .then((data) => {
-          setArchiveCarpoolData(data)
-          setArchiveRefreshing(false)
         });
 
     }, 500);
@@ -91,34 +68,19 @@ export const MytripScreen = () => {
         return userData
       })
       .then((userData) => {
-        // console.log("user data to be passed to single trip screen")
-        // console.log(userData)
-        navigation.setOptions({ title: carpoolWithId.title })
-        navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData, from: "MyTripScreen" })
-        // navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })
+        console.log("user data to be passed to single trip screen")
+        console.log(userData)
+        navigation.setOptions({title: carpoolWithId.title})
+        //navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData })
+        navigation.navigate("ChatScreen", { chatIdString: carpoolWithId, userdata: userData })
       })
       .catch(error => console.log(error.message))
 
   };
 
-  // const handleMoreInfoPress = (id) => {
-  //   // Pass carpool id as the chatroom id
-  //   console.log(id)
-  //   getLoginUser()
-  //     .then(({ userId, userData }) => {
-  //       return { _id: userId, name: userData.firstName }
-
-  //     })
-  //     .then((userdata) => {
-  //       console.log(userdata)
-  //       navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })
-  //     })
-  //     .catch(error => console.log(error.message))
-
-  // };
+  /*
 
   const LeftSwipeActions = () => {
-    const text = value == subscreen.ongoingTrips ? "Archive" : "Unarchive"
     return (
       <View
         style={{ flex: 1, backgroundColor: '#f1c40f', justifyContent: 'center' }}
@@ -132,11 +94,12 @@ export const MytripScreen = () => {
             paddingVertical: 20,
           }}
         >
-          {text}
+          Archive
         </Text>
       </View>
     );
   }
+
 
   const RightSwipeActions = () => {
     return (
@@ -163,37 +126,14 @@ export const MytripScreen = () => {
     );
   }
 
+  */
+
 
   const Separator = () => <View style={styles.itemSeparator} />;
 
 
-  const swipeFromLeftOpen = (carpoolWithId) => {
-    // alert('Swipe from left');
-    console.log("archive " + carpoolWithId.id)
-    getLoginUser()
-      .then(({ userId, userData }) => {
-        userData._id = userId
-        return userData
-      })
-      .then((userData) => {
-        if (value == subscreen.ongoingTrips) {
-          archiveTrip(userData, carpoolWithId)
-          .then(() => {
-            console.log("ready to reset carpool...")
-            onRefresh()
-          })
-        } else {
-          unarchiveTrip(userData, carpoolWithId)
-          .then(() => {
-            console.log("ready to reset carpool...")
-            onArchiveRefresh()
-          })
-        }
-        
-
-      })
-      .catch(error => console.log(error.message))
-
+  const swipeFromLeftOpen = () => {
+    alert('Swipe from left');
   }
 
   const swipeFromRightOpen = () => {
@@ -203,32 +143,18 @@ export const MytripScreen = () => {
   /**
    * This function is called for every item in the flatlist
    * It will create a card for each carpool instance
-   * @param {CarpoolWithId} item I think it has to be named "item", it represents a carpool instance
+   * @param {Carpool} item I think it has to be named "item", it represents a carpool instance
    * @returns
    */
   const renderCards = ({ item }) => {
     // console.log(typeof(item))
-    // console.log("item in render card")
-    // console.log(item)
-    console.log(value)
-    console.log(item)
-    
     const remainingSeats = item.capacity - item.userGTIDs.length;
     // I think title is not necessary
     const subtitle =
       "From: " + item.departureLocation + "\n" + "To: " + item.destination;
-    // console.log("Document ID:", item);
-
-    // console.log(item)
-    return (
-      
-      <Swipeable
-        key={item.id}
-        renderLeftActions={LeftSwipeActions}
-        onSwipeableLeftOpen={() => swipeFromLeftOpen(item)}
-      // renderRightActions={RightSwipeActions}
-      // onSwipeableRightOpen={swipeFromRightOpen}
-      >
+    console.log("Document ID:", item);
+    if (item)
+      return (
         <Card style={styles.cardStyle}>
           <Card.Title
             title={item.title}
@@ -236,100 +162,34 @@ export const MytripScreen = () => {
             subtitleNumberOfLines={2}
             subtitle={subtitle}
           />
-
-          <Card.Content>
-            <Text variant="bodyLarge">{item.departureTime.toLocaleString()}</Text>
-            <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
-            <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
-            <Text variant="bodyLarge" style={{ fontWeight: "700" }}>{item.tripStatus}</Text>
-          </Card.Content>
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
-
-          <Card.Actions>
-            <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={() => { handleMoreInfoPress(item) }
-              }
-            >
-
-              <Icon name="ellipsis-v" size={25} color="black" />
-            </TouchableOpacity>
-          </Card.Actions>
-          {/* <View
-          // style={styles.buttonContainer}
-          > */}
-          {/* <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={() =>
-                handleChatPress(item.id)
-              }
-            >
-
-              <Icon name="comments-o" size={25} color="black" />
-            </TouchableOpacity> */}
-
-
-          {/* </View> */}
-
-
-
-
+          <Card.Actions></Card.Actions>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={() =>
+              handleMoreInfoPress(item.id)
+            }
+          >
+            
+            <Icon name="comments-o" size={35} color="black" />
+          </TouchableOpacity>
         </Card>
-      </Swipeable>
-    )
-  }
+      );
+    else return <></>;
+  };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-
-      <SegmentedButtons
-        value={value}
-        onValueChange={setValue}
-        style={styles.segmentedButtons}
-        // theme={theme}
-        buttons={[
-          {
-            value: subscreen.ongoingTrips,
-            label: 'Ongoing Trips',
-            // TODO: need two themes for the button, one for the unchecked state and another for the checked state
-            // checkedColor: 'black',
-            // showSelectedCheck:'true'
-          },
-          {
-            value: subscreen.archivedTrips,
-            label: 'Archived Trips',
-            // showSelectedCheck:'true'
-          },
-
-
-        ]}
-      />
-
-      {value == subscreen.ongoingTrips &&
-        <FlatList
-          data={carpoolData}
-          style={styles.flatListStyle}
-          contentContainerStyle={{ alignItems: "stretch" }}
-          renderItem={renderCards}
-          keyExtractor={(item) => { return item.id }}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          ItemSeparatorComponent={() => <Separator />}
-        ></FlatList>
-      }
-
-      {value == subscreen.archivedTrips &&
-        <FlatList
-          data={archiveCarpoolData}
-          style={styles.flatListStyle}
-          contentContainerStyle={{ alignItems: "stretch" }}
-          renderItem={renderCards}
-          keyExtractor={(item) => { return item.id }}
-          refreshing={archiveRefreshing}
-          onRefresh={onArchiveRefresh}
-          ItemSeparatorComponent={() => <Separator />}
-        ></FlatList>
-      }
+      <FlatList
+        data={carpoolData}
+        style={styles.flatListStyle}
+        contentContainerStyle={{ alignItems: "stretch" }}
+        renderItem={renderCards}
+        keyExtractor={(item) => {return item.id}}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        ItemSeparatorComponent={() => <Separator />}
+      ></FlatList>
     </KeyboardAvoidingView>
   );
 };
