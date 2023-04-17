@@ -28,6 +28,7 @@ import { skipCarpool } from "../logic/carpoolHandler";
 import { subscreen } from "../constants/constants";
 
 
+
 export const MytripScreen = () => {
   const navigation = useNavigation();
 
