@@ -2,12 +2,16 @@ import { Review } from '../model/Review'
 import { auth, firestore } from '../api/firebase'
 import User from '../model/User';
 import { carpoolConverter, userConverter, carpoolCollection, usersCollection } from '../constants/converters';
-import { subscreen } from '../screens/MyTripScreen';
+import { subscreen, tripStatus } from '../constants/constants';
 
 
 
 export const archiveTrip = async (userWithId, carpoolWithId) => {
   console.log("attempt to archive trip")
+  if (carpoolWithId.tripStatus != tripStatus.Finished) {
+    alert("You can only archive finished trips!")
+    return
+  }
   const ongoingTrips = userWithId.ongoingTripID.filter(trip => {
     // console.log(trip == carpoolWithId.id)
     return !(trip == carpoolWithId.id)

@@ -25,11 +25,8 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { skipCarpool } from "../logic/carpoolHandler";
+import { subscreen } from "../constants/constants";
 
-export const subscreen = {
-  ongoingTrips: "ongoingTrips",
-  archivedTrips: "archivedTrips",
-}
 
 export const MytripScreen = () => {
   const navigation = useNavigation();

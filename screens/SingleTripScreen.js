@@ -28,6 +28,7 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { subscreen } from "./MyTripScreen";
+import { tripStatus } from "../constants/constants";
 
 const dummy = [
   { firstName: "Joe" },
@@ -101,13 +102,13 @@ export const SingleTripScreen = ({ route }) => {
   };
 
   const startCarpool = async () => {
-    carpoolWithId.tripStatus = "Started"
+    carpoolWithId.tripStatus = tripStatus.Start
     await updateCarpool(carpoolWithId)
     setLoading(!loading)
   }
 
   const finishCarpool = async () => {
-    carpoolWithId.tripStatus = "Finished"
+    carpoolWithId.tripStatus = tripStatus.Finished
     await updateCarpool(carpoolWithId)
     setLoading(!loading)
   }
