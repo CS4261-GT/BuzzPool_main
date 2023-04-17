@@ -2,6 +2,7 @@ import { Review } from '../model/Review'
 import { auth, firestore } from '../api/firebase'
 import User from '../model/User';
 import { carpoolConverter, userConverter, carpoolCollection, usersCollection } from '../constants/converters';
+import { subscreen } from '../screens/MyTripScreen';
 
 
 
@@ -16,11 +17,26 @@ export const archiveTrip = async (userWithId, carpoolWithId) => {
   const archivedTrips = [...userWithId.archivedTripID, carpoolWithId.id]
   userWithId.ongoingTripID = ongoingTrips
   userWithId.archivedTripID = archivedTrips
-  // console.log("archived trips:")
-  // console.log(archivedTrips)
 
-  // console.log("updated user:")
-  // console.log(userWithId)
+  usersCollection
+  .doc(userWithId._id)
+  .withConverter(userConverter)
+  .set(userWithId)
+  .catch(e => console.error(e.message))
+
+}
+
+export const unarchiveTrip = async (userWithId, carpoolWithId) => {
+  console.log("attempt to unarchive trip")
+  const archivedTrips = userWithId.archivedTripID.filter(trip => {
+    // console.log(trip == carpoolWithId.id)
+    return !(trip == carpoolWithId.id)
+  })
+
+  // console.log(...userWithId.archivedTripID)
+  const ongoingTrips = [...userWithId.ongoingTripID, carpoolWithId.id]
+  userWithId.ongoingTripID = ongoingTrips
+  userWithId.archivedTripID = archivedTrips
 
   usersCollection
   .doc(userWithId._id)
@@ -31,14 +47,15 @@ export const archiveTrip = async (userWithId, carpoolWithId) => {
 }
 
 /**
- * return all the carpools in a user's ongoing trips
+ * return all the carpools in a user's ongoing/archived trips
  * @returns {Promise<Carpool[]>} a list of carpool stored in Promise
  */
-export const showMyCarpool = async () => {
+export const showMyCarpool = async (keyword) => {
   var carpoolList = []
   const {userId, userData} = await getLoginUser()
-  // console.log("in showMyCarpool")
-  // console.log(userData)
+
+
+  const userCarpool = keyword == subscreen.ongoingTrips ? userData.ongoingTripID : userData.archivedTripID
   await carpoolCollection
   .withConverter(carpoolConverter)
   .get()
@@ -51,7 +68,8 @@ export const showMyCarpool = async () => {
       const carpoolID = doc.id
       carpool.id = carpoolID
       // console.log(carpool)
-      if (userData.ongoingTripID.includes(carpoolID)) {
+
+      if (userCarpool.includes(carpoolID)) {
         carpoolList.push(carpool)
       }
         
