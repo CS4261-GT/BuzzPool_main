@@ -29,17 +29,14 @@ import {
   skipCarpool,
 } from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
-import {
-  getLoginUser,
-} from "../logic/userHandler";
+import { getLoginUser } from "../logic/userHandler";
 
-import * as Calendar from 'expo-calendar';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import * as Calendar from "expo-calendar";
+import Icon from "react-native-vector-icons/FontAwesome";
 import { getCalendars } from "expo-localization";
 
 export const RiderScreen = () => {
-  const navigation = useNavigation()
-
+  const navigation = useNavigation();
 
   const [refreshing, setrefreshing] = useState(false);
   const [carpoolData, setCarpoolData] = useState();
@@ -53,34 +50,55 @@ export const RiderScreen = () => {
 
   const [isDriver, setIsDriver] = useState(true);
   const [date, setDate] = useState(new Date());
-  // const [carpool, setCarpool] = useState({})
+
+  const [carpool, setCarpool] = useState({});
+
+  //Search bar
+  const [searchText, setSearchText] = useState("");
+  const [filteredCarpoolData, setFilteredCarpoolData] = useState([]);
+
+  const handleFilterPress = (departureLocation, destination) => {
+    // Filter the carpool data based on departure location and destination
+    const filteredData = carpoolData.filter((item) => {
+      return (
+        item.departureLocation
+          .toLowerCase()
+          .includes(departureLocation.toLowerCase()) &&
+        item.destination.toLowerCase().includes(destination.toLowerCase())
+      );
+    });
+
+    // Update the filtered data in state and reset the refreshing state
+    setFilteredCarpoolData(filteredData);
+  };
+
+
   const onDateTimeChange = (event, selectedDate) => {
     // const currentDate = selectedDate;
     // setShow(false);
     setDate(selectedDate);
-    console.log("new date...")
-    console.log(selectedDate)
+    console.log("new date...");
+    console.log(selectedDate);
   };
 
-  
-
-
   // const [value, setValue] = useState("myTrip");
-  const { calendar, timeZone, uses24hourClock, firstWeekday } = getCalendars()[0];
+  const { calendar, timeZone, uses24hourClock, firstWeekday } =
+    getCalendars()[0];
 
   // console.log(date)
   useEffect(() => {
     // setReload(!reload);
     getAllCarpools().then((data) => {
       setCarpoolData(data);
+      setFilteredCarpoolData(data);
     });
     (async () => {
       const { status } = await Calendar.requestCalendarPermissionsAsync();
 
-      if (status === 'granted')
-      {
-
-        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+      if (status === "granted") {
+        const calendars = await Calendar.getCalendarsAsync(
+          Calendar.EntityTypes.EVENT
+        );
         // console.log('Here are all your calendars:');
         // console.log({ calendars });
       }
@@ -94,14 +112,11 @@ export const RiderScreen = () => {
     return defaultCalendar;
   }
 
-
   async function createCalendar(calendarDate) {
-
     const defaultCalendar =
       Platform.OS === "ios"
         ? await getDefaultCalendar()
-
-        : { isLocalAccount: true, name: 'Expo Calendar' };
+        : { isLocalAccount: true, name: "Expo Calendar" };
     // console.log(defaultCalendar.id)
 
     // setDate(carpool.departureTime)
@@ -116,13 +131,11 @@ export const RiderScreen = () => {
       source: defaultCalendar.source,
       allowsModifications: true,
       timeZone: timeZone,
-      title: 'Buzzpool: ' + title,
+      title: "Buzzpool: " + title,
       creationDate: calendarDate,
       startDate: calendarDate,
       endDate: calendarDate,
-
-    })
-      .then(() => alert("A calendar event is created on your phone!"))
+    }).then(() => alert("A calendar event is created on your phone!"));
 
     // console.log(`Your new calendar ID is: ${newCalendarID}`);
   }
@@ -161,16 +174,15 @@ export const RiderScreen = () => {
     // const carpoolObject = convertToCarpool(carpool)
     // console.log("in joinCarpoolUI")
     // console.log(carpool)
-    setjoinTripModalVisible(!joinTripModalVisible)
+    setjoinTripModalVisible(!joinTripModalVisible);
     joinCarpool(carpool, isDriver)
-    .then(joinedTrip => {
-      console.log("trying to join a trip.....")
-      console.log(joinedTrip)
-      createCalendar(joinedTrip.departureTime)
-    })
-    .catch(error => console.error(error.message))
+      .then((joinedTrip) => {
+        console.log("trying to join a trip.....");
+        console.log(joinedTrip);
+        createCalendar(joinedTrip.departureTime);
+      })
+      .catch((error) => console.error(error.message));
     // skipCarpoolUI(carpoolData, carpool.id);
-
   };
 
   const handleMoreInfoPress = (carpoolWithId) => {
@@ -178,21 +190,22 @@ export const RiderScreen = () => {
     // console.log(id)
     getLoginUser()
       .then(({ userId, userData }) => {
-        userData['_id'] = userId
-        return userData
+        userData["_id"] = userId;
+        return userData;
       })
       .then((userData) => {
         // console.log("user data to be passed to single trip screen")
         // console.log(userData)
-        navigation.setOptions({ title: carpoolWithId.title })
-        navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData, from: "RiderScreen" })
+        navigation.setOptions({ title: carpoolWithId.title });
+        navigation.navigate("SingleTripScreen", {
+          carpoolWithId: carpoolWithId,
+          userData: userData,
+          from: "RiderScreen",
+        });
         // navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })
       })
-      .catch(error => console.log(error.message))
-
+      .catch((error) => console.log(error.message));
   };
-
-
 
   /**
    * This function is called for every item in the flatlist
@@ -217,10 +230,14 @@ export const RiderScreen = () => {
             subtitle={subtitle}
           />
           <Card.Content>
-            <Text variant="bodyLarge">{item.departureTime.toLocaleString()}</Text>
+            <Text variant="bodyLarge">
+              {item.departureTime.toLocaleString()}
+            </Text>
             <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
             <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
-            <Text variant="bodyLarge" style={{ fontWeight: "700" }}>{item.tripStatus}</Text>
+            <Text variant="bodyLarge" style={{ fontWeight: "700" }}>
+              {item.tripStatus}
+            </Text>
           </Card.Content>
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
           <Card.Actions>
@@ -235,20 +252,19 @@ export const RiderScreen = () => {
               style={styles.buttonConfirm}
               mode="contained"
               onPress={() => {
-                setCarpool(item)
+                setCarpool(item);
                 // console.log(carpool)
-                setjoinTripModalVisible(!joinTripModalVisible)
-
+                setjoinTripModalVisible(!joinTripModalVisible);
               }}
             >
               Join
             </Button>
             <TouchableOpacity
               style={styles.buttonContainer}
-              onPress={() => { handleMoreInfoPress(item) }
-              }
+              onPress={() => {
+                handleMoreInfoPress(item);
+              }}
             >
-
               <Icon name="ellipsis-v" size={25} color="black" />
             </TouchableOpacity>
           </Card.Actions>
@@ -265,12 +281,11 @@ export const RiderScreen = () => {
     setModalVisible(!modalVisible);
     // setDate(date)
     // setCarpool({})
-    try
-    {
+    try {
       getLoginUser()
         .then(async ({ userId, userData }) => {
           // console.log(userId, userData)
-          const GTIDNumber = userData.GTID
+          const GTIDNumber = userData.GTID;
 
           if (
             title.length == 0 ||
@@ -291,9 +306,10 @@ export const RiderScreen = () => {
             !isDriver,
             4,
             GTIDNumber,
-            userId,
-          ).then(newCarpool => {
+            userId
+          ).then((newCarpool) => {
             // setCarpool(newCarpool)
+
             console.log("just created a carpool...")
             console.log(newCarpool)
             createCalendar(newCarpool.departureTime)
@@ -301,12 +317,10 @@ export const RiderScreen = () => {
           })
 
 
+
         })
-        .catch(e => console.error(e.message))
-
-    } catch (error)
-    {
-
+        .catch((e) => console.error(e.message));
+    } catch (error) {
       alert("Incomplete or invalid input!");
     }
   };
@@ -352,14 +366,36 @@ export const RiderScreen = () => {
         Make post
       </Button>
 
+      <View style={styles.filterContainer}>
+        <TextInput
+          style={styles.filterInput}
+          placeholder="From"
+          value={departureLocation}
+          onChangeText={onChangeDepartureLocation}
+        />
+        <TextInput
+          style={styles.filterInput}
+          placeholder="To"
+          value={destination}
+          onChangeText={onChangeDestination}
+        />
+        <Button
+          style={styles.filterButton}
+          mode="contained"
+          onPress={() => handleFilterPress(departureLocation, destination)}
+        >
+          Filter
+        </Button>
+      </View>
+
       <FlatList
-        data={carpoolData}
+        data={filteredCarpoolData}
         style={styles.flatListStyle}
         contentContainerStyle={{ alignItems: "stretch" }}
         renderItem={renderCards}
-
-        keyExtractor={(item) => { return item.id }}
-
+        keyExtractor={(item) => {
+          return item.id;
+        }}
         refreshing={refreshing}
         onRefresh={onRefresh}
       ></FlatList>
@@ -375,8 +411,6 @@ export const RiderScreen = () => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-
-
             <View style={styles.inputRowcontainer}>
               <Text style={styles.inputLabel}>Driving?</Text>
               <Checkbox
@@ -406,7 +440,6 @@ export const RiderScreen = () => {
           </View>
         </View>
       </Modal>
-
 
       {/* ---------------Modal will be dispalyed below---------------- */}
 
@@ -679,6 +712,25 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     marginTop: 10,
-    marginHorizontal: 4
+    marginHorizontal: 4,
+  },
+  filterContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 16,
+  },
+  filterInput: {
+    flex: 1,
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    marginHorizontal: 8,
+  },
+  filterButton: {
+    marginLeft: 5,
+    marginHorizontal: 8,
   },
 });
