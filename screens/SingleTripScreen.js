@@ -13,111 +13,135 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  Keyboard,
   KeyboardAvoidingView,
   TextInput,
   FlatList,
   Modal,
 } from "react-native";
-import {
-  updateCarpool,
-} from "../logic/carpoolHandler";
-import { auth } from "../api/firebase";
+import { updateCarpool } from "../logic/carpoolHandler";
+import { auth, firestore } from "../api/firebase";
 import { getLoginUser, getAllUsersInCarpool } from "../logic/userHandler";
 import Carpool from "../model/Carpool";
 import { useNavigation } from "@react-navigation/native";
-import Icon from 'react-native-vector-icons/FontAwesome';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Icon from "react-native-vector-icons/FontAwesome";
+import Swipeable from "react-native-gesture-handler/Swipeable";
 
-const dummy = [
-  { firstName: "Joe" },
-  { firstName: "Sriram" },
-  {},
-  {},
-  {},
-]
+const dummy = [{ firstName: "Joe" }, { firstName: "Sriram" }, {}, {}, {}];
 
 export const SingleTripScreen = ({ route }) => {
   const navigation = useNavigation();
 
   // const [refreshing, setrefreshing] = useState(false);
   const [passengerData, setpassengerData] = useState([]);
-  const [driver, setDriver] = useState("No driver available")
+  const [driver, setDriver] = useState("No driver available");
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
+  const [reportUser, setReportUser] = useState(false);
+  const [message, setMessage] = useState("");
 
+  const [reportedEmail, setReportedEmail] = useState("")
+  const [reportedFirst, setReportedFirst] = useState("")
+  const [reportedLast, setReportedLast] = useState("")
+  const [reportedGTID, setReportedGTID] = useState("")
 
   const [value, setValue] = useState("myTrip");
 
-  const { carpoolWithId, userData, from } = route.params
-  const tripStatusVisible = from == 'MyTripScreen'
-  console.log(from)
-  const usersIDs = carpoolWithId.userIDs
-  console.log(carpoolWithId)
+  const { carpoolWithId, userData, from } = route.params;
+  const tripStatusVisible = from == "MyTripScreen";
+  console.log(from);
+  const usersIDs = carpoolWithId.userIDs;
+  console.log(carpoolWithId);
   useEffect(() => {
-    setLoading(!loading)
+    setLoading(!loading);
     getAllUsersInCarpool(usersIDs).then((data) => {
-
       const newData = data.filter((user) => {
-        if (user.GTID != carpoolWithId.driverGTID)
-        {
-          console.log("This is a passenger")
-          console.log(user)
-          return true
+        if (user.GTID != carpoolWithId.driverGTID) {
+          console.log("This is a passenger");
+          console.log(user);
+          return true;
+        } else {
+          setDriver(user);
+          console.log("driver:");
+          console.log(user);
+          setLoading(!loading);
+          return false;
         }
-        else
-        {
-          setDriver(user)
-          console.log("driver:")
-          console.log(user)
-          setLoading(!loading)
-          return false
-        }
-      })
+      });
       // console.log("passenger data")
       // console.log(newData)
-      setpassengerData(newData)
+      setpassengerData(newData);
     });
   }, []);
-  console.log(driver)
+  console.log(driver);
 
   const [requestedUserInfo, setRequestedUserInfo] = useState({
     email: "",
     firstName: "",
     lastName: "",
     GTID: "",
-    phoneNumber: ""
-  })
+    phoneNumber: "",
+  });
 
+  const sendReportMessage = async () => {
+    try {
+      // Add document to Firestore
+      await firestore.collection("Reports").add({
+        email: reportedEmail, // Replace with the actual data you want to store
+        first: reportedFirst,
+        last: reportedLast,
+        GTID: reportedGTID,
+        message: message,
+      });
 
+      setReportedEmail("");
+      setReportedFirst("");
+      setReportedLast("");
+      setReportedGTID("");
+      setMessage("");
+      console.log("Document added successfully!");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+  };
 
   // console.log("userData in single trip screen")
   // console.log(userData)
 
   const handleChatPress = () => {
-    navigation.navigate("ChatScreen", { chatIdString: carpoolWithId.id, userdata: userData })
-
+    navigation.navigate("ChatScreen", {
+      chatIdString: carpoolWithId.id,
+      userdata: userData,
+    });
   };
 
   const startCarpool = async () => {
-    carpoolWithId.tripStatus = "Started"
-    await updateCarpool(carpoolWithId)
-    setLoading(!loading)
-  }
+    carpoolWithId.tripStatus = "Started";
+    await updateCarpool(carpoolWithId);
+    setLoading(!loading);
+  };
 
   const finishCarpool = async () => {
-    carpoolWithId.tripStatus = "Finished"
-    await updateCarpool(carpoolWithId)
-    setLoading(!loading)
-  }
+    carpoolWithId.tripStatus = "Finished";
+    await updateCarpool(carpoolWithId);
+    setLoading(!loading);
+  };
 
   const getUserInfo = (user) => {
-    console.log("requested info")
-    console.log(user)
-    setRequestedUserInfo(user)
-    setModalVisible(!modalVisible)
-  }
+    console.log("requested info");
+    console.log(user);
+    setRequestedUserInfo(user);
+    setModalVisible(!modalVisible);
+  };
 
+  const report = () => {
+    setReportUser(true);
+  };
+
+  const handleChangeText = (text) => {
+    setMessage(text);
+  };
 
   /**
    * This function is called for every item in the flatlist
@@ -126,31 +150,28 @@ export const SingleTripScreen = ({ route }) => {
    * @returns
    */
   const renderCards = ({ item }) => {
-    console.log(item)
+    console.log(item);
     return (
-
-      <Card
-        style={styles.cardStyle}
-        onPress={() => getUserInfo(item)}
-      >
+      <Card style={styles.cardStyle} onPress={() => getUserInfo(item)}>
         <Card.Content>
           <Text variant="bodyLarge">{item.firstName}</Text>
         </Card.Content>
       </Card>
+    );
+  };
 
-
-
-    )
-  }
-
-  const remainingSeats = carpoolWithId.capacity - carpoolWithId.userGTIDs.length;
+  const remainingSeats =
+    carpoolWithId.capacity - carpoolWithId.userGTIDs.length;
   // I think title is not necessary
   const subtitle =
-    "From " + carpoolWithId.departureLocation + "\n" + "To " + carpoolWithId.destination;
+    "From " +
+    carpoolWithId.departureLocation +
+    "\n" +
+    "To " +
+    carpoolWithId.destination;
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      
       <Modal
         animationType="slide"
         transparent={true}
@@ -158,46 +179,95 @@ export const SingleTripScreen = ({ route }) => {
         onRequestClose={() => {
           // Alert.alert('Modal has been closed.');
           setModalVisible(!modalVisible);
+          setReportUser("False");
         }}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text
-              style={styles.postTitle}
-            >
+            <Text style={styles.postTitle}>
               {requestedUserInfo.firstName} {requestedUserInfo.lastName}
             </Text>
 
-
             <View style={styles.inputRowcontainer}>
-              <Text style={styles.inputLabel}>GTID: {requestedUserInfo.GTID}</Text>
+              <Text style={styles.inputLabel}>
+                GTID: {requestedUserInfo.GTID}
+              </Text>
             </View>
 
             <View style={styles.inputRowcontainer}>
-              <Text style={styles.inputLabel}>Phone Number: {requestedUserInfo.phoneNumber}</Text>
+              <Text style={styles.inputLabel}>
+                Phone Number: {requestedUserInfo.phoneNumber}
+              </Text>
             </View>
 
             <View style={styles.inputRowcontainer}>
-              <Text style={styles.inputLabel}>Email: {requestedUserInfo.email}</Text>
+              <Text style={styles.inputLabel}>
+                Email: {requestedUserInfo.email}
+              </Text>
             </View>
 
             <View style={styles.inputRowcontainerNoborder}>
-
               <Button
-                onPress={() => setModalVisible(!modalVisible)}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                  setReportUser(false);
+                  setMessage("");
+                }}
                 mode="contained"
                 style={styles.buttonConfirm}
               >
                 OK
               </Button>
+
+              <Button
+                onPress={() => {
+                  report();
+                  setReportedEmail(requestedUserInfo.email);
+                  setReportedFirst(requestedUserInfo.firstName);
+                  setReportedLast(requestedUserInfo.lastName);
+                  setReportedGTID(requestedUserInfo.GTID);
+                }}
+                mode="contained"
+                style={styles.buttonReport}
+              >
+                Report
+              </Button>
             </View>
+
+            {reportUser && (
+              <>
+              <KeyboardAvoidingView>
+              <View style={styles.reportMessage}>
+                  <TextInput
+                    style={[styles.message, { height: 100, width: 200 }]} // Set height and width here
+                    placeholder="Message"
+                    value={message}
+                    onChangeText={handleChangeText}
+                    maxLength={100} // Maximum length of 100 characters
+                    multiline // Allow multiple lines of input
+                    numberOfLines={3} // Display 3 lines of input initially
+                    onSubmitEditing={() => Keyboard.dismiss()}
+                  />
+                </View>
+                <Button
+                  onPress={() => {
+                    sendReportMessage();
+                    setModalVisible(!modalVisible);
+                    setReportUser(false);
+                  }}
+                  mode="contained"
+                  style={styles.buttonReport}
+                >
+                  Send Message
+                </Button>
+              </KeyboardAvoidingView>
+              </>
+            )}
           </View>
         </View>
       </Modal>
 
-
       <Card style={styles.cardStyle}>
-
         <Card.Title
           title={carpoolWithId.title}
           titleStyle={styles.postTitle}
@@ -205,14 +275,20 @@ export const SingleTripScreen = ({ route }) => {
           subtitle={subtitle}
         />
         <Card.Content>
-          <Text variant="bodyLarge">{carpoolWithId.departureTime.toLocaleString()}</Text>
-          <Text variant="bodyMedium">car capacity: {carpoolWithId.capacity}</Text>
+          <Text variant="bodyLarge">
+            {carpoolWithId.departureTime.toLocaleString()}
+          </Text>
+          <Text variant="bodyMedium">
+            car capacity: {carpoolWithId.capacity}
+          </Text>
           <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
-          <Text variant="bodyLarge" style={{ fontWeight: "700" }}>{carpoolWithId.tripStatus}</Text>
+          <Text variant="bodyLarge" style={{ fontWeight: "700" }}>
+            {carpoolWithId.tripStatus}
+          </Text>
         </Card.Content>
 
         <Card.Actions>
-          {tripStatusVisible &&
+          {tripStatusVisible && (
             <Button
               style={styles.buttonCancel}
               mode="contained"
@@ -220,9 +296,9 @@ export const SingleTripScreen = ({ route }) => {
             >
               Finish
             </Button>
-          }
+          )}
 
-          {tripStatusVisible &&
+          {tripStatusVisible && (
             <Button
               style={styles.buttonConfirm}
               mode="contained"
@@ -230,7 +306,7 @@ export const SingleTripScreen = ({ route }) => {
             >
               Start
             </Button>
-          }
+          )}
 
           {/* <TouchableOpacity
               style={styles.buttonContainer}
@@ -240,49 +316,36 @@ export const SingleTripScreen = ({ route }) => {
               <Icon name="comments-o" size={25} color="black" />
             </TouchableOpacity> */}
         </Card.Actions>
-
-
-
       </Card>
 
       <TouchableOpacity
         style={styles.buttonContainer}
         onPress={handleChatPress}
-      >
+      ></TouchableOpacity>
 
+      <Text style={styles.postTitle}>Driver</Text>
 
-      </TouchableOpacity>
-
-      <Text style={styles.postTitle}>
-        Driver
-      </Text>
-
-
-      <Card
-        style={styles.cardStyle}
-        onPress={() => getUserInfo(driver)}
-      >
+      <Card style={styles.cardStyle} onPress={() => getUserInfo(driver)}>
         <Card.Content>
           <Text variant="bodyLarge">{driver.firstName}</Text>
         </Card.Content>
-
       </Card>
 
-
-
-
-
-      <Text style={styles.postTitle}>
-        Passengers
-      </Text>
+      <Text style={styles.postTitle}>Passengers</Text>
 
       <FlatList
         data={passengerData}
         style={styles.flatListStyle}
-        contentContainerStyle={{ alignItems: "stretch", justifyContent: "center", alignContent: "center" }}
+        contentContainerStyle={{
+          alignItems: "stretch",
+          justifyContent: "center",
+          alignContent: "center",
+        }}
         renderItem={renderCards}
-        keyExtractor={(item) => { return item.GTID }}
-      // ItemSeparatorComponent={() => <Separator />}
+        keyExtractor={(item) => {
+          return item.GTID;
+        }}
+        // ItemSeparatorComponent={() => <Separator />}
       ></FlatList>
     </KeyboardAvoidingView>
   );
@@ -302,7 +365,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginVertical: 10,
     height: 1,
-    backgroundColor: 'grey',
+    backgroundColor: "grey",
   },
   centeredView: {
     flex: 1,
@@ -428,6 +491,12 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginHorizontal: 5,
   },
+  buttonReport: {
+    backgroundColor: "#FF0000",
+    alignItems: "center",
+    marginBottom: 5,
+    marginHorizontal: 5,
+  },
   buttonCancel: {
     backgroundColor: "red",
     // borderColor: '#000000',
@@ -457,5 +526,16 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "black",
     fontWeight: "bold",
+  },
+  reportMessage: {
+    marginVertical: 10,
+  },
+  message: {
+    height: 80,
+    borderColor: "gray",
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    textAlignVertical: "top", // Align text at the top of the input field
   },
 });
