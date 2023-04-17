@@ -94,7 +94,7 @@ export const MytripScreen = () => {
         // console.log("user data to be passed to single trip screen")
         // console.log(userData)
         navigation.setOptions({ title: carpoolWithId.title })
-        navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData, from: "MyTripScreen" })
+        navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData, from: "MyTripScreen" + value })
         // navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })
       })
       .catch(error => console.log(error.message))
