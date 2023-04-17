@@ -24,6 +24,7 @@ import Carpool from "../model/Carpool";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { skipCarpool } from "../logic/carpoolHandler";
 
 export const MytripScreen = () => {
   const navigation = useNavigation();
@@ -32,11 +33,11 @@ export const MytripScreen = () => {
   const [carpoolData, setCarpoolData] = useState([]);
 
   const [value, setValue] = useState("myTrip");
-  const [loading, setLoading] = useState(false)
+  // const [loading, setLoading] = useState(false)
   const [user, setUser] = useState({})
 
   useEffect(() => {
-    setLoading(!loading)
+    // setLoading(!loading)
     showMyCarpool().then((data) => setCarpoolData(data));
   }, []);
 
@@ -142,17 +143,19 @@ export const MytripScreen = () => {
 
   const swipeFromLeftOpen = (carpoolWithId) => {
     // alert('Swipe from left');
-    
+    console.log("archive " + carpoolWithId.id)
     getLoginUser()
       .then(({ userId, userData }) => {
-        userData['_id'] = userId
+        userData._id = userId
         return userData
       })
       .then((userData) => {
         archiveTrip(userData, carpoolWithId)
         .then(() => {
-          setLoading(!loading)
+          console.log("ready to reset carpool...")
+          onRefresh()
         })
+        
       })
       .catch(error => console.log(error.message))
     
@@ -170,6 +173,8 @@ export const MytripScreen = () => {
    */
   const renderCards = ({ item }) => {
     // console.log(typeof(item))
+    // console.log("item in render card")
+    // console.log(item)
     const remainingSeats = item.capacity - item.userGTIDs.length;
     // I think title is not necessary
     const subtitle =
@@ -179,6 +184,7 @@ export const MytripScreen = () => {
     // console.log(item)
     return (
       <Swipeable
+        key={item.id}
         renderLeftActions={LeftSwipeActions}
         onSwipeableLeftOpen={() => swipeFromLeftOpen(item)}
         renderRightActions={RightSwipeActions}

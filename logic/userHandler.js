@@ -6,20 +6,28 @@ import { carpoolConverter, userConverter, carpoolCollection, usersCollection } f
 
 
 export const archiveTrip = async (userWithId, carpoolWithId) => {
-
+  console.log("attempt to archive trip")
   const ongoingTrips = userWithId.ongoingTripID.filter(trip => {
+    // console.log(trip == carpoolWithId.id)
     return !(trip == carpoolWithId.id)
   })
 
+  // console.log(...userWithId.archivedTripID)
   const archivedTrips = [...userWithId.archivedTripID, carpoolWithId.id]
   userWithId.ongoingTripID = ongoingTrips
-  userWithId.archiveTrip = archivedTrips
-  console.log(archivedTrips)
+  userWithId.archivedTripID = archivedTrips
+  // console.log("archived trips:")
+  // console.log(archivedTrips)
+
+  // console.log("updated user:")
+  // console.log(userWithId)
+
   usersCollection
-  .doc(userWithId.id)
+  .doc(userWithId._id)
   .withConverter(userConverter)
   .set(userWithId)
   .catch(e => console.error(e.message))
+
 }
 
 /**
@@ -29,8 +37,8 @@ export const archiveTrip = async (userWithId, carpoolWithId) => {
 export const showMyCarpool = async () => {
   var carpoolList = []
   const {userId, userData} = await getLoginUser()
-  console.log("in showMyCarpool")
-  console.log(userData)
+  // console.log("in showMyCarpool")
+  // console.log(userData)
   await carpoolCollection
   .withConverter(carpoolConverter)
   .get()
@@ -129,7 +137,8 @@ export const addUser = async (fname, lname, phoneNumber, GTID) => {
             lastName: lname,
             phoneNumber: phoneNumber,
             GTID: GTID,
-            ongoingTripID: []
+            ongoingTripID: [],
+            archivedTripID: [],
         })
         .then(() => {
             console.log('New user added!')
