@@ -19,11 +19,14 @@ import {
   Modal,
 } from "react-native";
 import { auth } from "../api/firebase";
-import { archiveTrip, getLoginUser, showMyCarpool } from "../logic/userHandler";
+import { archiveTrip, getLoginUser, showMyCarpool, unarchiveTrip } from "../logic/userHandler";
 import Carpool from "../model/Carpool";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { skipCarpool } from "../logic/carpoolHandler";
+import { subscreen } from "../constants/constants";
+
 
 
 export const MytripScreen = () => {
@@ -31,14 +34,19 @@ export const MytripScreen = () => {
 
   const [refreshing, setrefreshing] = useState(false);
   const [carpoolData, setCarpoolData] = useState([]);
+  const [archiveRefreshing, setArchiveRefreshing] = useState(false)
+  const [archiveCarpoolData, setArchiveCarpoolData] = useState([])
 
-  const [value, setValue] = useState("myTrip");
-  const [loading, setLoading] = useState(false)
-  const [user, setUser] = useState({})
+
+  const [value, setValue] = useState(subscreen.ongoingTrips);
+
+
+
 
   useEffect(() => {
-    setLoading(!loading)
-    showMyCarpool().then((data) => setCarpoolData(data));
+    // setLoading(!loading)
+    showMyCarpool(subscreen.ongoingTrips).then((data) => setCarpoolData(data));
+    showMyCarpool(subscreen.archivedTrips).then((data) => setArchiveCarpoolData(data));
   }, []);
 
 
@@ -48,10 +56,25 @@ export const MytripScreen = () => {
   const onRefresh = () => {
     setrefreshing(true);
     setTimeout(() => {
-      showMyCarpool()
+      showMyCarpool(subscreen.ongoingTrips)
         .then((data) => {
           setCarpoolData(data)
           setrefreshing(false)
+        });
+
+    }, 500);
+  };
+
+  /**
+   * This function resets carpool data and force rerendering of the UI
+   */
+  const onArchiveRefresh = () => {
+    setArchiveRefreshing(true);
+    setTimeout(() => {
+      showMyCarpool(subscreen.archivedTrips)
+        .then((data) => {
+          setArchiveCarpoolData(data)
+          setArchiveRefreshing(false)
         });
 
     }, 500);
@@ -68,8 +91,8 @@ export const MytripScreen = () => {
       .then((userData) => {
         // console.log("user data to be passed to single trip screen")
         // console.log(userData)
-        navigation.setOptions({title: carpoolWithId.title})
-        navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData, from: "MyTripScreen" })
+        navigation.setOptions({ title: carpoolWithId.title })
+        navigation.navigate("SingleTripScreen", { carpoolWithId: carpoolWithId, userData: userData, from: "MyTripScreen" + value })
         // navigation.navigate("ChatScreen", { chatIdString: id, userdata: userdata })
       })
       .catch(error => console.log(error.message))
@@ -93,6 +116,7 @@ export const MytripScreen = () => {
   // };
 
   const LeftSwipeActions = () => {
+    const text = value == subscreen.ongoingTrips ? "Archive" : "Unarchive"
     return (
       <View
         style={{ flex: 1, backgroundColor: '#f1c40f', justifyContent: 'center' }}
@@ -106,7 +130,7 @@ export const MytripScreen = () => {
             paddingVertical: 20,
           }}
         >
-          Archive
+          {text}
         </Text>
       </View>
     );
@@ -143,20 +167,31 @@ export const MytripScreen = () => {
 
   const swipeFromLeftOpen = (carpoolWithId) => {
     // alert('Swipe from left');
-    
+    console.log("archive " + carpoolWithId.id)
     getLoginUser()
       .then(({ userId, userData }) => {
-        userData['_id'] = userId
+        userData._id = userId
         return userData
       })
       .then((userData) => {
-        archiveTrip(userData, carpoolWithId)
-        .then(() => {
-          setLoading(!loading)
-        })
+        if (value == subscreen.ongoingTrips) {
+          archiveTrip(userData, carpoolWithId)
+          .then(() => {
+            console.log("ready to reset carpool...")
+            onRefresh()
+          })
+        } else {
+          unarchiveTrip(userData, carpoolWithId)
+          .then(() => {
+            console.log("ready to reset carpool...")
+            onArchiveRefresh()
+          })
+        }
+        
+
       })
       .catch(error => console.log(error.message))
-    
+
   }
 
   const swipeFromRightOpen = () => {
@@ -171,6 +206,11 @@ export const MytripScreen = () => {
    */
   const renderCards = ({ item }) => {
     // console.log(typeof(item))
+    // console.log("item in render card")
+    // console.log(item)
+    console.log(value)
+    console.log(item)
+    
     const remainingSeats = item.capacity - item.userGTIDs.length;
     // I think title is not necessary
     const subtitle =
@@ -179,30 +219,32 @@ export const MytripScreen = () => {
 
     // console.log(item)
     return (
+      
       <Swipeable
+        key={item.id}
         renderLeftActions={LeftSwipeActions}
         onSwipeableLeftOpen={() => swipeFromLeftOpen(item)}
-        renderRightActions={RightSwipeActions}
-        onSwipeableRightOpen={swipeFromRightOpen}
+      // renderRightActions={RightSwipeActions}
+      // onSwipeableRightOpen={swipeFromRightOpen}
       >
         <Card style={styles.cardStyle}>
-           <Card.Title
+          <Card.Title
             title={item.title}
             titleStyle={styles.postTitle}
             subtitleNumberOfLines={2}
             subtitle={subtitle}
           />
-          
+
           <Card.Content>
             <Text variant="bodyLarge">{item.departureTime.toLocaleString()}</Text>
             <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
             <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
-            <Text variant="bodyLarge" style={{fontWeight:"700"}}>{item.tripStatus}</Text>
+            <Text variant="bodyLarge" style={{ fontWeight: "700" }}>{item.tripStatus}</Text>
           </Card.Content>
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
 
           <Card.Actions>
-          <TouchableOpacity
+            <TouchableOpacity
               style={styles.buttonContainer}
               onPress={() => { handleMoreInfoPress(item) }
               }
@@ -214,7 +256,7 @@ export const MytripScreen = () => {
           {/* <View
           // style={styles.buttonContainer}
           > */}
-            {/* <TouchableOpacity
+          {/* <TouchableOpacity
               style={styles.buttonContainer}
               onPress={() =>
                 handleChatPress(item.id)
@@ -224,7 +266,7 @@ export const MytripScreen = () => {
               <Icon name="comments-o" size={25} color="black" />
             </TouchableOpacity> */}
 
-            
+
           {/* </View> */}
 
 
@@ -237,16 +279,55 @@ export const MytripScreen = () => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <FlatList
-        data={carpoolData}
-        style={styles.flatListStyle}
-        contentContainerStyle={{ alignItems: "stretch" }}
-        renderItem={renderCards}
-        keyExtractor={(item) => {return item.id}}
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-        ItemSeparatorComponent={() => <Separator />}
-      ></FlatList>
+
+      <SegmentedButtons
+        value={value}
+        onValueChange={setValue}
+        style={styles.segmentedButtons}
+        // theme={theme}
+        buttons={[
+          {
+            value: subscreen.ongoingTrips,
+            label: 'Ongoing Trips',
+            // TODO: need two themes for the button, one for the unchecked state and another for the checked state
+            // checkedColor: 'black',
+            // showSelectedCheck:'true'
+          },
+          {
+            value: subscreen.archivedTrips,
+            label: 'Archived Trips',
+            // showSelectedCheck:'true'
+          },
+
+
+        ]}
+      />
+
+      {value == subscreen.ongoingTrips &&
+        <FlatList
+          data={carpoolData}
+          style={styles.flatListStyle}
+          contentContainerStyle={{ alignItems: "stretch" }}
+          renderItem={renderCards}
+          keyExtractor={(item) => { return item.id }}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          ItemSeparatorComponent={() => <Separator />}
+        ></FlatList>
+      }
+
+      {value == subscreen.archivedTrips &&
+        <FlatList
+          data={archiveCarpoolData}
+          style={styles.flatListStyle}
+          contentContainerStyle={{ alignItems: "stretch" }}
+          renderItem={renderCards}
+          keyExtractor={(item) => { return item.id }}
+          refreshing={archiveRefreshing}
+          onRefresh={onArchiveRefresh}
+          ItemSeparatorComponent={() => <Separator />}
+        ></FlatList>
+      }
     </KeyboardAvoidingView>
   );
 };
