@@ -59,8 +59,8 @@ export var carpoolConverter = {
     // isTransactionFinished = false, 
     // isTripFinished = false
 
-    console.log("Carpool from firebase")
-    console.log(data.departureTime.toDate())
+    // console.log("Carpool from firebase")
+    // console.log(data.departureTime.toDate())
 
     var carpool = new Carpool(
 
@@ -111,8 +111,8 @@ export var userConverter = {
   fromFirestore: function (snapshot, options) {
     const data = snapshot.data(options);
 
-    console.log("From firebase")
-    console.log(data)
+    // console.log("From firebase")
+    // console.log(data)
 
     var user = new User(
       data.email,

@@ -23,19 +23,13 @@ import {
   Modal,
 } from "react-native";
 import {
-  carpoolCollection,
-  carpoolConverter,
   createCarpool,
-  getCarpool,
+  getAllCarpools,
   joinCarpool,
   skipCarpool,
 } from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
-import {
-  usersCollection,
-  userConverter,
-  getLoginUser,
-} from "../logic/userHandler";
+
 
 
 export const DriverScreen = () => {
@@ -61,7 +55,7 @@ export const DriverScreen = () => {
   const [value, setValue] = useState("myTrip");
 
   useEffect(() => {
-    getCarpool().then((data) => {
+    getAllCarpools().then((data) => {
       const newData = data.filter((carpool) => {
         return !carpool.requireDriver;
       });
@@ -182,7 +176,7 @@ export const DriverScreen = () => {
    * This function resets carpool data and force rerendering of the UI
    */
   const updateData = () => {
-    getCarpool().then((data) => {
+    getAllCarpools().then((data) => {
       const newData = data.filter((carpool) => {
         return !carpool.requireDriver;
       });

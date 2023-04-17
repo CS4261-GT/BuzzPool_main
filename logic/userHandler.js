@@ -2,35 +2,64 @@ import { Review } from '../model/Review'
 import { auth, firestore } from '../api/firebase'
 import User from '../model/User';
 import { carpoolConverter, userConverter, carpoolCollection, usersCollection } from '../constants/converters';
+import { subscreen, tripStatus } from '../constants/constants';
 
 
 
 export const archiveTrip = async (userWithId, carpoolWithId) => {
-
+  console.log("attempt to archive trip")
+  if (carpoolWithId.tripStatus != tripStatus.Finished) {
+    alert("You can only archive finished trips!")
+    return
+  }
   const ongoingTrips = userWithId.ongoingTripID.filter(trip => {
+    // console.log(trip == carpoolWithId.id)
     return !(trip == carpoolWithId.id)
   })
 
+  // console.log(...userWithId.archivedTripID)
   const archivedTrips = [...userWithId.archivedTripID, carpoolWithId.id]
   userWithId.ongoingTripID = ongoingTrips
-  userWithId.archiveTrip = archivedTrips
-  console.log(archivedTrips)
+  userWithId.archivedTripID = archivedTrips
+
   usersCollection
-  .doc(userWithId.id)
+  .doc(userWithId._id)
   .withConverter(userConverter)
   .set(userWithId)
   .catch(e => console.error(e.message))
+
+}
+
+export const unarchiveTrip = async (userWithId, carpoolWithId) => {
+  console.log("attempt to unarchive trip")
+  const archivedTrips = userWithId.archivedTripID.filter(trip => {
+    // console.log(trip == carpoolWithId.id)
+    return !(trip == carpoolWithId.id)
+  })
+
+  // console.log(...userWithId.archivedTripID)
+  const ongoingTrips = [...userWithId.ongoingTripID, carpoolWithId.id]
+  userWithId.ongoingTripID = ongoingTrips
+  userWithId.archivedTripID = archivedTrips
+
+  usersCollection
+  .doc(userWithId._id)
+  .withConverter(userConverter)
+  .set(userWithId)
+  .catch(e => console.error(e.message))
+
 }
 
 /**
- * return all the carpools in a user's ongoing trips
+ * return all the carpools in a user's ongoing/archived trips
  * @returns {Promise<Carpool[]>} a list of carpool stored in Promise
  */
-export const showMyCarpool = async () => {
+export const showMyCarpool = async (keyword) => {
   var carpoolList = []
   const {userId, userData} = await getLoginUser()
-  console.log("in showMyCarpool")
-  console.log(userData)
+
+
+  const userCarpool = keyword == subscreen.ongoingTrips ? userData.ongoingTripID : userData.archivedTripID
   await carpoolCollection
   .withConverter(carpoolConverter)
   .get()
@@ -43,7 +72,8 @@ export const showMyCarpool = async () => {
       const carpoolID = doc.id
       carpool.id = carpoolID
       // console.log(carpool)
-      if (userData.ongoingTripID.includes(carpoolID)) {
+
+      if (userCarpool.includes(carpoolID)) {
         carpoolList.push(carpool)
       }
         
@@ -129,7 +159,8 @@ export const addUser = async (fname, lname, phoneNumber, GTID) => {
             lastName: lname,
             phoneNumber: phoneNumber,
             GTID: GTID,
-            ongoingTripID: []
+            ongoingTripID: [],
+            archivedTripID: [],
         })
         .then(() => {
             console.log('New user added!')

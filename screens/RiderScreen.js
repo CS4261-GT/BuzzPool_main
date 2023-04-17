@@ -7,7 +7,7 @@ import {
   Button,
 } from "react-native-paper";
 // import DateTimePicker from '@react-native-community/datetimepicker';
-import RNDateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import {
   NavigationHelpersContext,
   useNavigation,
@@ -46,10 +46,11 @@ export const RiderScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [joinTripModalVisible, setjoinTripModalVisible] = useState(false);
 
-  const [reload, setReload] = useState(true);
+  // const [reload, setReload] = useState(true);
 
   const [isDriver, setIsDriver] = useState(true);
   const [date, setDate] = useState(new Date());
+
   const [carpool, setCarpool] = useState({});
 
   //Search bar
@@ -72,6 +73,7 @@ export const RiderScreen = () => {
     setFilteredCarpoolData(filteredData);
   };
 
+
   const onDateTimeChange = (event, selectedDate) => {
     // const currentDate = selectedDate;
     // setShow(false);
@@ -86,7 +88,7 @@ export const RiderScreen = () => {
 
   // console.log(date)
   useEffect(() => {
-    setReload(!reload);
+    // setReload(!reload);
     getAllCarpools().then((data) => {
       setCarpoolData(data);
       setFilteredCarpoolData(data);
@@ -151,6 +153,9 @@ export const RiderScreen = () => {
       });
     }, 500);
   };
+
+  // onRefresh()
+
 
   /**
    * Rerender the RiderScreen UI by removing the skipped carpool
@@ -237,13 +242,13 @@ export const RiderScreen = () => {
           </Card.Content>
           {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
           <Card.Actions>
-            <Button
+            {/* <Button
               style={styles.buttonCancel}
               mode="contained"
               onPress={() => skipCarpoolUI(item.id)}
             >
               Skip
-            </Button>
+            </Button> */}
             <Button
               style={styles.buttonConfirm}
               mode="contained"
@@ -305,10 +310,15 @@ export const RiderScreen = () => {
             userId
           ).then((newCarpool) => {
             // setCarpool(newCarpool)
-            console.log("just created a carpool...");
-            console.log(newCarpool);
-            createCalendar(newCarpool.departureTime);
-          });
+
+            console.log("just created a carpool...")
+            console.log(newCarpool)
+            createCalendar(newCarpool.departureTime)
+            onRefresh()
+          })
+
+
+
         })
         .catch((e) => console.error(e.message));
     } catch (error) {
@@ -477,7 +487,7 @@ export const RiderScreen = () => {
 
             <View style={styles.inputRowcontainer}>
               <Text style={styles.inputLabel}>Departure Time:</Text>
-              <RNDateTimePicker
+              <DateTimePicker
                 value={date}
                 mode={"datetime"}
                 onChange={onDateTimeChange}
