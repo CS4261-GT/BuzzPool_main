@@ -69,12 +69,12 @@ export const Navigator = () => {
       /> */}
       {/* <Tab.Screen name="Provider" component={Provider} /> */}
       <Tab.Screen
-        name="Report"
+        name="Setting"
         component={ReportScreen}
 
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Icon name="warning" size={size} color={color} />
+            <Icon name="gear" size={size} color={color} />
           ),
           headerShown: false
         }}

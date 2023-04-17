@@ -30,6 +30,7 @@ import Carpool from "../model/Carpool";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { subscreen } from "../constants/constants";
 
 export const MyChatScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -50,7 +51,7 @@ export const MyChatScreen = ({ route }) => {
   const onRefresh = () => {
     setrefreshing(true);
     setTimeout(() => {
-      showMyCarpool()
+      showMyCarpool(subscreen.ongoingTrips)
         .then((data) => {
           setCarpoolData(data)
           setrefreshing(false)
