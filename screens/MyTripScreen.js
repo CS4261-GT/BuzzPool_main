@@ -25,6 +25,7 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
+
 export const MytripScreen = () => {
   const navigation = useNavigation();
 
