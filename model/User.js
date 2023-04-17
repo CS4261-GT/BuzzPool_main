@@ -1,15 +1,16 @@
 import { auth } from "../api/firebase"
-
+import { carpoolCollection, usersCollection, userConverter, carpoolConverter } from "../constants/converters"
 export default class User {
-  constructor(GTID, firstName, lastName, phoneNumber, ongoingTripID) {
+  constructor(email, GTID, firstName, lastName, phoneNumber, ongoingTripID, archivedTripID) {
     // userId from firebase?
-    this.email = auth.currentUser.email
-    this.GTID = GTID
+    // can't use current login user's email, because you may be getting information about another person
+    this.email = email
+    this.GTID = GTID,
     this.firstName = firstName
     this.lastName = lastName
     this.phoneNumber = phoneNumber
     this.ongoingTripID = ongoingTripID
-  
+    this.archivedTripID = archivedTripID
   }
 
   /**

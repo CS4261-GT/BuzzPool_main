@@ -19,10 +19,6 @@ import {
   Modal,
 } from "react-native";
 import {
-  carpoolCollection,
-  carpoolConverter,
-  createCarpool,
-  getAllCarpools,
   updateCarpool,
 } from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
@@ -47,12 +43,16 @@ export const SingleTripScreen = ({ route }) => {
   const [passengerData, setpassengerData] = useState([]);
   const [driver, setDriver] = useState("No driver available")
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+
 
 
   const [value, setValue] = useState("myTrip");
 
-  const { carpoolWithId, userData } = route.params
-  const usersIDs = carpoolWithId['userIDs']
+  const { carpoolWithId, userData, from } = route.params
+  const tripStatusVisible = from == 'MyTripScreen'
+  console.log(from)
+  const usersIDs = carpoolWithId.userIDs
   console.log(carpoolWithId)
   useEffect(() => {
     setLoading(!loading)
@@ -61,24 +61,38 @@ export const SingleTripScreen = ({ route }) => {
       const newData = data.filter((user) => {
         if (user.GTID != carpoolWithId.driverGTID)
         {
-          // console.log("This is a passenger")
-          // console.log(user)
+          console.log("This is a passenger")
+          console.log(user)
           return true
         }
         else
         {
           setDriver(user)
+          console.log("driver:")
+          console.log(user)
+          setLoading(!loading)
           return false
         }
       })
+      // console.log("passenger data")
+      // console.log(newData)
       setpassengerData(newData)
     });
   }, []);
+  console.log(driver)
+
+  const [requestedUserInfo, setRequestedUserInfo] = useState({
+    email: "",
+    firstName: "",
+    lastName: "",
+    GTID: "",
+    phoneNumber: ""
+  })
 
 
 
-  console.log("userData in single trip screen")
-  console.log(userData)
+  // console.log("userData in single trip screen")
+  // console.log(userData)
 
   const handleChatPress = () => {
     navigation.navigate("ChatScreen", { chatIdString: carpoolWithId.id, userdata: userData })
@@ -97,6 +111,13 @@ export const SingleTripScreen = ({ route }) => {
     setLoading(!loading)
   }
 
+  const getUserInfo = (user) => {
+    console.log("requested info")
+    console.log(user)
+    setRequestedUserInfo(user)
+    setModalVisible(!modalVisible)
+  }
+
 
   /**
    * This function is called for every item in the flatlist
@@ -107,51 +128,18 @@ export const SingleTripScreen = ({ route }) => {
   const renderCards = ({ item }) => {
     console.log(item)
     return (
-      <Card style={styles.cardStyle}>
-        {/* <Card.Title
-          title={item.title}
-          titleStyle={styles.postTitle}
-          subtitleNumberOfLines={2}
-          subtitle={subtitle}
-        /> */}
+
+      <Card
+        style={styles.cardStyle}
+        onPress={() => getUserInfo(item)}
+      >
         <Card.Content>
           <Text variant="bodyLarge">{item.firstName}</Text>
-          {/* <Text variant="bodyMedium">car capacity: {item.capacity}</Text>
-          <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text> */}
         </Card.Content>
-        {/* <Card.Cover source={{ uri: 'https://picsum.photos/700' }} /> */}
-
-        {/* <Card.Actions>
-          <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={() =>
-                handleChatPress(item.id)
-              }
-            >
-
-              <Icon name="comments-o" size={25} color="black" />
-            </TouchableOpacity>
-        </Card.Actions> */}
-        {/* <View
-          // style={styles.buttonContainer}
-          > */}
-        {/* <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={() =>
-                handleChatPress(item.id)
-              }
-            >
-
-              <Icon name="comments-o" size={25} color="black" />
-            </TouchableOpacity> */}
-
-
-        {/* </View> */}
-
-
-
-
       </Card>
+
+
+
     )
   }
 
@@ -162,6 +150,52 @@ export const SingleTripScreen = ({ route }) => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
+      
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          // Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text
+              style={styles.postTitle}
+            >
+              {requestedUserInfo.firstName} {requestedUserInfo.lastName}
+            </Text>
+
+
+            <View style={styles.inputRowcontainer}>
+              <Text style={styles.inputLabel}>GTID: {requestedUserInfo.GTID}</Text>
+            </View>
+
+            <View style={styles.inputRowcontainer}>
+              <Text style={styles.inputLabel}>Phone Number: {requestedUserInfo.phoneNumber}</Text>
+            </View>
+
+            <View style={styles.inputRowcontainer}>
+              <Text style={styles.inputLabel}>Email: {requestedUserInfo.email}</Text>
+            </View>
+
+            <View style={styles.inputRowcontainerNoborder}>
+
+              <Button
+                onPress={() => setModalVisible(!modalVisible)}
+                mode="contained"
+                style={styles.buttonConfirm}
+              >
+                OK
+              </Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+
       <Card style={styles.cardStyle}>
 
         <Card.Title
@@ -171,28 +205,33 @@ export const SingleTripScreen = ({ route }) => {
           subtitle={subtitle}
         />
         <Card.Content>
-          <Text variant="bodyLarge">{carpoolWithId.departureTime}</Text>
+          <Text variant="bodyLarge">{carpoolWithId.departureTime.toLocaleString()}</Text>
           <Text variant="bodyMedium">car capacity: {carpoolWithId.capacity}</Text>
           <Text variant="bodyMedium">Remaining seats: {remainingSeats}</Text>
-          <Text variant="bodyLarge" style={{fontWeight:"700"}}>{carpoolWithId.tripStatus}</Text>
+          <Text variant="bodyLarge" style={{ fontWeight: "700" }}>{carpoolWithId.tripStatus}</Text>
         </Card.Content>
 
         <Card.Actions>
+          {tripStatusVisible &&
+            <Button
+              style={styles.buttonCancel}
+              mode="contained"
+              onPress={finishCarpool}
+            >
+              Finish
+            </Button>
+          }
 
-          <Button
-            style={styles.buttonCancel}
-            mode="contained"
-            onPress={finishCarpool}
-          >
-            Finish
-          </Button>
-          <Button
-            style={styles.buttonConfirm}
-            mode="contained"
-            onPress={startCarpool}
-          >
-            Start
-          </Button>
+          {tripStatusVisible &&
+            <Button
+              style={styles.buttonConfirm}
+              mode="contained"
+              onPress={startCarpool}
+            >
+              Start
+            </Button>
+          }
+
           {/* <TouchableOpacity
               style={styles.buttonContainer}
               onPress={handleChatPress}
@@ -218,12 +257,18 @@ export const SingleTripScreen = ({ route }) => {
         Driver
       </Text>
 
-      <Card style={styles.cardStyle}>
+
+      <Card
+        style={styles.cardStyle}
+        onPress={() => getUserInfo(driver)}
+      >
         <Card.Content>
           <Text variant="bodyLarge">{driver.firstName}</Text>
         </Card.Content>
 
       </Card>
+
+
 
 
 
@@ -236,7 +281,7 @@ export const SingleTripScreen = ({ route }) => {
         style={styles.flatListStyle}
         contentContainerStyle={{ alignItems: "stretch", justifyContent: "center", alignContent: "center" }}
         renderItem={renderCards}
-        keyExtractor={(item) => { return item.id }}
+        keyExtractor={(item) => { return item.GTID }}
       // ItemSeparatorComponent={() => <Separator />}
       ></FlatList>
     </KeyboardAvoidingView>
@@ -301,9 +346,10 @@ const styles = StyleSheet.create({
 
   modalView: {
     margin: 20,
+    marginTop: 5,
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 35,
+    padding: 20,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -329,7 +375,8 @@ const styles = StyleSheet.create({
   },
   postTitle: {
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    // paddingVertical: 10,
+    paddingBottom: 10,
     borderRadius: 10,
     marginTop: 5,
     textAlign: "center",
@@ -340,7 +387,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginVertical: 5,
     paddingHorizontal: 5,
-    borderWidth: 1,
+    // borderWidth: 1,
     flexWrap: "wrap",
     alignItems: "center",
   },
@@ -367,7 +414,7 @@ const styles = StyleSheet.create({
 
   buttonContainer: {
     width: "100%",
-    flex: 0,
+    // flex: 0,
     flexDirection: "row",
     justifyContent: "space-between",
     // alignItems: "center",

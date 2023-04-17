@@ -1,16 +1,10 @@
-import { Avatar, Button, Card, Text } from 'react-native-paper';
-import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
-import React, { useRef, useState } from 'react'
-import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList } from 'react-native'
-import { auth, firestore } from '../api/firebase'
-// import firestore from 'firebase/firestore';
 import Carpool from '../model/Carpool';
-import { userConverter, usersCollection, getLoginUser } from './userHandler';
+import { getLoginUser } from './userHandler';
+import { carpoolConverter, userConverter, carpoolCollection, usersCollection } from '../constants/converters';
 
 
 
 
-export const carpoolCollection = firestore.collection('Carpools');
 /**
  * This function writes a carpool instance to firebase firestore
  * @param {string} title title of the post
@@ -22,7 +16,7 @@ export const carpoolCollection = firestore.collection('Carpools');
  * @param {number} GTID requester's GTID
 
  */
-export const createCarpool = (title, datetime, from, to, requireDriver, capacity, GTID, userID) => {
+export const createCarpool = async(title, datetime, from, to, requireDriver, capacity, GTID, userID) => {
 
   const carpool = new Carpool(
     title,
@@ -48,15 +42,15 @@ export const createCarpool = (title, datetime, from, to, requireDriver, capacity
       docRef.get()
       .then(carpoolWithId => {
         carpoolWithId['id'] = docRef.id
-        console.log("this is the new carpool")
-        console.log(carpoolWithId)
+        // console.log("this is the new carpool")
+        // console.log(carpoolWithId)
         addInitialCarpoolCreator(carpoolWithId, !requireDriver)
       })
 
     })
     .catch(error => console.log(error.message));
   // console.log(carpool);
-
+  return carpool
 }
 
 /**
@@ -177,21 +171,21 @@ export const addInitialCarpoolCreator = (carpool) => {
  * 1) add carpool id to user's ongoingCarpool and push user data to firestore
  * 2) remove the card from feed
  * 3) update carpool's data and push carpool data to firestore
- * @param {CarpoolWithId} carpool 
+ * @param {CarpoolWithId} carpoolWithId
  * @param {boolean} isDriver
+ * @return {boolean} true if joining the carpool is successful
  */
-export const joinCarpool = (carpool, isDriver) => {
+export const joinCarpool = async (carpoolWithId, isDriver) => {
   // console.log(auth.currentUser)
   // console.log("trying to join a carpool")
   // console.log("inside joinCarpool")
   // console.log(carpool)
-  getLoginUser()
+  var tripSuccess;
+  await getLoginUser()
     .then(({ userId, userData }) => {
       // console.log(userData)
-
-      // add carpoolId to user
-      if (userData.addTripId(carpool.id))
-      {
+      const carpool = convertToCarpool(carpoolWithId)
+      if (userData.addTripId(carpoolWithId.id) && carpool.addUser(userData.GTID, userId, isDriver)) {
         console.log(userData)
 
         // update user data in firestore
@@ -200,107 +194,42 @@ export const joinCarpool = (carpool, isDriver) => {
           .set(userData)
           .catch(e => console.error(e.message))
 
-        // add user to the carpool instance
-        if (carpool.addUser(userData.GTID, isDriver))
-        {
-          // update carpool data in firestore
-          console.log("trying to update firestore carpool")
-          carpoolCollection.doc(carpool.id)
-            .withConverter(carpoolConverter)
-            .set(carpool)
+        // update carpool data in firestore
+        console.log("trying to update firestore carpool")
+        carpoolCollection.doc(carpoolWithId.id)
+          .withConverter(carpoolConverter)
+          .set(carpool)
 
-          alert("Successfully joined the carpool!")
-
-
-        } else
-        {
-          alert("Carpool is full or this carpool already has a driver!")
-        }
-
-
+        alert("Successfully joined the carpool!")
+        tripSuccess = carpool
       }
-      else
+      else {
         alert("Error in joining the carpool")
+      }
+        
     })
-    .catch(error => console.log(error.message))
+    .catch(error => console.error(error.message))
+  console.log(tripSuccess)
+  return tripSuccess
 }
 
-
-/**
- * This object uses the firebase interface of datatype conversion
- * This converts a carpool object to a firestore compatible object upon write
- * and converts a firestore compatible object to a carpool object upon read
- */
-export var carpoolConverter = {
-  toFirestore: function (carpool) {
-    // data fields for reference
-
-    // this.departureTime = departureTime
-    // this.departureLocation = departureLocation
-    // this.destination = destination
-    // this.capacity = capacity
-    // this.requireDriver = true
-    // this.userGTIDs = [gtid]
-    // this.isTransactionFinished = false
-    // this.isTripFinished = false
-    // console.log(carpool);
-
-    // console.log("Carpool to firebase")
-    // console.log(carpool)
-    return {
-      // required fields
-      title: carpool.title,
-      departureTime: carpool.departureTime,
-      departureLocation: carpool.departureLocation,
-      destination: carpool.destination,
-      requireDriver: carpool.requireDriver,
-      capacity: carpool.capacity,
-      userGTIDs: carpool.userGTIDs,
-      driverGTID: carpool.driverGTID,
-      userIDs: carpool.userIDs,
+export const convertToCarpool = (carpool) => {
+  return new Carpool(
+    carpool.title,
+    carpool.departureTime,
+    carpool.departureLocation,
+    carpool.destination,
+    carpool.requireDriver,
+    carpool.capacity,
+    carpool.userGTIDs,
+    carpool.driverGTID,
+    carpool.userIDs,
 
 
-      // internal fields
-      tripStatus: carpool.tripStatus,
-      isTransactionFinished: carpool.isTransactionFinished,
+    // internal fields
+    carpool.tripStatus,
+    carpool.isTransactionFinished,
+  )
+  
 
-    };
-  },
-  fromFirestore: function (snapshot, options) {
-    const data = snapshot.data(options);
-
-    // title, 
-    // departureTime, 
-    // departureLocation, 
-    // destination, 
-    // requireDriver = true, 
-    // capacity = 5, 
-    // userGTIDs = [],
-    // isTransactionFinished = false, 
-    // isTripFinished = false
-
-    // console.log("Carpool from firebase")
-    // console.log(data)
-
-    var carpool = new Carpool(
-
-      // required fields
-      data.title,
-      data.departureTime,
-      data.departureLocation,
-      data.destination,
-      data.requireDriver,
-      data.capacity,
-      data.userGTIDs,
-      data.driverGTID,
-      data.userIDs,
-
-      // internal fields
-      data.tripStatus,
-      data.isTransactionFinished,
-
-    );
-
-    return carpool;
-  }
-};
+}

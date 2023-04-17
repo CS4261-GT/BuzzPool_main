@@ -1,15 +1,36 @@
 import { Review } from '../model/Review'
 import { auth, firestore } from '../api/firebase'
 import User from '../model/User';
-import { carpoolCollection, carpoolConverter } from './carpoolHandler';
-
-export const usersCollection = firestore.collection('Users');
+import { carpoolConverter, userConverter, carpoolCollection, usersCollection } from '../constants/converters';
 
 
+
+export const archiveTrip = async (userWithId, carpoolWithId) => {
+
+  const ongoingTrips = userWithId.ongoingTripID.filter(trip => {
+    return !(trip == carpoolWithId.id)
+  })
+
+  const archivedTrips = [...userWithId.archivedTripID, carpoolWithId.id]
+  userWithId.ongoingTripID = ongoingTrips
+  userWithId.archiveTrip = archivedTrips
+  console.log(archivedTrips)
+  usersCollection
+  .doc(userWithId.id)
+  .withConverter(userConverter)
+  .set(userWithId)
+  .catch(e => console.error(e.message))
+}
+
+/**
+ * return all the carpools in a user's ongoing trips
+ * @returns {Promise<Carpool[]>} a list of carpool stored in Promise
+ */
 export const showMyCarpool = async () => {
   var carpoolList = []
   const {userId, userData} = await getLoginUser()
-
+  console.log("in showMyCarpool")
+  console.log(userData)
   await carpoolCollection
   .withConverter(carpoolConverter)
   .get()
@@ -20,7 +41,7 @@ export const showMyCarpool = async () => {
       var carpool = doc.data()
       
       const carpoolID = doc.id
-      carpool['id'] = carpoolID
+      carpool.id = carpoolID
       // console.log(carpool)
       if (userData.ongoingTripID.includes(carpoolID)) {
         carpoolList.push(carpool)
@@ -41,18 +62,27 @@ export const showMyCarpool = async () => {
 
 export const getAllUsersInCarpool = async (userIDs) => {
   var userArr = []
+  console.log("These are the user IDs for the carpool")
+  console.log(userIDs)
   await usersCollection
   .withConverter(userConverter)
   .get()
   .then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
-      if (userIDs.includes(doc.id))
+      console.log('user to be compared')
+      console.log(doc.id)
+      if (userIDs.includes(doc.id)) {
         userArr.push(doc.data())
+        console.log("gotten a user!")
+        console.log(doc.data())
+      }
     })
   })
   .catch((error) => {
       console.log('Error getting documents: ', error)
   })
+  console.log("trying to get all users")
+  console.log(userArr)
   return userArr
 }
 
@@ -109,44 +139,3 @@ export const addUser = async (fname, lname, phoneNumber, GTID) => {
         .catch( error => console.log(error.message));
 }
 
-/**
- * This object uses the firebase interface of datatype conversion
- * This converts a user object to a firestore compatible object upon write
- * and converts a firestore compatible object to a user object upon read
- */
-export var userConverter = {
-  toFirestore: function (user) {
-
-    console.log("To firebase")
-    console.log(user)
-
-    return {
-      email: user.email,
-      GTID: user.GTID,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      phoneNumber: user.phoneNumber,
-      ongoingTripID: user.ongoingTripID,
-      };
-  },
-  fromFirestore: function (snapshot, options) {
-    const data = snapshot.data(options);
-
-    console.log("From firebase")
-    console.log(data)
-
-    var user = new User(
-      data.GTID,
-      data.firstName,
-      data.lastName,
-      data.phoneNumber,
-      data.ongoingTripID,
-      );
-
-    return user;
-  }
-};
-
-
-
-export {}
