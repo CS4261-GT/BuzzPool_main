@@ -78,14 +78,7 @@ const ChatScreen = ({ route }) => {
     await Promise.all(writes);
   }
 
-  if (!chatRoom)
-  {
-    return (
-      <View style={styles.container}>
-        <Button onPress={handleChatRoomPress} title="Join Chat Room" />
-      </View>
-    );
-  }
+
   return (
     <View style={styles.container} behavior="padding">
       <GiftedChat
@@ -97,7 +90,6 @@ const ChatScreen = ({ route }) => {
         }}
       />
     </View>
-
   );
 };
 
