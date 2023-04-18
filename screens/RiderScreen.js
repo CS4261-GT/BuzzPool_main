@@ -150,6 +150,7 @@ export const RiderScreen = () => {
     setTimeout(() => {
       getAllCarpools().then((data) => {
         setCarpoolData(data);
+        setFilteredCarpoolData(data)
         setrefreshing(false);
       });
     }, 100);
@@ -586,9 +587,11 @@ const styles = StyleSheet.create({
     marginTop: 22,
   },
   flatListStyle: {
-    // flexWrap: "wrap",
+    paddingVertical: 10,
     width: "100%",
-    padding: 10,
+    minHeight: 150,
+    paddingHorizontal: 10,
+    marginVertical: 30,
   },
   segmentedButtons: {
     padding: 10,

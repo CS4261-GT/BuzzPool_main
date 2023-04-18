@@ -7,7 +7,7 @@ import { subscreen, tripStatus } from '../constants/constants';
 
 
 export const archiveTrip = async (userWithId, carpoolWithId) => {
-  console.log("attempt to archive trip")
+  // console.log("attempt to archive trip")
   if (carpoolWithId.tripStatus != tripStatus.Finished) {
     alert("You can only archive finished trips!")
     return
@@ -31,7 +31,7 @@ export const archiveTrip = async (userWithId, carpoolWithId) => {
 }
 
 export const unarchiveTrip = async (userWithId, carpoolWithId) => {
-  console.log("attempt to unarchive trip")
+  // console.log("attempt to unarchive trip")
   const archivedTrips = userWithId.archivedTripID.filter(trip => {
     // console.log(trip == carpoolWithId.id)
     return !(trip == carpoolWithId.id)
@@ -47,6 +47,50 @@ export const unarchiveTrip = async (userWithId, carpoolWithId) => {
   .withConverter(userConverter)
   .set(userWithId)
   .catch(e => console.error(e.message))
+
+}
+
+export const leaveTrip = async (userWithId, carpoolWithId) => {
+  console.log("attempt to leave trip")
+  if (carpoolWithId.tripStatus != tripStatus.NotStarted) {
+    alert("You can only leave unstarted trips!")
+    return
+  }
+  const ongoingTrips = userWithId.ongoingTripID.filter(trip => {
+    // console.log(trip == carpoolWithId.id)
+    return !(trip == carpoolWithId.id)
+  })
+
+  // console.log(...userWithId.archivedTripID)
+
+  userWithId.ongoingTripID = ongoingTrips
+
+  await usersCollection
+  .doc(userWithId._id)
+  .withConverter(userConverter)
+  .set(userWithId)
+  .catch(e => console.error(e.message))
+
+  if (carpoolWithId.driverGTID == userWithId.GTID && !carpoolWithId.requireDriver) {
+    carpoolWithId.driverGTID = -1
+    carpoolWithId.requireDriver = true
+  }
+  const userIDs = carpoolWithId.userIDs.filter(userID => {
+    return !(userID == userWithId._id)
+  })
+  const userGITDs = carpoolWithId.userGTIDs.filter(userGTID => {
+    return !(userGTID == userWithId.GTID)
+  })
+  carpoolWithId.userIDs = userIDs
+  carpoolWithId.userGTIDs = userGITDs
+  await carpoolCollection
+  .doc(carpoolWithId.id)
+  .withConverter(carpoolConverter)
+  .set(carpoolWithId)
+  .catch(e => console.error(e.message))
+    
+
+  // carpool remove user
 
 }
 
