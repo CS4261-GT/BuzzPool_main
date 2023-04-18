@@ -52,6 +52,7 @@ export const RiderScreen = () => {
   const [date, setDate] = useState(new Date());
 
   const [carpool, setCarpool] = useState({});
+  const [singleRefresh, setSingleRefresh] = useState(false)
 
   //Search bar
   const [searchText, setSearchText] = useState("");
@@ -150,8 +151,13 @@ export const RiderScreen = () => {
         setCarpoolData(data);
         setrefreshing(false);
       });
-    }, 500);
+    }, 100);
   };
+
+  if (!singleRefresh) {
+    onRefresh()
+    setSingleRefresh(true)
+  }
 
   // onRefresh()
 
