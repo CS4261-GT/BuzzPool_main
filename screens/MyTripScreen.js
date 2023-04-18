@@ -19,7 +19,7 @@ import {
   Modal,
 } from "react-native";
 import { auth } from "../api/firebase";
-import { archiveTrip, getLoginUser, showMyCarpool, unarchiveTrip } from "../logic/userHandler";
+import { archiveTrip, getLoginUser, leaveTrip, showMyCarpool, unarchiveTrip } from "../logic/userHandler";
 import Carpool from "../model/Carpool";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -152,6 +152,7 @@ export const MytripScreen = () => {
   }
 
   const RightSwipeActions = () => {
+    if (value == subscreen.archivedTrips) return <></>
     return (
       <View
         style={{
@@ -170,7 +171,7 @@ export const MytripScreen = () => {
             paddingVertical: 20,
           }}
         >
-          Delete
+          Leave
         </Text>
       </View>
     );
@@ -211,8 +212,24 @@ export const MytripScreen = () => {
 
   }
 
-  const swipeFromRightOpen = () => {
-    alert('Swipe from right');
+  const swipeFromRightOpen = (carpoolWithId) => {
+    console.log("leave " + carpoolWithId.id)
+    getLoginUser()
+      .then(({ userId, userData }) => {
+        userData._id = userId
+        return userData
+      })
+      .then((userData) => {
+        if (value == subscreen.ongoingTrips)
+        {
+          leaveTrip(userData, carpoolWithId)
+            .then(() => {
+              console.log("ready to reset carpool...")
+              onRefresh()
+            })
+        } 
+      })
+      .catch(error => console.log(error.message))
   }
 
   /**
@@ -241,8 +258,8 @@ export const MytripScreen = () => {
         key={item.id}
         renderLeftActions={LeftSwipeActions}
         onSwipeableLeftOpen={() => swipeFromLeftOpen(item)}
-      // renderRightActions={RightSwipeActions}
-      // onSwipeableRightOpen={swipeFromRightOpen}
+        renderRightActions={RightSwipeActions}
+        onSwipeableRightOpen={() => swipeFromRightOpen(item)}
       >
         <Card style={styles.cardStyle}>
           <Card.Title
