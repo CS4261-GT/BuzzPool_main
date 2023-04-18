@@ -97,6 +97,10 @@ export const SingleTripScreen = ({ route }) => {
   }
 
   const finishCarpool = async () => {
+    if (carpoolWithId.tripStatus != tripStatus.Started) {
+      alert("You can only finish a carpool after it is started!")
+      return
+    }
     carpoolWithId.tripStatus = tripStatus.Finished
     await updateCarpool(carpoolWithId)
     setLoading(!loading)
@@ -217,7 +221,14 @@ export const SingleTripScreen = ({ route }) => {
             <Button
               style={styles.buttonConfirm}
               mode="contained"
-              onPress={() => setstartTripVisible(true)}
+              onPress={() => { 
+                if (carpoolWithId.tripStatus != tripStatus.NotStarted) {
+                  alert("You cannot start a carpool when it is finished!")
+                  return
+                }
+                setstartTripVisible(true)
+                
+              }}
             >
               Start
             </Button>
