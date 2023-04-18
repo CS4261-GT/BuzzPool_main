@@ -399,7 +399,9 @@ const styles = StyleSheet.create({
     // flexWrap: "wrap",
     paddingVertical: 10,
     width: "100%",
+    minHeight: 150,
     paddingHorizontal: 10,
+    marginVertical: 30,
   },
   segmentedButtons: {
     padding: 10,
