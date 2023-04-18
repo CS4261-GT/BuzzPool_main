@@ -8,3 +8,6 @@ export const tripStatus = {
   Started: "Started",
   Finished: "Finished"
 }
+export const usersCollection = firestore.collection('Users');
+export const carpoolCollection = firestore.collection('Carpools');
+export const chatCollection = firestore.collection("chats")

@@ -1,8 +1,7 @@
 import { firestore } from "../api/firebase";
 import Carpool from "../model/Carpool";
 import User from "../model/User";
-export const usersCollection = firestore.collection('Users');
-export const carpoolCollection = firestore.collection('Carpools');
+import { chatCollection, usersCollection, carpoolCollection } from "./constants";
 
 /**
  * This object uses the firebase interface of datatype conversion
