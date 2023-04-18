@@ -17,7 +17,6 @@ const ChatScreen = ({ route }) => {
   const [messages, setMessages] = useState([]);
   const [chatRoom, setChatRoom] = useState(chatIdString); // Added chatRoom state variable
 
-
   const handleChatRoomPress = () => {
     // Perform any actions or API calls related to joining chat room here
     // ...Your code here...

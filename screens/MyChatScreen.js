@@ -37,13 +37,8 @@ export const MyChatScreen = ({ route }) => {
 
   const [refreshing, setrefreshing] = useState(false);
   const [carpoolData, setCarpoolData] = useState([]);
-  const [loading, setLoading] = useState(false)
-  
-
-  useEffect(() => {
-    setLoading(!loading)
-    showMyCarpool().then((data) => setCarpoolData(data));
-  }, []);
+  // const [loading, setLoading] = useState(false)
+  const [singleRefresh, setSingleRefresh] = useState(false)
 
   /**
    * This function resets carpool data and force rerendering of the UI
@@ -59,6 +54,19 @@ export const MyChatScreen = ({ route }) => {
 
     }, 500);
   };
+
+  if (!singleRefresh) {
+    onRefresh()
+    setSingleRefresh(true)
+  }
+  
+
+  useEffect(() => {
+    // setLoading(!loading)
+    showMyCarpool().then((data) => setCarpoolData(data));
+  }, []);
+
+  
 
   const handleMoreInfoPress = (carpoolWithId) => {
     // Pass carpool id as the chatroom id
