@@ -228,14 +228,6 @@ export const SingleTripScreen = ({ route }) => {
               Start
             </Button>
           }
-
-          {/* <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={handleChatPress}
-            >
-
-              <Icon name="comments-o" size={25} color="black" />
-            </TouchableOpacity> */}
         </Card.Actions>
 
 
@@ -264,10 +256,6 @@ export const SingleTripScreen = ({ route }) => {
         </Card.Content>
 
       </Card>
-
-
-
-
 
       <Text style={styles.postTitle}>
         Passengers
