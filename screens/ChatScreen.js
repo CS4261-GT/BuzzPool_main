@@ -6,6 +6,7 @@ import * as firebase from "firebase";
 import "firebase/firestore";
 import { auth, firestore } from "../api/firebase";
 import { getLoginUser } from "../logic/userHandler";
+import { chatCollection } from "../constants/constants";
 
 
 
@@ -29,23 +30,21 @@ const ChatScreen = ({ route }) => {
   useEffect(() => {
 
     const unsubscribe = chatRoom // Only listen for chat room changes if chatRoom is set
-      ? firestore
-        .collection("chats")
-        .doc(chatRoom)
-        .collection("messages")
-        .orderBy("createdAt", "desc")
-        .onSnapshot((querySnapshot) => {
-          const messagesFirestore = querySnapshot
-            .docChanges()
-            .filter(({ type }) => type === "added")
-            .map(({ doc }) => {
-              const message = doc.data();
-              return { ...message, createdAt: message.createdAt.toDate() };
-            })
-            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-          appendMessages(messagesFirestore);
-        })
-      : null;
+    chatCollection
+      .doc(chatRoom)
+      .collection("messages")
+      .orderBy("createdAt", "desc")
+      .onSnapshot((querySnapshot) => {
+        const messagesFirestore = querySnapshot
+          .docChanges()
+          .filter(({ type }) => type === "added")
+          .map(({ doc }) => {
+            const message = doc.data();
+            return { ...message, createdAt: message.createdAt.toDate() };
+          })
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        appendMessages(messagesFirestore);
+      })
     return () => unsubscribe && unsubscribe(); // Unsubscribe if chatRoom is unset
   }, [chatRoom]);
 
@@ -78,14 +77,7 @@ const ChatScreen = ({ route }) => {
     await Promise.all(writes);
   }
 
-  if (!chatRoom)
-  {
-    return (
-      <View style={styles.container}>
-        <Button onPress={handleChatRoomPress} title="Join Chat Room" />
-      </View>
-    );
-  }
+
   return (
     <View style={styles.container} behavior="padding">
       <GiftedChat
@@ -97,7 +89,6 @@ const ChatScreen = ({ route }) => {
         }}
       />
     </View>
-
   );
 };
 

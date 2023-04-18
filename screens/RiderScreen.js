@@ -25,11 +25,10 @@ import {
 import {
   createCarpool,
   getAllCarpools,
-  joinCarpool,
   skipCarpool,
 } from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
-import { getLoginUser } from "../logic/userHandler";
+import { getLoginUser, joinCarpool } from "../logic/userHandler";
 
 import * as Calendar from "expo-calendar";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -165,14 +164,14 @@ export const RiderScreen = () => {
   // onRefresh()
 
 
-  /**
-   * Rerender the RiderScreen UI by removing the skipped carpool
-   * @param {string} carpoolId
-   */
-  const skipCarpoolUI = (carpoolId) => {
-    const newCarpoolArray = skipCarpool(carpoolData, carpoolId);
-    setCarpoolData(newCarpoolArray);
-  };
+  // /**
+  //  * Rerender the RiderScreen UI by removing the skipped carpool
+  //  * @param {string} carpoolId
+  //  */
+  // const skipCarpoolUI = (carpoolId) => {
+  //   const newCarpoolArray = skipCarpool(carpoolData, carpoolId);
+  //   setCarpoolData(newCarpoolArray);
+  // };
 
   /**
    * Rerender the RiderScreen UI by removing the joined carpool

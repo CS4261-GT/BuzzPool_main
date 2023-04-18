@@ -18,12 +18,6 @@ import {
   FlatList,
   Modal,
 } from "react-native";
-import {
-  carpoolCollection,
-  carpoolConverter,
-  createCarpool,
-  getAllCarpools,
-} from "../logic/carpoolHandler";
 import { auth } from "../api/firebase";
 import { getLoginUser, showMyCarpool } from "../logic/userHandler";
 import Carpool from "../model/Carpool";
@@ -157,9 +151,6 @@ export const MyChatScreen = ({ route }) => {
    * @returns
    */
   const renderCards = ({ item }) => {
-    // console.log(typeof(item))
-    const remainingSeats = item.capacity - item.userGTIDs.length;
-    // I think title is not necessary
     const subtitle =
       "From: " + item.departureLocation + "\n" + "To: " + item.destination;
     console.log("Document ID:", item);

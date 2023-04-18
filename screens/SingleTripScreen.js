@@ -24,10 +24,12 @@ import { auth, firestore } from "../api/firebase";
 import { getLoginUser, getAllUsersInCarpool } from "../logic/userHandler";
 import Carpool from "../model/Carpool";
 import { useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/FontAwesome";
-import Swipeable from "react-native-gesture-handler/Swipeable";
 
-const dummy = [{ firstName: "Joe" }, { firstName: "Sriram" }, {}, {}, {}];
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { subscreen, tripStatus } from "../constants/constants";
+
+
 
 export const SingleTripScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -37,6 +39,8 @@ export const SingleTripScreen = ({ route }) => {
   const [driver, setDriver] = useState("No driver available");
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [startTripVisible, setstartTripVisible] = useState(false);
+
 
   const [reportUser, setReportUser] = useState(false);
   const [message, setMessage] = useState("");
@@ -49,7 +53,7 @@ export const SingleTripScreen = ({ route }) => {
   const [value, setValue] = useState("myTrip");
 
   const { carpoolWithId, userData, from } = route.params;
-  const tripStatusVisible = from == "MyTripScreen";
+  const tripStatusVisible = from == 'MyTripScreen' + subscreen.ongoingTrips
   console.log(from);
   const usersIDs = carpoolWithId.userIDs;
   console.log(carpoolWithId);
@@ -117,16 +121,22 @@ export const SingleTripScreen = ({ route }) => {
   };
 
   const startCarpool = async () => {
-    carpoolWithId.tripStatus = "Started";
-    await updateCarpool(carpoolWithId);
-    setLoading(!loading);
-  };
+
+    carpoolWithId.tripStatus = tripStatus.Started
+    await updateCarpool(carpoolWithId)
+    setLoading(!loading)
+  }
 
   const finishCarpool = async () => {
-    carpoolWithId.tripStatus = "Finished";
-    await updateCarpool(carpoolWithId);
-    setLoading(!loading);
-  };
+    if (carpoolWithId.tripStatus != tripStatus.Started) {
+      alert("You can only finish a carpool after it is started!")
+      return
+    }
+    carpoolWithId.tripStatus = tripStatus.Finished
+    await updateCarpool(carpoolWithId)
+    setLoading(!loading)
+  }
+
 
   const getUserInfo = (user) => {
     console.log("requested info");
@@ -172,6 +182,7 @@ export const SingleTripScreen = ({ route }) => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -302,19 +313,18 @@ export const SingleTripScreen = ({ route }) => {
             <Button
               style={styles.buttonConfirm}
               mode="contained"
-              onPress={startCarpool}
+              onPress={() => { 
+                if (carpoolWithId.tripStatus != tripStatus.NotStarted) {
+                  alert("You cannot start a carpool when it is finished!")
+                  return
+                }
+                setstartTripVisible(true)
+                
+              }}
             >
               Start
             </Button>
-          )}
 
-          {/* <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={handleChatPress}
-            >
-
-              <Icon name="comments-o" size={25} color="black" />
-            </TouchableOpacity> */}
         </Card.Actions>
       </Card>
 
@@ -331,7 +341,9 @@ export const SingleTripScreen = ({ route }) => {
         </Card.Content>
       </Card>
 
+
       <Text style={styles.postTitle}>Passengers</Text>
+
 
       <FlatList
         data={passengerData}
@@ -347,6 +359,53 @@ export const SingleTripScreen = ({ route }) => {
         }}
         // ItemSeparatorComponent={() => <Separator />}
       ></FlatList>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={startTripVisible}
+        onRequestClose={() => {
+          // Alert.alert('Modal has been closed.');
+          setstartTripVisible(!startTripVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+
+
+            <Text
+              style={styles.title}
+            >
+              Warning
+            </Text>
+
+            <View style={styles.inputRowcontainerNoborder}>
+              <Text
+                style={styles.modalText}>
+                You cannot leave the carpool once you start it! Do you want to proceed?
+              </Text>
+            </View>
+
+            <View style={styles.inputRowcontainerNoborder}>
+              <Button
+                onPress={() => setstartTripVisible(!startTripVisible)}
+                mode="contained"
+                style={styles.buttonCancel}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                onPress={() => {setstartTripVisible(false); startCarpool()}}
+                mode="contained"
+                style={styles.buttonConfirm}
+              >
+                Yes
+              </Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 };
@@ -467,12 +526,14 @@ const styles = StyleSheet.create({
   dateTimeDisplay: {
     flex: 1,
   },
-  input: {
+  title: {
     backgroundColor: "white",
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
+    fontWeight: "500",
+    fontSize: 20,
   },
 
   buttonContainer: {

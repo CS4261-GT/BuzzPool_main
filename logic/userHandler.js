@@ -1,8 +1,9 @@
 import { Review } from '../model/Review'
 import { auth, firestore } from '../api/firebase'
 import User from '../model/User';
-import { carpoolConverter, userConverter, carpoolCollection, usersCollection } from '../constants/converters';
-import { subscreen, tripStatus } from '../constants/constants';
+import { carpoolConverter, userConverter } from '../constants/converters';
+import { subscreen, tripStatus, carpoolCollection, usersCollection } from '../constants/constants';
+import { convertToCarpool } from './carpoolHandler';
 
 
 
@@ -106,6 +107,7 @@ export const showMyCarpool = async (keyword) => {
   const userCarpool = keyword == subscreen.ongoingTrips ? userData.ongoingTripID : userData.archivedTripID
   await carpoolCollection
   .withConverter(carpoolConverter)
+  // .orderBy("departureTime", "asec")
   .get()
   .then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
@@ -129,7 +131,7 @@ export const showMyCarpool = async (keyword) => {
     console.log("Error getting documents: ", error);
   });
 
-  console.log("Here " + carpoolList.length)
+  // console.log("Here " + carpoolList.length)
   // console.log(carpoolList)
   return carpoolList
 }
@@ -155,8 +157,8 @@ export const getAllUsersInCarpool = async (userIDs) => {
   .catch((error) => {
       console.log('Error getting documents: ', error)
   })
-  console.log("trying to get all users")
-  console.log(userArr)
+  // console.log("trying to get all users")
+  // console.log(userArr)
   return userArr
 }
 
@@ -183,6 +185,52 @@ export const getLoginUser = async () => {
 
 // export var myUser = async () => {await getLoginUser()}
 
+/**
+ * add the carpool to user's ongoing carpool
+ * 1) add carpool id to user's ongoingCarpool and push user data to firestore
+ * 2) remove the card from feed
+ * 3) update carpool's data and push carpool data to firestore
+ * @param {CarpoolWithId} carpoolWithId
+ * @param {boolean} isDriver
+ * @return {boolean} true if joining the carpool is successful
+ */
+export const joinCarpool = async (carpoolWithId, isDriver) => {
+  // console.log(auth.currentUser)
+  // console.log("trying to join a carpool")
+  // console.log("inside joinCarpool")
+  // console.log(carpool)
+  var tripSuccess;
+  await getLoginUser()
+    .then(({ userId, userData }) => {
+      // console.log(userData)
+      const carpool = convertToCarpool(carpoolWithId)
+      if (userData.addTripId(carpoolWithId.id) && carpool.addUser(userData.GTID, userId, isDriver)) {
+        console.log(userData)
+
+        // update user data in firestore
+        usersCollection.doc(userId)
+          .withConverter(userConverter)
+          .set(userData)
+          .catch(e => console.error(e.message))
+
+        // update carpool data in firestore
+        console.log("trying to update firestore carpool")
+        carpoolCollection.doc(carpoolWithId.id)
+          .withConverter(carpoolConverter)
+          .set(carpool)
+
+        alert("Successfully joined the carpool!")
+        tripSuccess = carpool
+      }
+      else {
+        alert("Error in joining the carpool")
+      }
+        
+    })
+    .catch(error => console.error(error.message))
+  console.log(tripSuccess)
+  return tripSuccess
+}
 
 
 

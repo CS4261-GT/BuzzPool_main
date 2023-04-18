@@ -25,7 +25,7 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { skipCarpool } from "../logic/carpoolHandler";
-import { subscreen } from "../constants/constants";
+import { subscreen, tripStatus } from "../constants/constants";
 import { EmptyScreen } from "./EmptyScreen";
 
 
@@ -214,6 +214,10 @@ export const MytripScreen = () => {
 
   const swipeFromRightOpen = (carpoolWithId) => {
     console.log("leave " + carpoolWithId.id)
+    if (carpoolWithId.tripStatus != tripStatus.NotStarted) {
+      alert("You cannot leave a carpool once it is started or finished!")
+      return
+    }
     getLoginUser()
       .then(({ userId, userData }) => {
         userData._id = userId
