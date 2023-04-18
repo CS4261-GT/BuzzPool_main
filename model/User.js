@@ -1,5 +1,6 @@
 import { auth } from "../api/firebase"
-import { carpoolCollection, usersCollection, userConverter, carpoolConverter } from "../constants/converters"
+import { carpoolCollection, usersCollection } from "../constants/constants"
+import { userConverter, carpoolConverter } from "../constants/converters"
 export default class User {
   constructor(email, GTID, firstName, lastName, phoneNumber, ongoingTripID, archivedTripID) {
     // userId from firebase?

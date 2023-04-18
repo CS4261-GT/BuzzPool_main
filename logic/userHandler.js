@@ -1,8 +1,8 @@
 import { Review } from '../model/Review'
 import { auth, firestore } from '../api/firebase'
 import User from '../model/User';
-import { carpoolConverter, userConverter, carpoolCollection, usersCollection } from '../constants/converters';
-import { subscreen, tripStatus } from '../constants/constants';
+import { carpoolConverter, userConverter } from '../constants/converters';
+import { subscreen, tripStatus, carpoolCollection, usersCollection } from '../constants/constants';
 import { convertToCarpool } from './carpoolHandler';
 
 
@@ -107,6 +107,7 @@ export const showMyCarpool = async (keyword) => {
   const userCarpool = keyword == subscreen.ongoingTrips ? userData.ongoingTripID : userData.archivedTripID
   await carpoolCollection
   .withConverter(carpoolConverter)
+  // .orderBy("departureTime", "asec")
   .get()
   .then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
@@ -130,7 +131,7 @@ export const showMyCarpool = async (keyword) => {
     console.log("Error getting documents: ", error);
   });
 
-  console.log("Here " + carpoolList.length)
+  // console.log("Here " + carpoolList.length)
   // console.log(carpoolList)
   return carpoolList
 }
@@ -156,8 +157,8 @@ export const getAllUsersInCarpool = async (userIDs) => {
   .catch((error) => {
       console.log('Error getting documents: ', error)
   })
-  console.log("trying to get all users")
-  console.log(userArr)
+  // console.log("trying to get all users")
+  // console.log(userArr)
   return userArr
 }
 

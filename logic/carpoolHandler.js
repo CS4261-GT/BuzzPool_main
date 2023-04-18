@@ -1,7 +1,7 @@
 import Carpool from '../model/Carpool';
 import { getLoginUser } from './userHandler';
-import { carpoolConverter, userConverter, carpoolCollection, usersCollection } from '../constants/converters';
-
+import { carpoolConverter, userConverter} from '../constants/converters';
+import { carpoolCollection, subscreen, tripStatus, usersCollection } from '../constants/constants';
 
 
 
@@ -55,21 +55,28 @@ export const createCarpool = async(title, datetime, from, to, requireDriver, cap
 
 /**
  * This class returns all the available carpool instances from firestore
- * @returns {Promise<Carpool[]>} all avaialble carpool instances
+ * @returns {Promise<CarpoolWithId[]>} all avaialble carpool instances
  */
 export const getAllCarpools = async () => {
   var carpools = [];
   await carpoolCollection
     .withConverter(carpoolConverter)
+    // .orderBy("departureTime", "asec")
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         // doc.data() is never undefined for query doc snapshots
         // console.log(doc.id, " => ", doc.data());
+        
         var carpool = doc.data();
-        carpool['id'] = doc.id;
-        carpools.push(carpool);
-        // consolel
+        // console.log(carpool)
+        // console.log(carpool.departureTime.getTime() + 86400*1000 - new Date().getTime() )
+
+        // don't show trips that are 12 hours behind or if they are finished
+        if (carpool.departureTime.getTime() + 86400*1000/2 >= new Date().getTime() && carpool.tripStatus != tripStatus.Finished) {
+          carpool['id'] = doc.id;
+          carpools.push(carpool);
+        }
       });
     })
     // .then(()=>console.log(carpools))

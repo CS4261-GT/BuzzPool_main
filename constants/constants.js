@@ -1,3 +1,4 @@
+import { firestore } from "../api/firebase";
 export const subscreen = {
   ongoingTrips: "ongoingTrips",
   archivedTrips: "archivedTrips",
