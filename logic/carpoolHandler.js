@@ -73,7 +73,7 @@ export const getAllCarpools = async () => {
         // console.log(carpool.departureTime.getTime() + 86400*1000 - new Date().getTime() )
 
         // don't show trips that are 12 hours behind or if they are finished
-        if (carpool.departureTime.getTime() + 86400*1000/2 >= new Date().getTime() && carpool.tripStatus != tripStatus.Finished) {
+        if (carpool.departureTime.getTime() + 86400*1000/2 >= new Date().getTime() && carpool.tripStatus == tripStatus.NotStarted) {
           carpool['id'] = doc.id;
           carpools.push(carpool);
         }

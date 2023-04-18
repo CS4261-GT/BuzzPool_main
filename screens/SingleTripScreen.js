@@ -97,7 +97,7 @@ export const SingleTripScreen = ({ route }) => {
   };
 
   const startCarpool = async () => {
-    carpoolWithId.tripStatus = tripStatus.Start
+    carpoolWithId.tripStatus = tripStatus.Started
     await updateCarpool(carpoolWithId)
     setLoading(!loading)
   }
