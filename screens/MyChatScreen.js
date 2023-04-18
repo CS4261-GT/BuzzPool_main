@@ -30,19 +30,16 @@ import Carpool from "../model/Carpool";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { subscreen } from "../constants/constants";
+import { EmptyChatScrren } from "./EmptyScreen";
 
 export const MyChatScreen = ({ route }) => {
   const navigation = useNavigation();
 
   const [refreshing, setrefreshing] = useState(false);
   const [carpoolData, setCarpoolData] = useState([]);
-  const [loading, setLoading] = useState(false)
-  
-
-  useEffect(() => {
-    setLoading(!loading)
-    showMyCarpool().then((data) => setCarpoolData(data));
-  }, []);
+  // const [loading, setLoading] = useState(false)
+  const [singleRefresh, setSingleRefresh] = useState(false)
 
   /**
    * This function resets carpool data and force rerendering of the UI
@@ -50,14 +47,27 @@ export const MyChatScreen = ({ route }) => {
   const onRefresh = () => {
     setrefreshing(true);
     setTimeout(() => {
-      showMyCarpool()
+      showMyCarpool(subscreen.ongoingTrips)
         .then((data) => {
           setCarpoolData(data)
           setrefreshing(false)
         });
 
-    }, 500);
+    }, 100);
   };
+
+  if (!singleRefresh) {
+    onRefresh()
+    setSingleRefresh(true)
+  }
+  
+
+  useEffect(() => {
+    // setLoading(!loading)
+    showMyCarpool().then((data) => setCarpoolData(data));
+  }, []);
+
+  
 
   const handleMoreInfoPress = (carpoolWithId) => {
     // Pass carpool id as the chatroom id
@@ -190,13 +200,15 @@ export const MyChatScreen = ({ route }) => {
         onRefresh={onRefresh}
         ItemSeparatorComponent={() => <Separator />}
       ></FlatList>
+
+      {!carpoolData.length && <EmptyChatScrren/>}
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     justifyContent: "center",
     alignItems: "center",
     alignContent: "center",

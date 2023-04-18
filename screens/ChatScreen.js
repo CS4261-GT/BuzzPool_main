@@ -13,11 +13,9 @@ import { getLoginUser } from "../logic/userHandler";
 
 
 const ChatScreen = ({ route }) => {
-  const [messages, setMessages] = useState([]);
-  const [chatRoom, setChatRoom] = useState(null); // Added chatRoom state variable
-
   const { chatIdString, userdata } = route.params;
-  // console.log(chatIdString)
+  const [messages, setMessages] = useState([]);
+  const [chatRoom, setChatRoom] = useState(chatIdString); // Added chatRoom state variable
 
   const handleChatRoomPress = () => {
     // Perform any actions or API calls related to joining chat room here

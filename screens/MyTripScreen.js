@@ -26,6 +26,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { skipCarpool } from "../logic/carpoolHandler";
 import { subscreen } from "../constants/constants";
+import { EmptyScreen } from "./EmptyScreen";
 
 
 
@@ -36,6 +37,8 @@ export const MytripScreen = () => {
   const [carpoolData, setCarpoolData] = useState([]);
   const [archiveRefreshing, setArchiveRefreshing] = useState(false)
   const [archiveCarpoolData, setArchiveCarpoolData] = useState([])
+  const [singleRefresh, setSingleRefresh] = useState(false)
+  const [singleArchiveRefresh, setSingleArchiveRefresh] = useState(false)
 
 
   const [value, setValue] = useState(subscreen.ongoingTrips);
@@ -62,8 +65,14 @@ export const MytripScreen = () => {
           setrefreshing(false)
         });
 
-    }, 500);
+    }, 100);
   };
+
+  if (!singleRefresh)
+  {
+    onRefresh()
+    setSingleRefresh(true)
+  }
 
   /**
    * This function resets carpool data and force rerendering of the UI
@@ -77,8 +86,14 @@ export const MytripScreen = () => {
           setArchiveRefreshing(false)
         });
 
-    }, 500);
+    }, 100);
   };
+
+  if (!singleArchiveRefresh)
+  {
+    onArchiveRefresh()
+    setSingleArchiveRefresh(true)
+  }
 
   const handleMoreInfoPress = (carpoolWithId) => {
     // Pass carpool id as the chatroom id
@@ -174,20 +189,22 @@ export const MytripScreen = () => {
         return userData
       })
       .then((userData) => {
-        if (value == subscreen.ongoingTrips) {
+        if (value == subscreen.ongoingTrips)
+        {
           archiveTrip(userData, carpoolWithId)
-          .then(() => {
-            console.log("ready to reset carpool...")
-            onRefresh()
-          })
-        } else {
+            .then(() => {
+              console.log("ready to reset carpool...")
+              onRefresh()
+            })
+        } else
+        {
           unarchiveTrip(userData, carpoolWithId)
-          .then(() => {
-            console.log("ready to reset carpool...")
-            onArchiveRefresh()
-          })
+            .then(() => {
+              console.log("ready to reset carpool...")
+              onArchiveRefresh()
+            })
         }
-        
+
 
       })
       .catch(error => console.log(error.message))
@@ -210,7 +227,7 @@ export const MytripScreen = () => {
     // console.log(item)
     console.log(value)
     console.log(item)
-    
+
     const remainingSeats = item.capacity - item.userGTIDs.length;
     // I think title is not necessary
     const subtitle =
@@ -219,7 +236,7 @@ export const MytripScreen = () => {
 
     // console.log(item)
     return (
-      
+
       <Swipeable
         key={item.id}
         renderLeftActions={LeftSwipeActions}
@@ -277,12 +294,24 @@ export const MytripScreen = () => {
     )
   }
 
+  const refreshAndSetValue = (newValue) => {
+    setValue(newValue)
+    if (newValue == subscreen.ongoingTrips)
+    {
+      onRefresh()
+    } else
+    {
+      onArchiveRefresh()
+    }
+  }
+
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
 
       <SegmentedButtons
         value={value}
-        onValueChange={setValue}
+        onValueChange={refreshAndSetValue}
         style={styles.segmentedButtons}
         // theme={theme}
         buttons={[
@@ -313,8 +342,14 @@ export const MytripScreen = () => {
           refreshing={refreshing}
           onRefresh={onRefresh}
           ItemSeparatorComponent={() => <Separator />}
-        ></FlatList>
+        />
       }
+
+
+      {value == subscreen.ongoingTrips && !carpoolData.length &&
+        <EmptyScreen />
+      }
+
 
       {value == subscreen.archivedTrips &&
         <FlatList
@@ -326,15 +361,21 @@ export const MytripScreen = () => {
           refreshing={archiveRefreshing}
           onRefresh={onArchiveRefresh}
           ItemSeparatorComponent={() => <Separator />}
-        ></FlatList>
+        />
       }
+
+      {value == subscreen.archivedTrips && !archiveCarpoolData.length &&
+        <EmptyScreen />
+      }
+
+
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     justifyContent: "center",
     alignItems: "center",
     alignContent: "center",

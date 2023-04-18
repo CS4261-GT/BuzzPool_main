@@ -34,6 +34,7 @@ import { getLoginUser } from "../logic/userHandler";
 import * as Calendar from "expo-calendar";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { getCalendars } from "expo-localization";
+import { EmptyScreen } from "./EmptyScreen";
 
 export const RiderScreen = () => {
   const navigation = useNavigation();
@@ -52,6 +53,7 @@ export const RiderScreen = () => {
   const [date, setDate] = useState(new Date());
 
   const [carpool, setCarpool] = useState({});
+  const [singleRefresh, setSingleRefresh] = useState(false)
 
   //Search bar
   const [searchText, setSearchText] = useState("");
@@ -150,8 +152,13 @@ export const RiderScreen = () => {
         setCarpoolData(data);
         setrefreshing(false);
       });
-    }, 500);
+    }, 100);
   };
+
+  if (!singleRefresh) {
+    onRefresh()
+    setSingleRefresh(true)
+  }
 
   // onRefresh()
 
@@ -398,7 +405,9 @@ export const RiderScreen = () => {
         }}
         refreshing={refreshing}
         onRefresh={onRefresh}
-      ></FlatList>
+      />
+
+      {!filteredCarpoolData.length && <EmptyScreen/>}
 
       <Modal
         animationType="slide"
@@ -563,7 +572,7 @@ export const RiderScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     justifyContent: "center",
     alignItems: "center",
     alignContent: "center",
