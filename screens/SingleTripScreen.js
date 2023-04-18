@@ -29,13 +29,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { subscreen, tripStatus } from "../constants/constants";
 
-const dummy = [
-  { firstName: "Joe" },
-  { firstName: "Sriram" },
-  {},
-  {},
-  {},
-]
 
 export const SingleTripScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -45,12 +38,13 @@ export const SingleTripScreen = ({ route }) => {
   const [driver, setDriver] = useState("No driver available")
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [startTripVisible, setstartTripVisible] = useState(false);
 
   const { carpoolWithId, userData, from } = route.params
   const tripStatusVisible = from == 'MyTripScreen' + subscreen.ongoingTrips
-  console.log(from)
+  // console.log(from)
   const usersIDs = carpoolWithId.userIDs
-  console.log(carpoolWithId)
+  // console.log(carpoolWithId)
   useEffect(() => {
     setLoading(!loading)
     getAllUsersInCarpool(usersIDs).then((data) => {
@@ -147,7 +141,7 @@ export const SingleTripScreen = ({ route }) => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -223,7 +217,7 @@ export const SingleTripScreen = ({ route }) => {
             <Button
               style={styles.buttonConfirm}
               mode="contained"
-              onPress={startCarpool}
+              onPress={() => setstartTripVisible(true)}
             >
               Start
             </Button>
@@ -269,6 +263,53 @@ export const SingleTripScreen = ({ route }) => {
         keyExtractor={(item) => { return item.GTID }}
       // ItemSeparatorComponent={() => <Separator />}
       ></FlatList>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={startTripVisible}
+        onRequestClose={() => {
+          // Alert.alert('Modal has been closed.');
+          setstartTripVisible(!startTripVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+
+
+            <Text
+              style={styles.title}
+            >
+              Warning
+            </Text>
+
+            <View style={styles.inputRowcontainerNoborder}>
+              <Text
+                style={styles.modalText}>
+                You cannot leave the carpool once you start it! Do you want to proceed?
+              </Text>
+            </View>
+
+            <View style={styles.inputRowcontainerNoborder}>
+              <Button
+                onPress={() => setstartTripVisible(!startTripVisible)}
+                mode="contained"
+                style={styles.buttonCancel}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                onPress={() => {setstartTripVisible(false); startCarpool()}}
+                mode="contained"
+                style={styles.buttonConfirm}
+              >
+                Yes
+              </Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 };
@@ -389,12 +430,14 @@ const styles = StyleSheet.create({
   dateTimeDisplay: {
     flex: 1,
   },
-  input: {
+  title: {
     backgroundColor: "white",
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
+    fontWeight: "500",
+    fontSize: 20,
   },
 
   buttonContainer: {
