@@ -68,9 +68,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   flatListStyle: {
-    // flexWrap: "wrap",
+    paddingVertical: 10,
     width: "100%",
+    minHeight: 150,
     paddingHorizontal: 10,
+    marginVertical: 30,
   },
   cardStyle: {
     marginVertical: 10,

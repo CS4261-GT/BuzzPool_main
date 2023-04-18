@@ -3,7 +3,7 @@ export const EmptyScreen = () => {
   // console.log("empty screen")
   return (
     <View
-      style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+      style={{ marginTop: 30, flex: 1, alignItems: "center", justifyContent: "center" }}
     >
       <Text
         style={{
@@ -29,7 +29,7 @@ export const EmptyChatScrren = () => {
   // console.log("empty screen")
   return (
     <View
-      style={{ flex: 1, alignItems: "center", justifyContent: "center"}}
+      style={{ marginTop: 30, flex: 1, alignItems: "center", justifyContent: "center"}}
     >
       <Text
         style={{
