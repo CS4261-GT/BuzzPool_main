@@ -42,6 +42,7 @@ const LoginScreen = () => {
             navigation.navigate("Navigator")
           else
             navigation.navigate("Profile")
+        }
 
       })
   
