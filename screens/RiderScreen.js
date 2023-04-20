@@ -414,7 +414,7 @@ export const RiderScreen = () => {
         transparent={true}
         visible={joinTripModalVisible}
         onRequestClose={() => {
-          // Alert.alert('Modal has been closed.');
+          // Alert.alert('Modal has fbeen closed.');
           setjoinTripModalVisible(!joinTripModalVisible);
         }}
       >
