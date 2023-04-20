@@ -40,6 +40,14 @@ const SettingScreen = () => {
       .catch((error) => alert(error.message));
   };
 
+  const reportScreen = () => {
+    navigation.navigate("Reports");
+  };
+
+  const terms = () => {
+    //
+  };
+
   return (
     <KeyboardAvoidingView style={styles.container}>
       <View style={styles.container}>
@@ -69,6 +77,21 @@ const SettingScreen = () => {
             <Text style={styles.buttonTextStyle}>Text GTPD</Text>
           </TouchableOpacity>
         </View>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.reportButtonStyle}
+          onPress={reportScreen}
+        >
+          <Text style={styles.buttonTextStyle}>View Reports</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.reportButtonStyle}
+          onPress={terms}
+        >
+          <Text style={styles.buttonTextStyle}>Terms & Conditions</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
           activeOpacity={0.7}
@@ -124,6 +147,16 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     marginTop: 50,
+    alignItems: "center",
+    marginHorizontal: 2,
+    color: "white",
+  },
+  reportButtonStyle: {
+    backgroundColor: "#0096FF",
+    width: "100%",
+    padding: 20,
+    borderRadius: 10,
+    marginTop: 10,
     alignItems: "center",
     marginHorizontal: 2,
     color: "white",
