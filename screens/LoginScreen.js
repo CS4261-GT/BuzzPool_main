@@ -35,9 +35,14 @@ const LoginScreen = () => {
 
     useEffect(() => {
       const unsubscribe = auth.onAuthStateChanged(user => {
+        console.log(user)
         if (user) {
-          navigation.navigate("Navigator")
-        }
+
+          if (user.displayName)
+            navigation.navigate("Navigator")
+          else
+            navigation.navigate("Profile")
+
       })
   
       return unsubscribe

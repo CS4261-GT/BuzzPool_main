@@ -107,6 +107,7 @@ export const SingleTripScreen = ({ route }) => {
       setReportedGTID("");
       setMessage("");
       console.log("Document added successfully!");
+      alert("Thank you for your report")
     } catch (error) {
       console.error("Error adding document: ", error);
     }
