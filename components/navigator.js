@@ -8,7 +8,7 @@ import { View } from "react-native";
 import { DriverScreen } from "../screens/DriverScreen";
 import { MytripScreen } from "../screens/MyTripScreen";
 import { MyChatScreen } from "../screens/MyChatScreen";
-import ReportScreen from "../screens/ReportScreen";
+import SettingScreen from "../screens/SettingScreen";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Tab = createBottomTabNavigator();
@@ -70,7 +70,7 @@ export const Navigator = () => {
       {/* <Tab.Screen name="Provider" component={Provider} /> */}
       <Tab.Screen
         name="Setting"
-        component={ReportScreen}
+        component={SettingScreen}
 
         options={{
           tabBarIcon: ({ color, size }) => (

@@ -8,6 +8,7 @@ import LoginScreen from './screens/LoginScreen';
 import RiderScreen from './screens/RiderScreen';
 import HomeScreen from './screens/HomeScreen';
 import ChatScreen from './screens/ChatScreen';
+import Reports from './screens/Reports';
 import { ProfileScreen } from './screens/ProfileScreen'
 import { Navigator } from './components/navigator'
 import { auth } from './api/firebase';
@@ -67,6 +68,15 @@ export default function App() {
           component={ChatScreen}
           options={{
             title: "ChatScreen",
+            // gestureEnabled: false,
+            // headerBackVisible: false
+          }}
+        />
+        <Stack.Screen
+          name="Reports"
+          component={Reports}
+          options={{
+            title: "Reports",
             // gestureEnabled: false,
             // headerBackVisible: false
           }}
