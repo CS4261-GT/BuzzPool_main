@@ -1,187 +1,146 @@
-import { Avatar, Button, Card, Text, Checkbox } from 'react-native-paper';
-import { DateTimePickerModal } from 'react-native-paper-datetimepicker';
-import { NavigationHelpersContext, useNavigation } from '@react-navigation/core'
-import React, { useRef, useState, useCallback } from 'react'
-import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal } from 'react-native'
-import { addUser } from '../logic/userHandler'
-import ServiceScreen from './RiderScreen';
-import { auth } from '../api/firebase';
+import React, { useState, useEffect } from "react";
+import { auth } from "../api/firebase";
+import { useNavigation } from "@react-navigation/core";
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+} from "react-native";
 
+import { phonecall, text } from "react-native-communications";
+import { Button } from "react-native-paper";
+import { getDataUsingPost } from "../api/nativeNotify";
 
+const SettingScreen = () => {
+  const navigation = useNavigation();
+  const [user, setUser] = useState(null);
 
-/**
- * This function returns the Setting page UI
- * @returns Setting page UI
- */
-export const SettingScreen = () => {
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+    });
 
-  const navigation = useNavigation()
-
-
+    return unsubscribe;
+  }, []);
 
   const logOut = () => {
-    auth.signOut()
+    auth
+      .signOut()
       .then(() => {
-        alert("User successfully logged out")
-        navigation.navigate("Login")
+        alert("User successfully logged out");
+        navigation.navigate("Login");
       })
-      .catch((error) => alert(error.message))
-
-  }
-
+      .catch((error) => alert(error.message));
+  };
 
   return (
+    <KeyboardAvoidingView style={styles.container}>
+      <View style={styles.container}>
+        {/* add a Text component to display the user email */}
+        {user && (
+          <Text style={styles.emailText}>Logged in as: {user.email}</Text>
+        )}
 
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior="padding"
-    >
+        <Text style={styles.titleText}>
+          Contact Georgia Tech Police Department (GTPD)
+        </Text>
 
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={styles.buttonStyle}
+            onPress={() => phonecall("4048942500", true)}
+          >
+            <Text style={styles.buttonTextStyle}>Call GTPD</Text>
+          </TouchableOpacity>
 
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={styles.buttonStyle}
+            onPress={() => text("4048942500")}
+          >
+            <Text style={styles.buttonTextStyle}>Text GTPD</Text>
+          </TouchableOpacity>
+        </View>
 
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.logOutButtonStyle}
+          onPress={logOut}
+        >
+          <Text style={styles.buttonTextStyle}>Log Out</Text>
+        </TouchableOpacity>
 
-      <Button onPress={logOut} style={styles.button} mode='contained' >Log Out</Button>
-
-
-
+        {/* <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.buttonStyle}
+          onPress={getDataUsingPost}>
+          <Text style={styles.buttonTextStyle}>
+            send notification
+          </Text>
+        </TouchableOpacity> */}
+      </View>
     </KeyboardAvoidingView>
-  )
-}
+  );
+};
 
-
+export default SettingScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignContent: "center",
-    flexWrap: "wrap",
-    // backgroundColor: "white",
+    backgroundColor: "white",
+    padding: 10,
   },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    marginTop: 22,
-    marginHorizontal: 10,
-    paddingHorizontal: 10,
+  titleText: {
+    fontSize: 20,
+    textAlign: "center",
   },
-  flatListStyle: {
-    paddingVertical: 10,
-    width: "100%",
-    minHeight: 150,
-    paddingHorizontal: 10,
-    marginVertical: 30,
-  },
-  cardStyle: {
-    marginVertical: 10,
-    marginHorizontal: 10,
-  },
-  inputContainer: {
-    width: '80%'
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  inputTitle: {
-    //   backgroundColor: 'white',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 10,
-    marginTop: 5,
-    fontWeight: '700',
-    fontSize: 16,
-  },
-  title: {
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 10,
-    marginTop: 5,
-    marginBottom: 50,
-    textAlign: 'center',
-    fontWeight: '700',
-    fontSize: 16,
-  },
-  postTitle: {
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 10,
-    marginTop: 5,
-    textAlign: 'center',
-    fontWeight: '700',
-    fontSize: 16,
-  },
-  inputRowcontainer: {
-    flexDirection: "row",
-    marginVertical: 5,
-    paddingHorizontal: 5,
-    borderWidth: 1,
-    flexWrap: "wrap",
-    alignItems: "center"
-  },
-  inputRowcontainerNoborder: {
-    flexDirection: "row",
-    marginVertical: 5,
-    paddingHorizontal: 5,
-    flexWrap: "wrap",
+  buttonConfirm: {
+    backgroundColor: "#0782F9",
     alignItems: "center",
+    marginBottom: 5,
+    marginHorizontal: 5,
   },
-  inputLabel: {
-    flex: 1,
-  },
-  dateTimeDisplay: {
-    flex: 1,
-  },
-  input: {
-    // backgroundColor: 'white',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+  buttonStyle: {
+    backgroundColor: "#0782F9",
+    width: "50%",
+    padding: 20,
     borderRadius: 10,
-    marginTop: 5,
-  },
-
-  buttonContainer: {
-    width: '60%',
-    justifyContent: 'center',
-    alignItems: 'center',
     marginTop: 40,
+    alignItems: "center",
+    marginHorizontal: 2
   },
-  button: {
-    backgroundColor: '#0782F9',
-    marginTop: 5,
-    alignItems: 'center',
+  logOutButtonStyle: {
+    backgroundColor: "#000000",
+    width: "100%",
+    padding: 20,
+    borderRadius: 10,
+    marginTop: 50,
+    alignItems: "center",
+    marginHorizontal: 2,
+    color: "white",
   },
-  buttonText: {
-    color: 'white',
-    fontWeight: '700',
+  buttonTextStyle: {
+    color: "white",
+    fontWeight: "700",
     fontSize: 16,
   },
-  buttonOutline: {
-    backgroundColor: 'white',
-    marginTop: 5,
-    borderColor: '#0782F9',
-    borderWidth: 2,
-  },
-  buttonOutlineText: {
-    color: '#0782F9',
-    fontWeight: '700',
+  emailText: {
     fontSize: 16,
+    textAlign: "center",
+    marginVertical: 10,
   },
-})
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 5,
+  },
+});
