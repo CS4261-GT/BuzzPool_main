@@ -56,6 +56,7 @@ export const RiderScreen = () => {
 
   //Search bar
   const [searchText, setSearchText] = useState("");
+  
   const [filteredCarpoolData, setFilteredCarpoolData] = useState([]);
 
   const handleFilterPress = (departureLocation, destination) => {
