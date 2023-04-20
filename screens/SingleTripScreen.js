@@ -45,6 +45,7 @@ export const SingleTripScreen = ({ route }) => {
   const [reportUser, setReportUser] = useState(false);
   const [message, setMessage] = useState("");
 
+  const [carpoolTitle, setCarpoolTitle] = useState("")
   const [reportedEmail, setReportedEmail] = useState("")
   const [reportedFirst, setReportedFirst] = useState("")
   const [reportedLast, setReportedLast] = useState("")
@@ -97,6 +98,7 @@ export const SingleTripScreen = ({ route }) => {
         last: reportedLast,
         GTID: reportedGTID,
         message: message,
+        carpoolTitle: carpoolTitle,
       });
 
       setReportedEmail("");
@@ -237,6 +239,7 @@ export const SingleTripScreen = ({ route }) => {
                   setReportedFirst(requestedUserInfo.firstName);
                   setReportedLast(requestedUserInfo.lastName);
                   setReportedGTID(requestedUserInfo.GTID);
+                  setCarpoolTitle(carpoolWithId.title);
                 }}
                 mode="contained"
                 style={styles.buttonReport}
@@ -324,7 +327,7 @@ export const SingleTripScreen = ({ route }) => {
             >
               Start
             </Button>
-
+          )}
         </Card.Actions>
       </Card>
 
