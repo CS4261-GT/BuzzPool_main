@@ -6,6 +6,7 @@ import React, { useRef, useState, useCallback } from 'react'
 import { StyleSheet, TouchableOpacity, View, KeyboardAvoidingView, TextInput, FlatList, Modal } from 'react-native'
 import { addUser } from '../logic/userHandler'
 import ServiceScreen from './RiderScreen';
+import { auth } from '../api/firebase';
 
 
 
@@ -23,14 +24,18 @@ export const ProfileScreen = () => {
      */
     const createUser = () => {
         try {
+            
             const pNumber = Number(phoneNumber)
             const GTIDNumber = Number(GTID)
+            
             if (!(firstName.length > 0 && lastName.length > 0 && phoneNumber.length == 10 && GTID.length == 9) || isNaN(pNumber) || isNaN(GTID))
-                throw new Error()
+                throw new Error("input error")
+            auth.currentUser.updateProfile({displayName: firstName + " " + lastName})
             addUser(firstName, lastName, pNumber, GTIDNumber)
             .then(() => navigation.navigate("Navigator"))
         } catch (error) {
             alert("Incomplete or Invalid user information!")
+            console.log(error.message)
         }
     }
 

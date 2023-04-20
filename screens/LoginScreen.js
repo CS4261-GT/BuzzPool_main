@@ -33,15 +33,19 @@ const LoginScreen = () => {
 
     // }
 
-    // useEffect(() => {
-    //   const unsubscribe = auth.onAuthStateChanged(user => {
-    //     if (user) {
-    //       navigation.navigate("Profile")
-    //     }
-    //   })
+    useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged(user => {
+        console.log(user)
+        if (user) {
+          if (user.displayName)
+            navigation.navigate("Navigator")
+          else
+            navigation.navigate("Profile")
+        }
+      })
   
-    //   return unsubscribe
-    // }, [])
+      return unsubscribe
+    }, [])
   
 
   return (
