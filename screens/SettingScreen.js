@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { auth } from "../api/firebase";
+import { auth, firestore } from "../api/firebase";
 import { useNavigation } from "@react-navigation/core";
 import {
   SafeAreaView,
@@ -16,19 +16,73 @@ import { getDataUsingPost } from "../api/nativeNotify";
 
 const SettingScreen = () => {
   const navigation = useNavigation();
-  const [user, setUser] = useState(null);
+
+  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [users, setUsers] = useState([]);
+
+  //Profile Update
+  const [first, setFirst] = useState();
+  const [last, setLast] = useState();
+  const [phone, setPhone] = useState();
+  const [email, setEmail] = useState();
+  const [GTID, setGTID] = useState();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
+    const unsubscribe = auth.onAuthStateChanged((curr) => {
+      if (curr) {
+        setCurrentUser(curr);
       } else {
-        setUser(null);
+        setCurrentUser(null);
       }
     });
 
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = firestore.collection("Users").onSnapshot((snapshot) => {
+      const userList = [];
+      snapshot.forEach((doc) => {
+        const userData = doc.data();
+        userList.push({
+          id: doc.id,
+          GTID: userData.GTID,
+          email: userData.email,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          phoneNumber: userData.phoneNumber,
+          ongoingTripID: userData.ongoingTripID,
+          report: userData.report,
+        });
+      });
+      setUsers(userList);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const matchingUser = users.find((user) => user.email === currentUser.email);
+
+    if (matchingUser) {
+      console.log("Found user!");
+      const firstName = matchingUser.firstName;
+      const lastName = matchingUser.lastName;
+      const phoneNumber = matchingUser.phoneNumber;
+      const email = matchingUser.email;
+      const userid = matchingUser.GTID;
+      setFirst(firstName);
+      setLast(lastName);
+      setPhone(phoneNumber);
+      setEmail(email);
+      setGTID(userid);
+    
+    } else {
+      console.log("Not found!");
+    }
+  });
 
   const logOut = () => {
     auth
@@ -48,17 +102,26 @@ const SettingScreen = () => {
     //
   };
 
+  const updateProfile = () => {
+    navigation.navigate("UpdateProfile");
+  };
+
   return (
     <KeyboardAvoidingView style={styles.container}>
+
       <View style={styles.container}>
         {/* add a Text component to display the user email */}
-        {user && (
-          <Text style={styles.emailText}>Logged in as: {user.email}</Text>
-        )}
+        {currentUser && (
+          <>
+          <View style={styles.userContainer}>
+          <Text style={styles.userText}>Logged in as: {(first + " " + last)}</Text>
+          <Text style={styles.userText}>Email: {email}</Text>
+          <Text style={styles.userText}>Phone: {phone}</Text>
+          <Text style={styles.userText}>GTID: {GTID}</Text>
+          </View>
+          </>
 
-        <Text style={styles.titleText}>
-          Contact Georgia Tech Police Department (GTPD)
-        </Text>
+        )}
 
         <View style={styles.buttonsContainer}>
           <TouchableOpacity
@@ -83,6 +146,14 @@ const SettingScreen = () => {
           onPress={reportScreen}
         >
           <Text style={styles.buttonTextStyle}>View Reports</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.reportButtonStyle}
+          onPress={updateProfile}
+        >
+          <Text style={styles.buttonTextStyle}>Update Profile</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -175,5 +246,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 5,
+  },
+  userContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 16,
+    marginVertical: 16,
+    marginHorizontal: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  userText: {
+    fontSize: 16,
+    marginBottom: 8,
+    fontWeight: 'bold',
+    color: '#333',
   },
 });
