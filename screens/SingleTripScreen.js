@@ -25,11 +25,9 @@ import { getLoginUser, getAllUsersInCarpool } from "../logic/userHandler";
 import Carpool from "../model/Carpool";
 import { useNavigation } from "@react-navigation/native";
 
-import Icon from 'react-native-vector-icons/FontAwesome';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Icon from "react-native-vector-icons/FontAwesome";
+import Swipeable from "react-native-gesture-handler/Swipeable";
 import { subscreen, tripStatus } from "../constants/constants";
-
-
 
 export const SingleTripScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -41,20 +39,19 @@ export const SingleTripScreen = ({ route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [startTripVisible, setstartTripVisible] = useState(false);
 
-
   const [reportUser, setReportUser] = useState(false);
   const [message, setMessage] = useState("");
 
-  const [carpoolTitle, setCarpoolTitle] = useState("")
-  const [reportedEmail, setReportedEmail] = useState("")
-  const [reportedFirst, setReportedFirst] = useState("")
-  const [reportedLast, setReportedLast] = useState("")
-  const [reportedGTID, setReportedGTID] = useState("")
+  const [carpoolTitle, setCarpoolTitle] = useState("");
+  const [reportedEmail, setReportedEmail] = useState("");
+  const [reportedFirst, setReportedFirst] = useState("");
+  const [reportedLast, setReportedLast] = useState("");
+  const [reportedGTID, setReportedGTID] = useState("");
 
   const [value, setValue] = useState("myTrip");
 
   const { carpoolWithId, userData, from } = route.params;
-  const tripStatusVisible = from == 'MyTripScreen' + subscreen.ongoingTrips
+  const tripStatusVisible = from == "MyTripScreen" + subscreen.ongoingTrips;
   console.log(from);
   const usersIDs = carpoolWithId.userIDs;
   console.log(carpoolWithId);
@@ -107,7 +104,7 @@ export const SingleTripScreen = ({ route }) => {
       setReportedGTID("");
       setMessage("");
       console.log("Document added successfully!");
-      alert("Thank you for your report")
+      alert("Thank you for your report");
     } catch (error) {
       console.error("Error adding document: ", error);
     }
@@ -124,22 +121,20 @@ export const SingleTripScreen = ({ route }) => {
   };
 
   const startCarpool = async () => {
-
-    carpoolWithId.tripStatus = tripStatus.Started
-    await updateCarpool(carpoolWithId)
-    setLoading(!loading)
-  }
+    carpoolWithId.tripStatus = tripStatus.Started;
+    await updateCarpool(carpoolWithId);
+    setLoading(!loading);
+  };
 
   const finishCarpool = async () => {
     if (carpoolWithId.tripStatus != tripStatus.Started) {
-      alert("You can only finish a carpool after it is started!")
-      return
+      alert("You can only finish a carpool after it is started!");
+      return;
     }
-    carpoolWithId.tripStatus = tripStatus.Finished
-    await updateCarpool(carpoolWithId)
-    setLoading(!loading)
-  }
-
+    carpoolWithId.tripStatus = tripStatus.Finished;
+    await updateCarpool(carpoolWithId);
+    setLoading(!loading);
+  };
 
   const getUserInfo = (user) => {
     console.log("requested info");
@@ -185,7 +180,6 @@ export const SingleTripScreen = ({ route }) => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-
       <Modal
         animationType="slide"
         transparent={true}
@@ -233,49 +227,51 @@ export const SingleTripScreen = ({ route }) => {
                 OK
               </Button>
 
-              <Button
-                onPress={() => {
-                  report();
-                  setReportedEmail(requestedUserInfo.email);
-                  setReportedFirst(requestedUserInfo.firstName);
-                  setReportedLast(requestedUserInfo.lastName);
-                  setReportedGTID(requestedUserInfo.GTID);
-                  setCarpoolTitle(carpoolWithId.title);
-                }}
-                mode="contained"
-                style={styles.buttonReport}
-              >
-                Report
-              </Button>
-            </View>
-
-            {reportUser && (
-              <>
-              <KeyboardAvoidingView>
-              <View style={styles.reportMessage}>
-                  <TextInput
-                    style={[styles.message, { height: 100, width: 200 }]} // Set height and width here
-                    placeholder="Message"
-                    value={message}
-                    onChangeText={handleChangeText}
-                    maxLength={100} // Maximum length of 100 characters
-                    multiline // Allow multiple lines of input
-                    numberOfLines={3} // Display 3 lines of input initially
-                    onSubmitEditing={() => Keyboard.dismiss()}
-                  />
-                </View>
+              {tripStatusVisible && (
                 <Button
                   onPress={() => {
-                    sendReportMessage();
-                    setModalVisible(!modalVisible);
-                    setReportUser(false);
+                    report();
+                    setReportedEmail(requestedUserInfo.email);
+                    setReportedFirst(requestedUserInfo.firstName);
+                    setReportedLast(requestedUserInfo.lastName);
+                    setReportedGTID(requestedUserInfo.GTID);
+                    setCarpoolTitle(carpoolWithId.title);
                   }}
                   mode="contained"
                   style={styles.buttonReport}
                 >
-                  Send Message
+                  Report
                 </Button>
-              </KeyboardAvoidingView>
+              )}
+            </View>
+
+            {reportUser &&(
+              <>
+                <KeyboardAvoidingView>
+                  <View style={styles.reportMessage}>
+                    <TextInput
+                      style={[styles.message, { height: 100, width: 200 }]} // Set height and width here
+                      placeholder="Message"
+                      value={message}
+                      onChangeText={handleChangeText}
+                      maxLength={100} // Maximum length of 100 characters
+                      multiline // Allow multiple lines of input
+                      numberOfLines={3} // Display 3 lines of input initially
+                      onSubmitEditing={() => Keyboard.dismiss()}
+                    />
+                  </View>
+                  <Button
+                    onPress={() => {
+                      sendReportMessage();
+                      setModalVisible(!modalVisible);
+                      setReportUser(false);
+                    }}
+                    mode="contained"
+                    style={styles.buttonReport}
+                  >
+                    Send Message
+                  </Button>
+                </KeyboardAvoidingView>
               </>
             )}
           </View>
@@ -317,13 +313,12 @@ export const SingleTripScreen = ({ route }) => {
             <Button
               style={styles.buttonConfirm}
               mode="contained"
-              onPress={() => { 
+              onPress={() => {
                 if (carpoolWithId.tripStatus != tripStatus.NotStarted) {
-                  alert("You cannot start a carpool when it is finished!")
-                  return
+                  alert("You cannot start a carpool when it is finished!");
+                  return;
                 }
-                setstartTripVisible(true)
-                
+                setstartTripVisible(true);
               }}
             >
               Start
@@ -345,9 +340,7 @@ export const SingleTripScreen = ({ route }) => {
         </Card.Content>
       </Card>
 
-
       <Text style={styles.postTitle}>Passengers</Text>
-
 
       <FlatList
         data={passengerData}
@@ -375,18 +368,12 @@ export const SingleTripScreen = ({ route }) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-
-
-            <Text
-              style={styles.title}
-            >
-              Warning
-            </Text>
+            <Text style={styles.title}>Warning</Text>
 
             <View style={styles.inputRowcontainerNoborder}>
-              <Text
-                style={styles.modalText}>
-                You cannot leave the carpool once you start it! Do you want to proceed?
+              <Text style={styles.modalText}>
+                You cannot leave the carpool once you start it! Do you want to
+                proceed?
               </Text>
             </View>
 
@@ -400,7 +387,10 @@ export const SingleTripScreen = ({ route }) => {
               </Button>
 
               <Button
-                onPress={() => {setstartTripVisible(false); startCarpool()}}
+                onPress={() => {
+                  setstartTripVisible(false);
+                  startCarpool();
+                }}
                 mode="contained"
                 style={styles.buttonConfirm}
               >
