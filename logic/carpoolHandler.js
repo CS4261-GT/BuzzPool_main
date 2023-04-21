@@ -76,6 +76,10 @@ export const getAllCarpools = async () => {
         if (carpool.departureTime.getTime() + 86400*1000/2 >= new Date().getTime() && carpool.tripStatus == tripStatus.NotStarted) {
           carpool['id'] = doc.id;
           carpools.push(carpool);
+        } else {
+          console.log(carpool.departureTime.getTime() + 86400*1000/2 >= new Date().getTime())
+          console.log("this carpool does not pass through")
+          console.log(carpool)
         }
       });
     })

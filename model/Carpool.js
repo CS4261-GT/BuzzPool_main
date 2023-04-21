@@ -7,7 +7,6 @@ export default class Carpool {
     requireDriver = true, capacity = 4, userGTIDs = [], driverGTID = "", userIDs = [],
     // auto set fields
     myTripStatus = tripStatus.NotStarted, isTransactionFinished = false) {
-
     this.title = title
     this.departureTime = departureTime
     this.departureLocation = departureLocation
@@ -17,7 +16,6 @@ export default class Carpool {
     this.userGTIDs = userGTIDs
     this.driverGTID = driverGTID
     this.userIDs = userIDs
-
     this.tripStatus = myTripStatus
     this.isTransactionFinished = isTransactionFinished
   }

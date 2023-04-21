@@ -29,9 +29,11 @@ export const handleEmailVerification = (email, password) => {
 export const handleSignUp = (email, password) => {
   auth
     .createUserWithEmailAndPassword(email, password)
-    .then(userCredentials => {
+    .then(async(userCredentials) => {
       const user = userCredentials.user;
-      console.log('Registered with:', user.email);
+
+      console.log('Registered with:', user.email)
+      // await enforceSignOut()
       handleEmailVerification(email)
     })
     .catch(error => alert(error.message))
