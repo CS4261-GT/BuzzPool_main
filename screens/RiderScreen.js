@@ -56,7 +56,7 @@ export const RiderScreen = () => {
 
   //Search bar
   const [searchText, setSearchText] = useState("");
-  
+
   const [filteredCarpoolData, setFilteredCarpoolData] = useState([]);
 
   const handleFilterPress = (departureLocation, destination) => {
@@ -97,7 +97,8 @@ export const RiderScreen = () => {
     (async () => {
       const { status } = await Calendar.requestCalendarPermissionsAsync();
 
-      if (status === "granted") {
+      if (status === "granted")
+      {
         const calendars = await Calendar.getCalendarsAsync(
           Calendar.EntityTypes.EVENT
         );
@@ -156,7 +157,8 @@ export const RiderScreen = () => {
     }, 100);
   };
 
-  if (!singleRefresh) {
+  if (!singleRefresh)
+  {
     onRefresh()
     setSingleRefresh(true)
   }
@@ -204,7 +206,7 @@ export const RiderScreen = () => {
       .then((userData) => {
         // console.log("user data to be passed to single trip screen")
         // console.log(userData)
-        navigation.setOptions({ title: carpoolWithId.title });
+        // navigation.setOptions({ title: carpoolWithId.title });
         navigation.navigate("SingleTripScreen", {
           carpoolWithId: carpoolWithId,
           userData: userData,
@@ -289,7 +291,8 @@ export const RiderScreen = () => {
     setModalVisible(!modalVisible);
     // setDate(date)
     // setCarpool({})
-    try {
+    try
+    {
       getLoginUser()
         .then(async ({ userId, userData }) => {
           // console.log(userId, userData)
@@ -328,7 +331,8 @@ export const RiderScreen = () => {
 
         })
         .catch((e) => console.error(e.message));
-    } catch (error) {
+    } catch (error)
+    {
       alert("Incomplete or invalid input!");
     }
   };
@@ -408,7 +412,7 @@ export const RiderScreen = () => {
         onRefresh={onRefresh}
       />
 
-      {!filteredCarpoolData.length && <EmptyScreen/>}
+      {!filteredCarpoolData.length && <EmptyScreen />}
 
       <Modal
         animationType="slide"
@@ -496,17 +500,19 @@ export const RiderScreen = () => {
 
             <View style={styles.inputRowcontainer}>
               <Text style={styles.inputLabel}>Departure Time:</Text>
-              <DateTimePicker
-                value={date}
-                mode={"datetime"}
-                onChange={onDateTimeChange}
-                style={{ paddingVertical: 8 }}
-                // textColor="black"
-                themeVariant="light"
-                // accentColor="#dddfff"
-                minimumDate={new Date()}
-                minuteInterval={5}
-              />
+              {React.useMemo(() => {
+                return (<DateTimePicker
+                  value={date}
+                  mode={"datetime"}
+                  onChange={onDateTimeChange}
+                  style={{ paddingVertical: 8 }}
+                  // textColor="black"
+                  themeVariant="light"
+                  // accentColor="#dddfff"
+                  minimumDate={new Date()}
+                  minuteInterval={5}
+                />)
+              })}
 
               {/* <DateTimePicker
                 visible={dateTimePickerVisible}

@@ -200,6 +200,8 @@ export const joinCarpool = async (carpoolWithId, isDriver) => {
   // console.log("inside joinCarpool")
   // console.log(carpool)
   var tripSuccess;
+  console.log("in join carpool")
+  console.log(carpoolWithId)
   await getLoginUser()
     .then(({ userId, userData }) => {
       // console.log(userData)
