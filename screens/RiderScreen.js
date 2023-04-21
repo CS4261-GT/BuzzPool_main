@@ -78,9 +78,15 @@ export const RiderScreen = () => {
   const onDateTimeChange = (event, selectedDate) => {
     // const currentDate = selectedDate;
     // setShow(false);
-    setDate(selectedDate);
-    console.log("new date...");
-    console.log(selectedDate);
+    if (selectedDate != date) {
+      console.log("new date...");
+      console.log(selectedDate)
+      console.log("original date..")
+      console.log(date)
+      setDate(selectedDate);
+      
+      // console.log(selectedDate);
+    }
   };
 
   // const [value, setValue] = useState("myTrip");
@@ -92,6 +98,7 @@ export const RiderScreen = () => {
     // setReload(!reload);
     getAllCarpools().then((data) => {
       setCarpoolData(data);
+      // console.log(data.length)
       setFilteredCarpoolData(data);
     });
     (async () => {
@@ -512,7 +519,7 @@ export const RiderScreen = () => {
                   minimumDate={new Date()}
                   minuteInterval={5}
                 />)
-              })}
+              }, [date])}
 
               {/* <DateTimePicker
                 visible={dateTimePickerVisible}
