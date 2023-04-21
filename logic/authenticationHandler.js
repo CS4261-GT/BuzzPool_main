@@ -1,5 +1,6 @@
 import { auth } from '../api/firebase'
 import { useNavigation } from '@react-navigation/core'
+import { blacklistCollection } from '../constants/constants'
 
 /**
  * This function handles email verification for user
@@ -77,16 +78,41 @@ export const handleLogin = async (email, password, navigation) => {
             alert("Email is not verified")
           } else
           {
-            console.log('Logged in with:', user.email);
-            navigation.navigate('Navigator', {screen: "MyTrip"});
+
+            var blacklisted = false
+            blacklistCollection
+              .get()
+              .then(querySnapshot => {
+                querySnapshot.forEach((doc) => {
+                  const userData = doc.data()
+                  if (user.email == userData.email)
+                  {
+                    blacklisted = true
+                  }
+                })
+              })
+              .then(() => {
+                if (!blacklisted)
+                {
+                  console.log('Logged in with:', user.email);
+                  navigation.navigate('Navigator', { screen: "MyTrip" });
+                }
+                else
+                {
+                  alert("blacklisted users cannot log in")
+                }
+
+              })
+              .catch(error => alert(error.message))
+
           }
+
         })
+        .catch(error => alert(error.message))
+
 
     })
-    .catch(error => alert(error.message))
-
-
-}
+  }
 
 /**
  * This function handles password reset for users
@@ -94,7 +120,7 @@ export const handleLogin = async (email, password, navigation) => {
  * @param {string} email 
  */
 export const handleResetPassword = (email) => {
-  auth.sendPasswordResetEmail(email)
-    .then(() => alert(`Password reset email is sent to ${email}`))
-    .catch(e => alert(e.message))
-}
+    auth.sendPasswordResetEmail(email)
+      .then(() => alert(`Password reset email is sent to ${email}`))
+      .catch(e => alert(e.message))
+  }
