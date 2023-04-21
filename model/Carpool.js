@@ -5,7 +5,7 @@ export default class Carpool {
     title, departureTime, departureLocation, destination,
     requireDriver = true, capacity = 4, userGTIDs = [], driverGTID = "", userIDs = [],
     // auto set fields
-    myTripStatus = "Not started", isTransactionFinished = false) {
+    myTripStatus = tripStatus.NotStarted, isTransactionFinished = false) {
     this.title = title
     this.departureTime = departureTime
     this.departureLocation = departureLocation
