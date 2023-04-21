@@ -1,4 +1,5 @@
 import { tripStatus } from "../constants/constants"
+
 export default class Carpool {
   constructor(
     // requried fields for creation
