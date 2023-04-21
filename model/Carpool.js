@@ -16,7 +16,6 @@ export default class Carpool {
     this.userGTIDs = userGTIDs
     this.driverGTID = driverGTID
     this.userIDs = userIDs
-
     this.tripStatus = myTripStatus
     this.isTransactionFinished = isTransactionFinished
   }
