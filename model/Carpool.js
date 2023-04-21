@@ -1,10 +1,11 @@
+import { tripStatus } from "../constants/constants"
 export default class Carpool {
   constructor(
     // requried fields for creation
     title, departureTime, departureLocation, destination,
     requireDriver = true, capacity = 4, userGTIDs = [], driverGTID = "", userIDs = [],
     // auto set fields
-    tripStatus = "Not started", isTransactionFinished = false) {
+    myTripStatus = "Not started", isTransactionFinished = false) {
     this.title = title
     this.departureTime = departureTime
     this.departureLocation = departureLocation
@@ -15,7 +16,7 @@ export default class Carpool {
     this.driverGTID = driverGTID
     this.userIDs = userIDs
 
-    this.tripStatus = tripStatus
+    this.tripStatus = myTripStatus
     this.isTransactionFinished = isTransactionFinished
   }
 
