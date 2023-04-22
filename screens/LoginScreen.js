@@ -21,7 +21,7 @@ const LoginScreen = () => {
       console.log(user)
       if (user && user.emailVerified) {
         
-          if (user.displayName)
+          if (user.displayName  != null)
             navigation.navigate("Navigator")
           else
             navigation.navigate("Profile")

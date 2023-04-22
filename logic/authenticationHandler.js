@@ -97,7 +97,7 @@ export const handleLogin = async (email, password, navigation) => {
                 if (!blacklisted)
                 {
                   console.log('Logged in with:', user.email);
-                  navigation.navigate('Navigator', { screen: "MyTrip" });
+                  // navigation.navigate('Navigator', { screen: "MyTrip" });
                 }
                 else
                 {
