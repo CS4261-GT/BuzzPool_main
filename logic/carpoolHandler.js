@@ -92,6 +92,10 @@ export const getAllCarpools = async () => {
 }
 
 
+/**
+ * update the data in a carpool
+ * @param {object} carpoolWithId 
+ */
 export const updateCarpool = async (carpoolWithId) => {
   carpoolCollection
   .doc(carpoolWithId.id)
@@ -173,7 +177,11 @@ export const addInitialCarpoolCreator = (carpool) => {
     .catch(error => console.log(error.message))
 }
 
-
+/**
+ * convert an object of carpool to a Carpool instance
+ * @param {object} carpool 
+ * @returns Carpool
+ */
 export const convertToCarpool = (carpool) => {
   return new Carpool(
     carpool.title,

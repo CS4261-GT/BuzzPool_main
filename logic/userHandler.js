@@ -6,7 +6,12 @@ import { subscreen, tripStatus, carpoolCollection, usersCollection } from '../co
 import { convertToCarpool } from './carpoolHandler';
 
 
-
+/**
+ * move an archived trip from the user's archive to their ongoing trip collection
+ * @param {object} userWithId 
+ * @param {object} carpoolWithId 
+ * @returns 
+ */
 export const archiveTrip = async (userWithId, carpoolWithId) => {
   // console.log("attempt to archive trip")
   if (carpoolWithId.tripStatus != tripStatus.Finished) {
@@ -31,6 +36,11 @@ export const archiveTrip = async (userWithId, carpoolWithId) => {
 
 }
 
+/**
+ * unarchive a trip from a user's trip archive to the ongoing trip
+ * @param {object} userWithId 
+ * @param {object} carpoolWithId 
+ */
 export const unarchiveTrip = async (userWithId, carpoolWithId) => {
   // console.log("attempt to unarchive trip")
   const archivedTrips = userWithId.archivedTripID.filter(trip => {
@@ -51,6 +61,12 @@ export const unarchiveTrip = async (userWithId, carpoolWithId) => {
 
 }
 
+/**
+ * exit a carpool that hasn't started
+ * @param {object} userWithId 
+ * @param {object} carpoolWithId 
+ * @returns 
+ */
 export const leaveTrip = async (userWithId, carpoolWithId) => {
   console.log("attempt to leave trip")
   if (carpoolWithId.tripStatus != tripStatus.NotStarted) {
@@ -136,6 +152,11 @@ export const showMyCarpool = async (keyword) => {
   return carpoolList
 }
 
+/**
+ * return all the user objects in a carpool
+ * @param {array[string]} userIDs 
+ * @returns 
+ */
 export const getAllUsersInCarpool = async (userIDs) => {
   var userArr = []
   console.log("These are the user IDs for the carpool")
@@ -162,6 +183,10 @@ export const getAllUsersInCarpool = async (userIDs) => {
   return userArr
 }
 
+/**
+ * 
+ * @returns the instance of a logged in user
+ */
 export const getLoginUser = async () => {
   var returnUser = {};
   console.log("attemp to get user")
